@@ -1,6 +1,6 @@
 # InfoCenter — Aggregated Social Updates in One Place
 
-InfoCenter รวมประกาศและข่าวสารจากหลายแหล่ง (Facebook, Instagram, TikTok) มาไว้ในฟีดเดียว ผู้ใช้แค่วางลิงก์ของเพจที่ต้องการติดตาม แล้วจัดกลุ่มด้วยแท็กและกรองด้วยคีย์เวิร์ดได้ ทำขึ้นเพื่อแก้ปัญหาที่นักศึกษาใหม่และคนที่เพิ่งเข้าองค์กรพลาดประกาศสำคัญ เพราะข้อมูลกระจายอยู่หลายแพลตฟอร์ม
+InfoCenter collects announcements and updates from multiple sources (Facebook, Instagram, TikTok) into a single feed. Users paste the link of a page they want to follow, then organize sources with tags and filter posts by keyword. It is built for new students and newcomers to an organization, who often miss important announcements because information is scattered across many platforms.
 
 > Developed by **Team 17 — ByteSquad** · Introduction to Software Engineering (15031001), Mae Fah Luang University
 
@@ -8,14 +8,14 @@ InfoCenter รวมประกาศและข่าวสารจากห
 
 ## 📌 Features & Highlights
 
-- 🔗 **Add & Subscribe via Link** — วาง URL ของเพจ Facebook / Instagram / TikTok เพื่อเพิ่มเป็นแหล่งข่าว
-- 📰 **Aggregated Feed** — โพสต์จากทุกแหล่งที่ติดตามจะแสดงในฟีดเดียว กดเพื่อไปยังโพสต์ต้นฉบับได้
-- 🏷️ **Tagging & Filtering** — สร้างแท็กเอง (เช่น `#MFU`, `#TechNews`) ผูกกับแต่ละแหล่ง และเปิด/ปิดการแสดงตามแท็กหรือแพลตฟอร์ม
-- 🔍 **Keyword Sorting** — กรองโพสต์ด้วยคีย์เวิร์ดแบบ *Must include* / *Exclude* และค้นหาข้อความ
-- 🗂️ **Feed Tabs** — All / Important / Unread / Bookmarked พร้อมเรียงลำดับแบบ Newest / Oldest / Important
-- 🛠️ **Manage Sources & Tags** — เปิด/ปิด ลบ และแก้ไขแท็กของแต่ละแหล่ง
-- 🌐 **Thai / English UI** และ 🌙 **Dark / Light theme** (บันทึกค่าไว้ใน `localStorage`)
-- 🔌 **Backend-ready** — เรียก REST API ที่ `/api/*` และถ้าไม่มี backend จะใช้ mock data แทนโดยอัตโนมัติ
+- 🔗 **Add & Subscribe via Link** — Paste a Facebook / Instagram / TikTok page URL to add it as a source
+- 📰 **Aggregated Feed** — Posts from every subscribed source appear in one feed, with a link back to the original post
+- 🏷️ **Tagging & Filtering** — Create custom tags (e.g. `#MFU`, `#TechNews`), assign them to sources, and show or hide posts by tag or platform
+- 🔍 **Keyword Sorting** — Filter posts with *Must include* / *Exclude* keywords, plus full-text search
+- 🗂️ **Feed Tabs** — All / Important / Unread / Bookmarked, sortable by Newest / Oldest / Important
+- 🛠️ **Manage Sources & Tags** — Enable/disable, delete, and edit the tags of each source
+- 🌐 **Thai / English UI** and 🌙 **Dark / Light theme** (saved in `localStorage`)
+- 🔌 **Backend-ready** — Calls a REST API at `/api/*` and automatically falls back to mock data when no backend is running
 
 **Tech stack:** React 18 · TypeScript · Vite 5 · Tailwind CSS 3 · lucide-react
 
@@ -24,8 +24,8 @@ InfoCenter รวมประกาศและข่าวสารจากห
 ## ⚙️ Installation & Run
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) 18 ขึ้นไป (มาพร้อม npm) — หรือจะใช้ [Bun](https://bun.sh/) ก็ได้
-- *(ไม่บังคับ)* Python 3 ถ้าต้องการรัน backend
+- [Node.js](https://nodejs.org/) 18 or later (includes npm) — or [Bun](https://bun.sh/)
+- *(Optional)* Python 3, if you want to run the backend
 
 ### Steps
 
@@ -44,19 +44,19 @@ cp .env.example .env # on Windows PowerShell: Copy-Item .env.example .env
 npm run dev
 ```
 
-เปิดเบราว์เซอร์ไปที่ **http://localhost:3000**
+Then open **http://localhost:3000** in your browser.
 
 ### Available scripts
 
 | Command | Description |
 | :--- | :--- |
-| `npm run dev` | รัน dev server ที่พอร์ต 3000 |
-| `npm run build` | ตรวจ type แล้ว build สำหรับ production ไปที่ `dist/` |
-| `npm run preview` | เปิดดูผลจาก build ที่พอร์ต 3000 |
-| `npm run lint` | ตรวจ type ด้วย `tsc --noEmit` |
+| `npm run dev` | Start the dev server on port 3000 |
+| `npm run build` | Type-check and build for production into `dist/` |
+| `npm run preview` | Preview the production build on port 3000 |
+| `npm run lint` | Type-check with `tsc --noEmit` |
 
 > [!NOTE]
-> ตอนรัน dev server, [`vite.config.ts`](vite.config.ts) จะพยายามเปิด `python3 backend/server.py` ที่พอร์ต **5001** และ proxy `/api` ไปที่นั่น ตอนนี้ยังไม่มีโฟลเดอร์ `backend/` ใน repo แอปจึงใช้ mock data จาก [`src/data/mockData.ts`](src/data/mockData.ts) แทน
+> When the dev server starts, [`vite.config.ts`](vite.config.ts) tries to launch `python3 backend/server.py` on port **5001** and proxies `/api` to it. The `backend/` folder is not in the repo yet, so the app uses mock data from [`src/data/mockData.ts`](src/data/mockData.ts) instead.
 
 ---
 
@@ -86,7 +86,7 @@ MFU69-SE-ByteSquad/
 │   ├── types.ts               # Shared TypeScript types
 │   ├── App.tsx                # Root component & state management
 │   ├── main.tsx               # Entry point
-│   ├── index.css / styles.css # Global styles & theme variables
+│   └── index.css / styles.css # Global styles & theme variables
 ├── index.html
 ├── vite.config.ts             # Vite config + /api proxy
 ├── tailwind.config.js
@@ -100,8 +100,8 @@ MFU69-SE-ByteSquad/
 
 ## 🧪 Testing & Code Quality
 
-- **Type checking:** `npm run lint` เรียก TypeScript compiler (`tsc --noEmit`) เพื่อหา type error โดยไม่สร้างไฟล์ output
-- **Build check:** `npm run build` จะตรวจ type ก่อน build ถ้ามี error ตัว build จะล้มเหลว
-- **Automated tests:** ยังไม่มี *(แผนที่วางไว้: เพิ่ม unit test ด้วย Vitest + React Testing Library)*
-- **Manual / acceptance testing:** ทดสอบตาม Non-Functional Requirements ใน [SRS](Docs/SRS.md) เช่น จับเวลาโหลดหน้า และให้ผู้ใช้ที่ไม่เคยเห็นแอปลองเพิ่มแหล่งข่าวเองแล้วจับเวลา
-- **Code review:** ทุกการเปลี่ยนแปลงต้องผ่าน Pull Request ก่อน merge เข้า `main` (ดูหัวข้อถัดไป)
+- **Type checking:** `npm run lint` runs the TypeScript compiler (`tsc --noEmit`) to catch type errors without emitting output files
+- **Build check:** `npm run build` type-checks before building; the build fails if there are any errors
+- **Automated tests:** None yet *(planned: unit tests with Vitest + React Testing Library)*
+- **Manual / acceptance testing:** Based on the Non-Functional Requirements in the [SRS](Docs/SRS.md), e.g. timing page load, and timing a first-time user adding a source without help
+- **Code review:** Every change must go through a Pull Request before being merged into `main` (see [CONTRIBUTING.md](Docs/CONTRIBUTING.md))
