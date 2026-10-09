@@ -31,8 +31,10 @@ InfoCenter collects announcements and updates from multiple sources (Facebook, I
 
 ```bash
 # 1. Clone the repository
-git clone <repository-url>
+git clone https://github.com/MeloonFrong/MFU69-SE-ByteSquad.git
 cd MFU69-SE-ByteSquad
+git checkout frontend-ui
+git pull
 
 # 2. Install dependencies
 npm install          # or: bun install
