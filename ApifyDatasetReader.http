@@ -1,0 +1,6 @@
+//@ApifyDatasetReader_HostAddress = http://localhost:5030
+
+//GET {{ApifyDatasetReader_HostAddress}}/weatherforecast
+//Accept: application/json
+
+//###

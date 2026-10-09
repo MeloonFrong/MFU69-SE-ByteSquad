@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:5030
+
+POST {{baseUrl}}/api/actors/facebook-posts-scraper/run
+Content-Type: application/json
+Accept: application/json
+
+{
+    "captionText": false,
+    "resultsLimit": 1,
+    "startUrls": [
+        {
+            "url": "https://www.facebook.com/MFU2Connect"
+        }
+    ]
+}
+
+@baseUrl = http://localhost:5030
+
+### Test: Get 10 recent unique posts
+GET {{baseUrl}}/api/posts/recent?page=MFU2Connect&limit=10
+Accept: application/json
