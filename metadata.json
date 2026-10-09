@@ -1,0 +1,8 @@
+{
+  "name": "InfoCenter - Unified Campus & Community Feed",
+  "description": "Aggregated announcement and information hub for students and organizations to subscribe to links, categorize feeds with tags, and sort updates seamlessly.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

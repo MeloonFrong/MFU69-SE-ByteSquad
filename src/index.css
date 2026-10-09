@@ -1,0 +1,13 @@
+@import "./styles.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', 'Sarabun', system-ui, -apple-system, sans-serif;
+  }
+}
