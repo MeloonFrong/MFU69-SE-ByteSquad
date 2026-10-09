@@ -2,7 +2,7 @@
 
 POST {{baseUrl}}/api/actors/facebook-posts-scraper/run
 Content-Type: application/json
-Accept: application/json
+Accept: application/jsonori
 
 {
     "captionText": false,
