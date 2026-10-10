@@ -186,3 +186,47 @@ The integration work established a connection between the React frontend and the
 The implementation and documentation commits are available on the `integration` branch of the MFU69-SE-ByteSquad repository.
 
 This report should be read alongside the actual source code and reproducible test results when assessing the implementation.
+
+## Additional Integration Verification — 10 October 2026
+
+### 1. Backend Build
+
+**Result: Passed**
+
+Executed:
+
+`dotnet build backend\ApifyDatasetReader.csproj`
+
+The C# backend compiled successfully. An earlier build attempt failed because the compiled DLL was locked by a running .NET Host process. After stopping the running backend, the build succeeded in 2.8 seconds.
+
+### 2. Backend Source Retrieval
+
+**Result: Passed**
+
+Requested `GET /api/sources` from `http://localhost:5030/api/sources`.
+
+The endpoint returned the saved `MED MFU Page` source as JSON, including its source ID, name, URL, platform, tags, enabled status, and description.
+
+### 3. Source Persistence After Restart
+
+**Result: Passed**
+
+Stopped and restarted the C# backend, then requested `GET /api/sources` again.
+
+The `MED MFU Page` record remained available with the same source ID, confirming that the source data persisted across the backend restart.
+
+### 4. Frontend Proxy Verification
+
+**Result: Passed**
+
+Requested `GET /api/sources` through `http://localhost:3000/api/sources`.
+
+The request returned the same source JSON as the backend endpoint. This confirms that the frontend's Vite proxy forwards source API requests to the C# backend successfully.
+
+### 5. Outstanding Issue
+
+**Status: Requires Investigation**
+
+The browser console reported a `404 Not Found` response for `POST /api/preferences`.
+
+This issue has not yet been investigated or resolved. The successful source API and proxy tests do not establish that the preferences endpoint works.
