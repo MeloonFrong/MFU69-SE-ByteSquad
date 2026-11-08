@@ -105,5 +105,5 @@ MFU69-SE-ByteSquad/
 - **Type checking:** `npm run lint` runs the TypeScript compiler (`tsc --noEmit`) to catch type errors without emitting output files
 - **Build check:** `npm run build` type-checks before building; the build fails if there are any errors
 - **Automated tests:** None yet *(planned: unit tests with Vitest + React Testing Library)*
-- **Manual / acceptance testing:** Based on the Non-Functional Requirements in the [SRS](Docs/SRS.md), e.g. timing page load, and timing a first-time user adding a source without help
+- **Manual / acceptance testing:** Based on the Non-Functional Requirements in the [SRS](Docs/SRS.md), including measuring page-load time and checking how easily a first-time user can add a source without assistance.
 - **Code review:** Every change must go through a Pull Request before being merged into `main` (see [CONTRIBUTING.md](Docs/CONTRIBUTING.md))
