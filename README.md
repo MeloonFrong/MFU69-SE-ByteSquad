@@ -1,6 +1,6 @@
 # InfoCenter — Aggregated Social Updates in One Place
 
-InfoCenter collects announcements and updates from multiple sources (Facebook, Instagram, TikTok) into a single feed. Users paste the link of a page they want to follow, then organize sources with tags and filter posts by keyword. It is built for new students and newcomers to an organization, who often miss important announcements because information is scattered across many platforms.
+InfoCenter brings announcements and updates from multiple social media platforms (Facebook, Instagram, and TikTok) together into one convenient feed. Users paste the link of a page they want to follow, then organize sources with tags and filter posts by keyword. It is built for new students and newcomers to an organization, who often miss important announcements because information is scattered across many platforms.
 
 > Developed by **Team 17 — ByteSquad** · Introduction to Software Engineering (15031001), Mae Fah Luang University
 
