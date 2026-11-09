@@ -1,3 +1,7 @@
 # QA & UI/UX Testing Log
 
 This document tracks bug reports and UX feedback identified during manual testing.
+
+## 1. [Bug] "Read more..." button is non-responsive
+* **Issue:** Clicking the `Read more...` link on post summaries does not expand the text or perform any action.
+* **Expected Result:** Clicking `Read more...` should expand the full content of the post or open a modal displaying the complete announcement.
