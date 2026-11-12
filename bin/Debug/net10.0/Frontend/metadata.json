@@ -1,0 +1,6 @@
+{
+  "name": "Facebook Feed & Apify Scraper Hub",
+  "description": "Feed ข่าวสารจาก Facebook เชื่อมต่อ C# Backend และ Apify Posts Scraper พร้อมระบบตัดโพสต์ซ้ำและจัดการ Dataset",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
