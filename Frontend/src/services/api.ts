@@ -1,5 +1,5 @@
 import { FacebookPost, RecentPostsResponse, ScraperRunInput, ApifyDataset } from '../types/facebook';
-import { INITIAL_MOCK_POSTS, MOCK_APIFY_DATASETS } from './mockData';
+import { INITIAL_MOCK_POSTS, MOCK_APIFY_DATASETS, normalizeSocialPost } from './mockData';
 
 const BASE_URL_STORAGE_KEY = 'fb_scraper_backend_base_url';
 const DEFAULT_BASE_URL = 'http://localhost:5030';
@@ -106,8 +106,9 @@ export class FacebookApiClient {
 
         if (response.ok) {
           const json = await response.json();
-          // Normalize post structure
-          const normalizedPosts = (json.posts || []).map((p: any) => this.normalizePost(p));
+          const rawList = Array.isArray(json) ? json : json.posts || json.items || [];
+          // Normalize post structure across Facebook, Instagram, and TikTok
+          const normalizedPosts = rawList.map((p: any) => this.normalizePost(p));
           return {
             data: {
               page: json.page || page,
@@ -126,10 +127,20 @@ export class FacebookApiClient {
       }
     }
 
-    // Local Simulation
+    // Local Simulation using real multi-platform output files
     const filtered = localStoredPosts.filter((p) => {
-      const pageName = p.pageName || p.user?.id || p.user?.name || '';
-      return pageName.toLowerCase().includes(page.toLowerCase()) || page === 'all';
+      if (!page || page === 'all') return true;
+      const q = page.toLowerCase();
+      const candidates = [
+        p.pageName,
+        p.user?.id,
+        p.user?.name,
+        p.facebookUrl,
+        p.url,
+      ]
+        .filter(Boolean)
+        .map((s) => String(s).toLowerCase());
+      return candidates.some((c) => c.includes(q));
     });
 
     const unique = this.deduplicatePosts(filtered);
@@ -213,34 +224,59 @@ export class FacebookApiClient {
     }
 
     // Simulation of Apify Run
-    await new Promise((res) => setTimeout(res, 1200));
+    await new Promise((res) => setTimeout(res, 900));
 
     const simulatedNewPosts: FacebookPost[] = input.startUrls.map((startUrl, idx) => {
-      const isMfu = startUrl.url.includes('MFU2Connect');
-      const targetPage = isMfu ? 'MFU2Connect' : 'profile.php?id=61563364138740';
-      const timestamp = Date.now() - idx * 3600000;
+      const rawUrl = startUrl.url.trim();
+      const lowerUrl = rawUrl.toLowerCase();
+      const isIg = lowerUrl.includes('instagram.com');
+      const isTt = lowerUrl.includes('tiktok.com');
+      const platform: 'facebook' | 'instagram' | 'tiktok' = isIg
+        ? 'instagram'
+        : isTt
+        ? 'tiktok'
+        : 'facebook';
 
-      return {
+      // Extract handle or page name from URL
+      let targetPage = 'MFU2Connect';
+      let displayName = 'ม.แม่ฟ้าหลวง Mae Fah Luang University';
+      if (isIg) {
+        const match = rawUrl.match(/instagram\.com\/([^/?#]+)/i);
+        targetPage = match?.[1] || 'humansofny';
+        displayName = targetPage === 'humansofny' ? 'Humans of New York' : targetPage;
+      } else if (isTt) {
+        const match = rawUrl.match(/tiktok\.com\/@?([^/?#]+)/i);
+        targetPage = match?.[1]?.replace(/^@/, '') || 'zenlesszonezero';
+        displayName =
+          targetPage === 'zenlesszonezero'
+            ? 'Zenless Zone Zero'
+            : targetPage === 'khaby.lame'
+            ? 'Khabane lame'
+            : targetPage;
+      } else if (rawUrl.includes('61563364138740') || lowerUrl.includes('international')) {
+        targetPage = 'International-Student-Club-MFU';
+        displayName = 'International Student Club MFU';
+      }
+
+      const timestamp = Date.now() - idx * 1800000;
+
+      return this.normalizePost({
         postId: `sim_${Date.now()}_${idx}`,
+        platform,
         pageName: targetPage,
         user: {
-          name: isMfu ? 'MFU2Connect' : 'องค์การบริหาร องค์การนักศึกษา มฟล.',
+          name: displayName,
           id: targetPage,
-          profilePic: isMfu
-            ? 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&auto=format&fit=crop&q=80'
-            : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         },
-        caption: `[Scraped Real-time ${new Date().toLocaleTimeString('th-TH')}] ข้อมูลอัปเดตล่าสุดจากเพจ ${targetPage}\n\nกิจกรรมสัมมนาวิชาการ นวัตกรรมและการพัฒนานักศึกษาสู่ศตวรรษที่ 21 จัดขึ้น ณ หอประชุมสมเด็จย่า มหาวิทยาลัยแม่ฟ้าหลวง\n\n📌 ติดตามรายละเอียดและภาพบรรยากาศเพิ่มเติมได้ทาง Facebook เพจทางการ\n\n#ScrapedLive #Apify #MFU2026`,
-        facebookUrl: `${startUrl.url}/posts/sim_${Date.now()}`,
+        caption: `[Synced ${new Date().toLocaleTimeString('th-TH')}] อัปเดตข้อมูลโพสต์ล่าสุดจาก ${displayName} (${rawUrl})`,
+        url: rawUrl,
+        facebookUrl: rawUrl,
         timestamp,
-        likesCount: Math.floor(Math.random() * 200) + 50,
-        commentsCount: Math.floor(Math.random() * 30) + 5,
-        sharesCount: Math.floor(Math.random() * 50) + 10,
-        images: [
-          'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1000&auto=format&fit=crop&q=80',
-        ],
+        likesCount: Math.floor(Math.random() * 400) + 80,
+        commentsCount: Math.floor(Math.random() * 40) + 6,
+        sharesCount: Math.floor(Math.random() * 60) + 12,
         isScrapedNew: true,
-      };
+      });
     });
 
     localStoredPosts = this.deduplicatePosts([...simulatedNewPosts, ...localStoredPosts]);
@@ -254,51 +290,51 @@ export class FacebookApiClient {
     };
   }
 
- 
-/**
- * GET /api/datasets
- */
-public static async getDatasets(): Promise<{
-  data: ApifyDataset[];
-  isSimulated: boolean;
-}> {
-  try {
-    const response = await fetch(
-      `${this.baseUrl}/api/datasets?limit=100&offset=0`,
-      {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
+  /**
+   * GET /api/datasets
+   */
+  public static async getDatasets(): Promise<{
+    data: ApifyDataset[];
+    isSimulated: boolean;
+  }> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/api/datasets?limit=100&offset=0`,
+        {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Backend returned HTTP ${response.status}`);
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`Backend returned HTTP ${response.status}`);
-    }
+      const json = await response.json();
 
-    const json = await response.json();
-
-    // รองรับทั้ง Array โดยตรง และ Apify API response
-    const datasets = Array.isArray(json)
-      ? json
-      : Array.isArray(json.items)
+      // รองรับทั้ง Array โดยตรง และ Apify API response
+      const datasets = Array.isArray(json)
+        ? json
+        : Array.isArray(json.items)
         ? json.items
         : Array.isArray(json.data)
-          ? json.data
-          : Array.isArray(json.data?.items)
-            ? json.data.items
-            : [];
+        ? json.data
+        : Array.isArray(json.data?.items)
+        ? json.data.items
+        : [];
 
-    return {
-      data: datasets,
-      isSimulated: false,
-    };
-  } 
-  catch (error) {
-  console.error('Failed to fetch Apify datasets:', error);
-  throw error;
-}
-}
-
+      return {
+        data: datasets,
+        isSimulated: false,
+      };
+    } catch (error) {
+      console.warn('Failed to fetch live Apify datasets, returning mock datasets:', error);
+      return {
+        data: MOCK_APIFY_DATASETS,
+        isSimulated: true,
+      };
+    }
+  }
 
   /**
    * GET /api/datasets/{datasetId}/items
@@ -322,8 +358,21 @@ public static async getDatasets(): Promise<{
         const items = Array.isArray(json) ? json : json.items || [];
         return { items, isSimulated: false };
       }
-    } catch (e) {
+    } catch {
       // Fallback
+    }
+
+    if (datasetId === 'ds_fb_mfu_output') {
+      const fbOnly = localStoredPosts.filter((p) => p.platform === 'facebook');
+      return { items: fbOnly.slice(offset, offset + limit), isSimulated: true };
+    }
+    if (datasetId === 'ds_ig_humansofny_output') {
+      const igOnly = localStoredPosts.filter((p) => p.platform === 'instagram');
+      return { items: igOnly.slice(offset, offset + limit), isSimulated: true };
+    }
+    if (datasetId === 'ds_tt_creators_output') {
+      const ttOnly = localStoredPosts.filter((p) => p.platform === 'tiktok');
+      return { items: ttOnly.slice(offset, offset + limit), isSimulated: true };
     }
 
     return { items: localStoredPosts.slice(offset, offset + limit), isSimulated: true };
@@ -373,11 +422,14 @@ public static async getDatasets(): Promise<{
       return post.timestamp > 10000000000 ? post.timestamp : post.timestamp * 1000;
     }
     if (typeof post.timestamp === 'string') {
-      const parsed = parseInt(post.timestamp, 10);
-      if (!isNaN(parsed)) {
-        return parsed > 10000000000 ? parsed : parsed * 1000;
+      const trimmed = post.timestamp.trim();
+      if (/^\d+$/.test(trimmed)) {
+        const parsed = parseInt(trimmed, 10);
+        if (!isNaN(parsed)) {
+          return parsed > 10000000000 ? parsed : parsed * 1000;
+        }
       }
-      const dateParsed = Date.parse(post.timestamp);
+      const dateParsed = Date.parse(trimmed);
       if (!isNaN(dateParsed)) return dateParsed;
     }
     if (post.time) {
@@ -392,50 +444,9 @@ public static async getDatasets(): Promise<{
   }
 
   /**
-   * Normalize various Apify post schema shapes into standard FacebookPost
+   * Normalize various Apify post schema shapes (Facebook, Instagram, TikTok) into standard FacebookPost
    */
   public static normalizePost(raw: any): FacebookPost {
-    const images: string[] = [];
-    if (Array.isArray(raw.images)) {
-      raw.images.forEach((img: any) => {
-        if (typeof img === 'string') images.push(img);
-        else if (img && typeof img.url === 'string') images.push(img.url);
-      });
-    } else if (typeof raw.imageUrl === 'string') {
-      images.push(raw.imageUrl);
-    } else if (Array.isArray(raw.media)) {
-      raw.media.forEach((m: any) => {
-        if (m?.url) images.push(m.url);
-        else if (m?.thumbnail) images.push(m.thumbnail);
-      });
-    }
-
-    let pageName = raw.pageName || raw.authorName || '';
-    if (!pageName && raw.user?.name) {
-      pageName = raw.user.name;
-    }
-    if (!pageName && raw.facebookUrl) {
-      if (raw.facebookUrl.includes('MFU2Connect')) pageName = 'MFU2Connect';
-      else if (raw.facebookUrl.includes('61563364138740')) pageName = 'profile.php?id=61563364138740';
-    }
-
-    return {
-      postId: raw.postId || raw.id,
-      pageName: pageName || 'Facebook Page',
-      user: {
-        name: raw.user?.name || pageName || 'Facebook Page',
-        id: raw.user?.id || pageName,
-        profilePic: raw.user?.profilePic || raw.profilePic,
-      },
-      caption: raw.caption || raw.text || raw.message || raw.content || '',
-      facebookUrl: raw.facebookUrl || raw.url || raw.postUrl || '',
-      timestamp: raw.timestamp || raw.time || raw.date,
-      likesCount: raw.likesCount ?? raw.likes ?? raw.reactionsCount ?? 0,
-      commentsCount: raw.commentsCount ?? raw.comments ?? 0,
-      sharesCount: raw.sharesCount ?? raw.shares ?? 0,
-      images,
-      attachedLink: raw.attachedLink || (raw.link ? { url: raw.link, title: raw.linkTitle || raw.link } : undefined),
-      sharedPost: raw.sharedPost,
-    };
+    return normalizeSocialPost(raw);
   }
 }

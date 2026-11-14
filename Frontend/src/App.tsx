@@ -1,43 +1,59 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FacebookPost } from './types/facebook';
 import { FacebookApiClient } from './services/api';
-import { Navbar } from './components/Navbar';
+import { DEMO_MOCK_POSTS } from './services/mockData';
+import { Navbar, ActiveSection } from './components/Navbar';
 import { FeedView } from './components/FeedView';
 import { ScraperModal } from './components/ScraperModal';
 import { DatasetViewer } from './components/DatasetViewer';
 import { ApiInspectorModal } from './components/ApiInspectorModal';
 import { BackendSettingsModal } from './components/BackendSettingsModal';
 import { MediaGalleryModal } from './components/MediaGalleryModal';
+import { LanguageProvider, useI18n } from './i18n/LanguageContext';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'feed' | 'scraper' | 'datasets' | 'api-docs'>('feed');
+function AppShell() {
+  const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState<ActiveSection>('feed');
   const [posts, setPosts] = useState<FacebookPost[]>([]);
   const [totalScanned, setTotalScanned] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedPage, setSelectedPage] = useState('MFU2Connect');
-  const [limit, setLimit] = useState(10);
+  const [selectedPage, setSelectedPage] = useState('all');
+  const [limit, setLimit] = useState(20);
   const [isConnected, setIsConnected] = useState(false);
   const [isSimulated, setIsSimulated] = useState(false);
-  const [errorNotice, setErrorNotice] = useState<string | undefined>(undefined);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [activeDatasetId, setActiveDatasetId] = useState<string | null>(null);
 
   // Modals
   const [isScraperModalOpen, setIsScraperModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [galleryImage, setGalleryImage] = useState<string | null>(null);
 
-  // Load posts from API
   const loadPosts = useCallback(
     async (pageToLoad: string = selectedPage, limitToLoad: number = limit) => {
       setIsLoading(true);
       try {
-        const result = await FacebookApiClient.getRecentPosts(pageToLoad, limitToLoad);
-        setPosts(result.data.posts);
-        setTotalScanned(result.data.totalScanned);
+        const result = await FacebookApiClient.getRecentPosts(
+          pageToLoad,
+          limitToLoad
+        );
         setIsSimulated(result.isSimulated);
-        setErrorNotice(result.errorNotice);
+        if (!result.isSimulated) {
+          setIsConnected(true);
+          setPosts(result.data.posts);
+          setTotalScanned(result.data.totalScanned);
+          setIsDemoMode(false);
+          setActiveDatasetId(null);
+        } else {
+          // Offline / Simulated: only populate if user scraped sources in this session; otherwise keep Clean Start (0 posts)
+          setPosts(result.data.posts);
+          setTotalScanned(result.data.totalScanned);
+        }
+        return result;
       } catch (err: any) {
         console.error('Failed to load posts', err);
+        return null;
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
@@ -46,25 +62,46 @@ export default function App() {
     [selectedPage, limit]
   );
 
-  // Check connection status
   const checkStatus = useCallback(async () => {
     try {
       const res = await FacebookApiClient.checkConnection();
       setIsConnected(res.ok);
+      return res.ok;
     } catch {
       setIsConnected(false);
+      return false;
     }
   }, []);
 
-  useEffect(() => {
-    checkStatus();
-    loadPosts(selectedPage, limit);
+  const syncConnectionAndFeed = useCallback(async () => {
+    setIsRefreshing(true);
+    const [ok, postRes] = await Promise.all([
+      checkStatus(),
+      loadPosts(selectedPage, limit),
+    ]);
+    if (ok || (postRes && !postRes.isSimulated)) {
+      setIsConnected(true);
+      setIsSimulated(false);
+    }
   }, [checkStatus, loadPosts, selectedPage, limit]);
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
+  useEffect(() => {
     checkStatus();
-    loadPosts(selectedPage, limit);
+    loadPosts('all', 20);
+  }, [checkStatus, loadPosts]);
+
+  const handleRefresh = () => {
+    if (isDemoMode) {
+      const sorted = [...FacebookApiClient.deduplicatePosts(DEMO_MOCK_POSTS)].sort(
+        (a, b) =>
+          FacebookApiClient.getPostTimestamp(b) -
+          FacebookApiClient.getPostTimestamp(a)
+      );
+      setPosts(sorted.slice(0, limit));
+      setTotalScanned(DEMO_MOCK_POSTS.length);
+      return;
+    }
+    syncConnectionAndFeed();
   };
 
   const handlePageChange = (newPage: string) => {
@@ -73,33 +110,87 @@ export default function App() {
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
+    if (isDemoMode) {
+      const sorted = [...FacebookApiClient.deduplicatePosts(DEMO_MOCK_POSTS)].sort(
+        (a, b) =>
+          FacebookApiClient.getPostTimestamp(b) -
+          FacebookApiClient.getPostTimestamp(a)
+      );
+      setPosts(sorted.slice(0, newLimit));
+    }
   };
 
-  const handleScrapeComplete = (newPostsCount: number) => {
-    // Reload posts to include fresh scrapes
-    loadPosts(selectedPage, limit);
+  const handleScrapeComplete = (_count: number, newPosts?: FacebookPost[]) => {
+    if (newPosts && newPosts.length > 0) {
+      setPosts((prev) => {
+        const merged = FacebookApiClient.deduplicatePosts([
+          ...newPosts,
+          ...prev,
+        ]);
+        return merged.sort(
+          (a, b) =>
+            FacebookApiClient.getPostTimestamp(b) -
+            FacebookApiClient.getPostTimestamp(a)
+        );
+      });
+      setTotalScanned((prev) => prev + newPosts.length);
+    } else {
+      syncConnectionAndFeed();
+    }
   };
 
-  const handleLoadDatasetItemsToFeed = (items: any[]) => {
+  // Requirement 3: Manual Demo Mode from Developer Tools menu
+  const handleLoadDemoData = () => {
+    const uniqueDemo = FacebookApiClient.deduplicatePosts(DEMO_MOCK_POSTS);
+    const sorted = [...uniqueDemo].sort(
+      (a, b) =>
+        FacebookApiClient.getPostTimestamp(b) -
+        FacebookApiClient.getPostTimestamp(a)
+    );
+    setPosts(sorted.slice(0, limit));
+    setTotalScanned(DEMO_MOCK_POSTS.length);
+    setSelectedPage('all');
+    setIsDemoMode(true);
+    setActiveDatasetId(null);
+    setActiveTab('feed');
+  };
+
+  // Requirement 3: Clear All Data back to Clean Start (0 posts, 0 accounts)
+  const handleClearData = () => {
+    setPosts([]);
+    setTotalScanned(0);
+    setSelectedPage('all');
+    setIsDemoMode(false);
+    setActiveDatasetId(null);
+    setActiveTab('feed');
+  };
+
+  const handleLoadDatasetItemsToFeed = (items: any[], datasetId?: string) => {
     const normalized = items.map((item) => FacebookApiClient.normalizePost(item));
-    setPosts((prev) => FacebookApiClient.deduplicatePosts([...normalized, ...prev]));
+    const unique = FacebookApiClient.deduplicatePosts(normalized);
+    setPosts(unique);
+    setTotalScanned(items.length);
+    setIsDemoMode(false);
+    setActiveDatasetId(datasetId || 'dataset');
     setActiveTab('feed');
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 selection:bg-blue-100 selection:text-blue-900">
-      {/* Strict 3-zone Header */}
+    <div className="min-h-screen bg-page flex flex-col text-ink">
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isConnected={isConnected}
         isSimulated={isSimulated}
+        onOpenScraper={() => setIsScraperModalOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onRefreshFeed={handleRefresh}
+        onLoadDemoData={handleLoadDemoData}
+        onClearData={handleClearData}
+        hasPosts={posts.length > 0}
         isRefreshing={isRefreshing}
       />
 
-      {/* Main Content Area */}
       <main className="flex-1">
         {activeTab === 'feed' && (
           <FeedView
@@ -114,36 +205,14 @@ export default function App() {
             onOpenScraper={() => setIsScraperModalOpen(true)}
             onImageClick={(url) => setGalleryImage(url)}
             isSimulated={isSimulated}
-            errorNotice={errorNotice}
+            isDemoMode={isDemoMode}
+            onClearData={handleClearData}
+            activeDatasetId={activeDatasetId}
+            onClearDatasetFilter={() => {
+              setActiveDatasetId(null);
+              handleClearData();
+            }}
           />
-        )}
-
-        {activeTab === 'scraper' && (
-          <div className="py-6">
-            <div className="max-w-2xl mx-auto px-4">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs text-center">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  ส่งคำสั่ง Scrape ไปยัง Apify Actor ผ่าน C# Backend
-                </h2>
-                <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                  สั่งงาน Facebook Posts Scraper ดึงโพสต์ล่าสุดจากโปรไฟล์ที่ระบุ (เช่น MFU2Connect หรือ profile.php?id=61563364138740) และบันทึกลงฐานข้อมูลแบบทันที
-                </p>
-                <div className="pt-2">
-                  <button
-                    onClick={() => setIsScraperModalOpen(true)}
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors inline-flex items-center gap-2"
-                  >
-                    <span>เปิดหน้าต่างส่งคำสั่ง Scrape (POST /run)</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         )}
 
         {activeTab === 'datasets' && (
@@ -153,21 +222,17 @@ export default function App() {
         {activeTab === 'api-docs' && <ApiInspectorModal />}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-line bg-card py-5 mt-12 text-[12px] text-ink-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-700">Facebook Feed & Apify Scraper Hub</span>
+            <span className="font-display font-semibold text-ink">{t('appName')}</span>
             <span aria-hidden="true">·</span>
-            <span>ASP.NET Core C# Backend Integration</span>
+            <span>{t('appTagline')}</span>
           </div>
-          <div className="text-[11px] font-mono text-slate-400">
-            Deduplication Algorithm: postId → url → content hash
-          </div>
+          <div>{t('footerNote')}</div>
         </div>
       </footer>
 
-      {/* Modals */}
       <ScraperModal
         isOpen={isScraperModalOpen}
         onClose={() => setIsScraperModalOpen(false)}
@@ -177,10 +242,7 @@ export default function App() {
       <BackendSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        onStatusChange={() => {
-          checkStatus();
-          loadPosts(selectedPage, limit);
-        }}
+        onStatusChange={syncConnectionAndFeed}
       />
 
       <MediaGalleryModal
@@ -188,5 +250,13 @@ export default function App() {
         onClose={() => setGalleryImage(null)}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppShell />
+    </LanguageProvider>
   );
 }

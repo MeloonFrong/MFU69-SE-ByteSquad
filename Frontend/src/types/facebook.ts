@@ -1,6 +1,7 @@
 export interface FacebookPost {
   postId?: string | number;
   id?: string;
+  platform?: 'facebook' | 'instagram' | 'tiktok';
   pageName?: string;
   user?: {
     name?: string;
@@ -19,6 +20,9 @@ export interface FacebookPost {
   likesCount?: number;
   commentsCount?: number;
   sharesCount?: number;
+  viewsCount?: number;
+  isVideo?: boolean;
+  mediaType?: string;
   media?: Array<{
     type?: 'image' | 'video' | 'link';
     url?: string;
@@ -39,6 +43,7 @@ export interface FacebookPost {
     text?: string;
     url?: string;
     pageName?: string;
+    images?: string[];
   };
   isScrapedNew?: boolean;
 }

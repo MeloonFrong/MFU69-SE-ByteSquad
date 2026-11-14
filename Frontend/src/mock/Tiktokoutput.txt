@@ -1,0 +1,379 @@
+[
+  {
+    "id": "7694582083984821518",
+    "text": "Version 3.3 Teaser - \"Journey to the Sky\" | Zenless Zone Zero\n\nDracaene, so wise and clear-headed...\nMay your wisdom part the fog of the unknown, so that people may see the path ahead.\nLindverne... Bold and fearless, with a heart full of courage...\nMay your passion keep the flame burning bright, so that the long, cold night may never feel so endless anymore.\nEldreda... my most steadfast, devoted child...\nMay your sense of duty no longer leave you standing alone. May they love you as deeply as you love them.\nJust as you would give everything for their sake.\n\n#zzzero #zenlesszonezero\n#zzzSpecialProgram",
+    "textLanguage": "en",
+    "createTime": 1791547800,
+    "createTimeISO": "2026-10-09T12:10:00.000Z",
+    "isAd": false,
+    "hasTikTokShopProduct": false,
+    "authorMeta": {
+      "id": "7085216414294574122",
+      "name": "zenlesszonezero",
+      "profileUrl": "https://www.tiktok.com/@zenlesszonezero",
+      "nickName": "Zenless Zone Zero",
+      "verified": true,
+      "signature": "Version 3.3 \"Journey to the Sky\" is now live!",
+      "bioLink": null,
+      "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/b8af73c71c16e7df2fc4f8832efbed64~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=c0de3d57&x-expires=1794675600&x-signature=sKCYhD%2BMVbZY9M4ZFH7u4eYwyPc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5",
+      "commerceUserInfo": {
+        "commerceUser": false
+      },
+      "privateAccount": false,
+      "roomId": "",
+      "ttSeller": false,
+      "createTime": 1649655999,
+      "hasActiveStory": false,
+      "following": 3,
+      "friends": 1,
+      "fans": 1600000,
+      "heart": 35800000,
+      "video": 830,
+      "digg": 0,
+      "followDatasetUrl": null,
+      "originalAvatarUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/b8af73c71c16e7df2fc4f8832efbed64~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=c0de3d57&x-expires=1794675600&x-signature=sKCYhD%2BMVbZY9M4ZFH7u4eYwyPc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+    },
+    "musicMeta": {
+      "musicName": "原声 - Zenless Zone Zero",
+      "musicAuthor": "Zenless Zone Zero",
+      "musicOriginal": true,
+      "playUrl": "https://v45.tiktokcdn-eu.com/9fe2148546fc21f1af07af9dab0ef200/6af74b47/video/tos/alisg/tos-alisg-ve-2370c799-sg/o8QKYgH3TWRkEHGVfLfKeN08y6polILAkGUoCK/?a=1233&bti=ODszNWYuMDE6&&bt=125&ft=cD1VS7z7ThWHHYTILGZmo0P&mime_type=audio_mpeg&rc=NWQ7Njo1NGloMzk1NDw6aEBpajk1eXQ5cm5kZTMzZzU8NEAuLy42YS4zXjUxXi5hXjVeYSNwM2VjMmRrYjFhLS1kMS9zcw%3D%3D&vvpl=1&l=20261112173250A14E91CDC95A033CDD06&btag=e000a5000&sp_exp=hash_v0",
+      "coverMediumUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/b8af73c71c16e7df2fc4f8832efbed64~tplv-tiktokx-cropcenter:720:720.jpeg?dr=10399&refresh_token=5ebea58e&x-expires=1794675600&x-signature=aUSh2XD4INhNLW7kMtlyKeg9wPk%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=no1a",
+      "originalCoverMediumUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/b8af73c71c16e7df2fc4f8832efbed64~tplv-tiktokx-cropcenter:720:720.jpeg?dr=10399&refresh_token=5ebea58e&x-expires=1794675600&x-signature=aUSh2XD4INhNLW7kMtlyKeg9wPk%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=no1a",
+      "musicId": "7694583817624996622"
+    },
+    "webVideoUrl": "https://www.tiktok.com/@zenlesszonezero/video/7694582083984821518",
+    "videoMeta": {
+      "height": 720,
+      "width": 1280,
+      "duration": 389,
+      "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast5-p-0068-tx/oMDAilv2unk7kI4sAAEAiIYn6AzBaP8pgB38i~tplv-tiktokx-origin.image?dr=10395&x-expires=1794675600&x-signature=AYsTpvoyauubJs5LQT9D0VGJgHo%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "definition": "720p",
+      "format": "mp4",
+      "subtitleLinks": [
+        {
+          "language": "eng-US",
+          "downloadLink": "https://v16-webapp.tiktokcdn-eu.com/028c9d1830a576b07f30ef659fe72565/6af89cc7/video/tos/alisg/tos-alisg-v-37c799-sg/4e97f33c460645c9a47b562c0a64c662/?a=1988&bti=ODszNWYuMDE6&&bt=34512&ft=_sO_C~00k12Nvjj_207nRfk8YHcI6IxVvYTpiX&mime_type=video_mp4&rc=anhvaHI5cm1kZTMzZzgzNEBpanhvaHI5cm1kZTMzZzgzNEAuX2k0MmRzMjFhLS1kLy9zYSMuX2k0MmRzMjFhLS1kLy9zcw%3D%3D&l=20261112173250A14E91CDC95A033CDD06&btag=e00060000",
+          "source": "ASR",
+          "sourceUnabbreviated": "automatic speech recognition",
+          "version": "1:big_caption",
+          "tiktokLink": "https://v16-webapp.tiktokcdn-eu.com/028c9d1830a576b07f30ef659fe72565/6af89cc7/video/tos/alisg/tos-alisg-v-37c799-sg/4e97f33c460645c9a47b562c0a64c662/?a=1988&bti=ODszNWYuMDE6&&bt=34512&ft=_sO_C~00k12Nvjj_207nRfk8YHcI6IxVvYTpiX&mime_type=video_mp4&rc=anhvaHI5cm1kZTMzZzgzNEBpanhvaHI5cm1kZTMzZzgzNEAuX2k0MmRzMjFhLS1kLy9zYSMuX2k0MmRzMjFhLS1kLy9zcw%3D%3D&l=20261112173250A14E91CDC95A033CDD06&btag=e00060000"
+        }
+      ],
+      "transcriptionLink": null,
+      "aiVideoDescription": null,
+      "aiVideoSummary": null,
+      "originalCoverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast5-p-0068-tx/oMDAilv2unk7kI4sAAEAiIYn6AzBaP8pgB38i~tplv-tiktokx-origin.image?dr=10395&x-expires=1794675600&x-signature=AYsTpvoyauubJs5LQT9D0VGJgHo%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a"
+    },
+    "diggCount": 26600,
+    "shareCount": 1172,
+    "playCount": 204400,
+    "collectCount": 3949,
+    "commentCount": 266,
+    "repostCount": 0,
+    "mentions": [],
+    "detailedMentions": [],
+    "hashtags": [
+      {
+        "id": null,
+        "name": "zzzero",
+        "title": null,
+        "cover": null
+      },
+      {
+        "id": null,
+        "name": "zenlesszonezero",
+        "title": null,
+        "cover": null
+      },
+      {
+        "id": null,
+        "name": "zzzspecialprogram",
+        "title": null,
+        "cover": null
+      }
+    ],
+    "effectStickers": [],
+    "isSlideshow": false,
+    "isPinned": true,
+    "isSponsored": false,
+    "shortDramaSeriesInfo": null,
+    "mediaUrls": [],
+    "input": "zenlesszonezero",
+    "fromProfileSection": "videos",
+    "isStory": false,
+    "commentsDatasetUrl": null
+  },
+  {
+    "id": "7706746160509160717",
+    "text": "\"Miss Nicole, I can offer up to 1.5 million Dennies for this mechanical arm.\"\n\"H—How much?!\"\n\"That's several fewer dives into dangerous Hollows, and several dozen fewer events! We could buy hundreds of bowls of noodles with that!\"\n\"When we get back, we're ripping it right off Billy!\"\n\n#zzzero #zenlesszonezero\n#Nicole",
+    "textLanguage": "en",
+    "createTime": 1794370500,
+    "createTimeISO": "2026-11-11T04:15:00.000Z",
+    "isAd": false,
+    "hasTikTokShopProduct": false,
+    "authorMeta": {
+      "id": "7085216414294574122",
+      "name": "zenlesszonezero",
+      "profileUrl": "https://www.tiktok.com/@zenlesszonezero",
+      "nickName": "Zenless Zone Zero",
+      "verified": true,
+      "signature": "Version 3.3 \"Journey to the Sky\" is now live!",
+      "bioLink": null,
+      "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/b8af73c71c16e7df2fc4f8832efbed64~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=c0de3d57&x-expires=1794675600&x-signature=sKCYhD%2BMVbZY9M4ZFH7u4eYwyPc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5",
+      "commerceUserInfo": {
+        "commerceUser": false
+      },
+      "privateAccount": false,
+      "roomId": "",
+      "ttSeller": false,
+      "createTime": 1649655999,
+      "hasActiveStory": false,
+      "following": 3,
+      "friends": 1,
+      "fans": 1600000,
+      "heart": 35800000,
+      "video": 830,
+      "digg": 0,
+      "followDatasetUrl": null,
+      "originalAvatarUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/b8af73c71c16e7df2fc4f8832efbed64~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=c0de3d57&x-expires=1794675600&x-signature=sKCYhD%2BMVbZY9M4ZFH7u4eYwyPc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+    },
+    "musicMeta": {
+      "musicName": "original sound - Zenless Zone Zero",
+      "musicOriginal": false,
+      "coverMediumUrl": "",
+      "originalCoverMediumUrl": "",
+      "musicId": "0"
+    },
+    "webVideoUrl": "https://www.tiktok.com/@zenlesszonezero/video/7706746160509160717",
+    "videoMeta": {
+      "height": 0,
+      "width": 0,
+      "duration": 0,
+      "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-i-photomode-us/21da7207c23843219c849e4fee8f20d8~tplv-photomode-image.jpeg?dr=10375&x-expires=1794675600&x-signature=aH2BSxdbsA8T3zcz7RiK6pmJyXM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=no1a&ftpl=1",
+      "subtitleLinks": null,
+      "transcriptionLink": null,
+      "aiVideoDescription": null,
+      "aiVideoSummary": null,
+      "originalCoverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-i-photomode-us/21da7207c23843219c849e4fee8f20d8~tplv-photomode-image.jpeg?dr=10375&x-expires=1794675600&x-signature=aH2BSxdbsA8T3zcz7RiK6pmJyXM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=no1a&ftpl=1"
+    },
+    "diggCount": 8409,
+    "shareCount": 642,
+    "playCount": 42000,
+    "collectCount": 1149,
+    "commentCount": 141,
+    "repostCount": 0,
+    "mentions": [],
+    "detailedMentions": [],
+    "hashtags": [
+      {
+        "id": null,
+        "name": "zzzero",
+        "title": null,
+        "cover": null
+      },
+      {
+        "id": null,
+        "name": "zenlesszonezero",
+        "title": null,
+        "cover": null
+      },
+      {
+        "id": null,
+        "name": "nicole",
+        "title": null,
+        "cover": null
+      }
+    ],
+    "effectStickers": [],
+    "isSlideshow": true,
+    "slideshowImageLinks": [
+      {
+        "tiktokLink": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-i-photomode-us/21da7207c23843219c849e4fee8f20d8~tplv-photomode-image.jpeg?dr=10375&x-expires=1794675600&x-signature=aH2BSxdbsA8T3zcz7RiK6pmJyXM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=no1a&ftpl=1",
+        "downloadLink": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-i-photomode-us/21da7207c23843219c849e4fee8f20d8~tplv-photomode-image.jpeg?dr=10375&x-expires=1794675600&x-signature=aH2BSxdbsA8T3zcz7RiK6pmJyXM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=no1a&ftpl=1"
+      }
+    ],
+    "isPinned": false,
+    "isSponsored": false,
+    "shortDramaSeriesInfo": null,
+    "mediaUrls": [],
+    "input": "zenlesszonezero",
+    "fromProfileSection": "videos",
+    "isStory": false,
+    "commentsDatasetUrl": null
+  },
+  {
+    "id": "7704740944427388191",
+    "text": "Proud to represent Senegal as an Ambassador for the Dakar 2026 Youth Olympic Games. 🇸🇳\n\nWatching young athletes chase their dreams on African soil for the first time is an honor I’ll never forget. ❤️🌍#dakar2026 ",
+    "textLanguage": "en",
+    "createTime": 1793899806,
+    "createTimeISO": "2026-11-05T17:30:06.000Z",
+    "isAd": false,
+    "hasTikTokShopProduct": false,
+    "authorMeta": {
+      "id": "127905465618821121",
+      "name": "khaby.lame",
+      "profileUrl": "https://www.tiktok.com/@khaby.lame",
+      "nickName": "Khabane lame",
+      "verified": true,
+      "signature": "Se vuoi ridere sei nel posto giusto😎 If u wanna laugh u r in the right place😎",
+      "bioLink": null,
+      "avatar": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-avt-0068-tx2/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=6564924d&x-expires=1794675600&x-signature=CoqHmm2%2BYJ7vjdJHUBweN4Bm1lg%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5",
+      "commerceUserInfo": {
+        "commerceUser": false
+      },
+      "privateAccount": false,
+      "roomId": "",
+      "ttSeller": false,
+      "createTime": 1470866554,
+      "hasActiveStory": false,
+      "following": 82,
+      "friends": 77,
+      "fans": 162900000,
+      "heart": 2700000000,
+      "video": 1360,
+      "digg": 0,
+      "followDatasetUrl": null,
+      "originalAvatarUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-avt-0068-tx2/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=6564924d&x-expires=1794675600&x-signature=CoqHmm2%2BYJ7vjdJHUBweN4Bm1lg%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+    },
+    "musicMeta": {
+      "musicName": "original sound",
+      "musicAuthor": "Khabane lame",
+      "musicOriginal": true,
+      "playUrl": "https://v45.tiktokcdn-eu.com/7b22f402ec98946602e4b266adb2ad1e/6af749dd/video/tos/alisg/tos-alisg-v-2370c799-sg/ooAIIpV6AeTwIBDoLXEOeQQGyAcq2A4CIDeFkx/?a=1233&bti=ODszNWYuMDE6&&bt=125&ft=cD1VS7z7ThWHJYTILGZmo0P&mime_type=audio_mpeg&rc=M2Y7aXY5cjtlZTMzaTU8NEBpM2Y7aXY5cjtlZTMzaTU8NEAucGg1MmQ0bmphLS1kMTJzYSMucGg1MmQ0bmphLS1kMTJzcw%3D%3D&vvpl=1&l=20261112173251BA7DCF161D1495626D29&btag=e0007d000&sp_exp=hash_v0",
+      "coverMediumUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=10399&refresh_token=6ae72770&x-expires=1794675600&x-signature=XkKiLq48yWx%2BE%2FEJDHLBsfZ%2Bgcc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast2b",
+      "originalCoverMediumUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=10399&refresh_token=6ae72770&x-expires=1794675600&x-signature=XkKiLq48yWx%2BE%2FEJDHLBsfZ%2Bgcc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast2b",
+      "musicId": "7704740996088662814"
+    },
+    "webVideoUrl": "https://www.tiktok.com/@khaby.lame/video/7704740944427388191",
+    "videoMeta": {
+      "height": 1280,
+      "width": 720,
+      "duration": 26,
+      "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast8-p-0068-tx2/okAAsFVd07kRDvLARfACL2EeAVE2EDAIXqUwEl~tplv-tiktokx-origin.image?dr=10395&x-expires=1794675600&x-signature=PDN1quvtdWspG6z6rn%2FSsflq624%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast2b",
+      "definition": "720p",
+      "format": "mp4",
+      "subtitleLinks": null,
+      "transcriptionLink": null,
+      "aiVideoDescription": null,
+      "aiVideoSummary": null,
+      "originalCoverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast8-p-0068-tx2/okAAsFVd07kRDvLARfACL2EeAVE2EDAIXqUwEl~tplv-tiktokx-origin.image?dr=10395&x-expires=1794675600&x-signature=PDN1quvtdWspG6z6rn%2FSsflq624%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast2b"
+    },
+    "diggCount": 91100,
+    "shareCount": 775,
+    "playCount": 1300000,
+    "collectCount": 5442,
+    "commentCount": 3146,
+    "repostCount": 0,
+    "mentions": [],
+    "detailedMentions": [],
+    "hashtags": [
+      {
+        "id": null,
+        "name": "dakar2026",
+        "title": null,
+        "cover": null
+      }
+    ],
+    "effectStickers": [],
+    "isSlideshow": false,
+    "isPinned": false,
+    "isSponsored": false,
+    "shortDramaSeriesInfo": null,
+    "mediaUrls": [],
+    "input": "khaby.lame",
+    "fromProfileSection": "videos",
+    "isStory": false,
+    "commentsDatasetUrl": null
+  },
+  {
+    "id": "7697307919943060767",
+    "text": "I guess is time to retire #learnfromkhaby #comedy 🥊",
+    "textLanguage": "en",
+    "createTime": 1792169181,
+    "createTimeISO": "2026-10-16T16:46:21.000Z",
+    "isAd": false,
+    "hasTikTokShopProduct": false,
+    "authorMeta": {
+      "id": "127905465618821121",
+      "name": "khaby.lame",
+      "profileUrl": "https://www.tiktok.com/@khaby.lame",
+      "nickName": "Khabane lame",
+      "verified": true,
+      "signature": "Se vuoi ridere sei nel posto giusto😎 If u wanna laugh u r in the right place😎",
+      "bioLink": null,
+      "avatar": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-avt-0068-tx2/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=6564924d&x-expires=1794675600&x-signature=CoqHmm2%2BYJ7vjdJHUBweN4Bm1lg%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5",
+      "commerceUserInfo": {
+        "commerceUser": false
+      },
+      "privateAccount": false,
+      "roomId": "",
+      "ttSeller": false,
+      "createTime": 1470866554,
+      "hasActiveStory": false,
+      "following": 82,
+      "friends": 77,
+      "fans": 162900000,
+      "heart": 2700000000,
+      "video": 1360,
+      "digg": 0,
+      "followDatasetUrl": null,
+      "originalAvatarUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-avt-0068-tx2/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=9640&refresh_token=6564924d&x-expires=1794675600&x-signature=CoqHmm2%2BYJ7vjdJHUBweN4Bm1lg%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+    },
+    "musicMeta": {
+      "musicName": "original sound",
+      "musicAuthor": "Khabane lame",
+      "musicOriginal": true,
+      "playUrl": "https://v45.tiktokcdn-eu.com/9b2fea9c9c1d98b1344fecea7d0105d4/6af749cc/video/tos/alisg/tos-alisg-v-2370c799-sg/oEEIAbfkyMVIeCnAjGGKYI9gqpqTImLAAfYo09/?a=1233&bti=ODszNWYuMDE6&&bt=125&ft=cD1VS7z7ThWHJYTILGZmo0P&mime_type=audio_mpeg&rc=M2lybXI5cnE4ZTMzaTU8NEBpM2lybXI5cnE4ZTMzaTU8NEBxYG5tMmRrNjZhLS1kMTJzYSNxYG5tMmRrNjZhLS1kMTJzcw%3D%3D&vvpl=1&l=20261112173251BA7DCF161D1495626D29&btag=e00075000&sp_exp=hash_v0",
+      "coverMediumUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=10399&refresh_token=6ae72770&x-expires=1794675600&x-signature=XkKiLq48yWx%2BE%2FEJDHLBsfZ%2Bgcc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast2b",
+      "originalCoverMediumUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/08987e23b94057953fd4f1738694bf5f~tplv-tiktokx-cropcenter:720:720.jpeg?dr=10399&refresh_token=6ae72770&x-expires=1794675600&x-signature=XkKiLq48yWx%2BE%2FEJDHLBsfZ%2Bgcc%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast2b",
+      "musicId": "7697308007327730462"
+    },
+    "webVideoUrl": "https://www.tiktok.com/@khaby.lame/video/7697307919943060767",
+    "videoMeta": {
+      "height": 1280,
+      "width": 720,
+      "duration": 9,
+      "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast8-p-0068-tx2/oQbHQmFfa5VY3NlkEGDAQT00RzqAqBOETlEafj~tplv-tiktokx-origin.image?dr=10395&x-expires=1794675600&x-signature=j0TpJzQCJYkO7%2BNNzBJC0wCQWy8%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast2b",
+      "definition": "720p",
+      "format": "mp4",
+      "subtitleLinks": null,
+      "transcriptionLink": null,
+      "aiVideoDescription": null,
+      "aiVideoSummary": null,
+      "originalCoverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast8-p-0068-tx2/oQbHQmFfa5VY3NlkEGDAQT00RzqAqBOETlEafj~tplv-tiktokx-origin.image?dr=10395&x-expires=1794675600&x-signature=j0TpJzQCJYkO7%2BNNzBJC0wCQWy8%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast2b"
+    },
+    "diggCount": 359700,
+    "shareCount": 34400,
+    "playCount": 6500000,
+    "collectCount": 18906,
+    "commentCount": 8977,
+    "repostCount": 0,
+    "mentions": [],
+    "detailedMentions": [],
+    "hashtags": [
+      {
+        "id": null,
+        "name": "learnfromkhaby",
+        "title": null,
+        "cover": null
+      },
+      {
+        "id": null,
+        "name": "comedy",
+        "title": null,
+        "cover": null
+      }
+    ],
+    "effectStickers": [],
+    "isSlideshow": false,
+    "isPinned": false,
+    "isSponsored": false,
+    "shortDramaSeriesInfo": null,
+    "mediaUrls": [],
+    "input": "khaby.lame",
+    "fromProfileSection": "videos",
+    "isStory": false,
+    "commentsDatasetUrl": null
+  }
+]

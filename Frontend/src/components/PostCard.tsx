@@ -1,7 +1,51 @@
 import { useState } from 'react';
-import { ExternalLink, Copy, Check, MessageSquare, ThumbsUp, Share2, Facebook, ShieldCheck } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  Eye,
+  ExternalLink,
+  Facebook,
+  Film,
+  Image as ImageIcon,
+  Instagram,
+  MessageSquare,
+  Music2,
+  Share2,
+  ThumbsUp,
+} from 'lucide-react';
 import { FacebookPost } from '../types/facebook';
 import { FacebookApiClient } from '../services/api';
+import { useI18n } from '../i18n/LanguageContext';
+
+export type SocialPlatform = 'facebook' | 'instagram' | 'tiktok';
+
+export function detectPostPlatform(post: FacebookPost): SocialPlatform {
+  if (
+    post.platform === 'facebook' ||
+    post.platform === 'instagram' ||
+    post.platform === 'tiktok'
+  ) {
+    return post.platform;
+  }
+  const url = (post.facebookUrl || post.url || post.postUrl || '').toLowerCase();
+  const page = (post.pageName || post.user?.name || '').toLowerCase();
+  if (
+    url.includes('instagram.com') ||
+    page.includes('instagram') ||
+    page.includes('humansofny')
+  ) {
+    return 'instagram';
+  }
+  if (
+    url.includes('tiktok.com') ||
+    page.includes('tiktok') ||
+    page.includes('zenlesszonezero') ||
+    page.includes('khaby.lame')
+  ) {
+    return 'tiktok';
+  }
+  return 'facebook';
+}
 
 interface PostCardProps {
   post: FacebookPost;
@@ -9,32 +53,44 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onImageClick }: PostCardProps) {
+  const { t, formatNumber, formatPostTimestamp } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
   const caption = post.caption || post.text || post.message || '';
-  const postKey = FacebookApiClient.getPostKey(post);
   const timestamp = FacebookApiClient.getPostTimestamp(post);
-  
-  // Format Date & Time
-  const formattedDate = timestamp ? new Intl.DateTimeFormat('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(timestamp)) : 'ไม่ระบุวันเวลา';
+  const formattedTimestamp = timestamp
+    ? formatPostTimestamp(timestamp)
+    : t('noDate');
 
-  const relativeTime = (() => {
-    if (!timestamp) return '';
-    const diffSec = Math.floor((Date.now() - timestamp) / 1000);
-    if (diffSec < 60) return 'เมื่อสักครู่';
-    if (diffSec < 3600) return `${Math.floor(diffSec / 60)} นาทีที่แล้ว`;
-    if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} ชั่วโมงที่แล้ว`;
-    if (diffSec < 604800) return `${Math.floor(diffSec / 86400)} วันที่แล้ว`;
-    return '';
-  })();
+  const platform = detectPostPlatform(post);
+
+  const platformMeta = {
+    facebook: {
+      label: t('platformFacebook'),
+      dotClass: 'bg-platform-fb',
+      iconColorClass: 'text-platform-fb',
+      Icon: Facebook,
+      openLabel: t('openOnFacebook'),
+    },
+    instagram: {
+      label: t('platformInstagram'),
+      dotClass: 'bg-platform-ig',
+      iconColorClass: 'text-platform-ig',
+      Icon: Instagram,
+      openLabel: t('openOnInstagram'),
+    },
+    tiktok: {
+      label: t('platformTiktok'),
+      dotClass: 'bg-platform-tt',
+      iconColorClass: 'text-platform-tt',
+      Icon: Music2,
+      openLabel: t('openOnTiktok'),
+    },
+  }[platform];
+
+  const PlatformIcon = platformMeta.Icon;
 
   const handleCopyLink = () => {
     const targetUrl = post.facebookUrl || post.url || window.location.href;
@@ -43,174 +99,216 @@ export function PostCard({ post, onImageClick }: PostCardProps) {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const images = post.images && post.images.length > 0 
-    ? post.images 
-    : post.imageUrl 
-    ? [post.imageUrl] 
-    : [];
+  const images =
+    post.images && post.images.length > 0
+      ? post.images
+      : post.imageUrl
+      ? [post.imageUrl]
+      : [];
 
   const handleImageError = (index: number) => {
     setImageErrors((prev) => ({ ...prev, [index]: true }));
   };
 
-  const isLongCaption = caption.length > 280;
-  const displayedCaption = isLongCaption && !isExpanded 
-    ? caption.slice(0, 280) + '...' 
-    : caption;
+  const isLongCaption = caption.length > 320;
+  const displayedCaption =
+    isLongCaption && !isExpanded ? caption.slice(0, 320) + '…' : caption;
 
-  const pageDisplayName = post.user?.name || post.pageName || 'Facebook Page';
-  const isMfuPage = pageDisplayName.includes('MFU') || (post.pageName && post.pageName.includes('MFU'));
+  const rawPage = post.pageName || post.user?.id || '';
+  const pageDisplayName =
+    post.user?.name || post.pageName || t('untitledPost');
+
+  const handleLabel =
+    rawPage &&
+    rawPage.toLowerCase() !== pageDisplayName.toLowerCase() &&
+    !rawPage.includes('profile.php')
+      ? `@${rawPage.replace(/^@/, '')}`
+      : null;
+
+  const avatarInitials = pageDisplayName
+    .replace(/[^a-zA-Z0-9ก-๙]/g, '')
+    .slice(0, 2)
+    .toUpperCase() || 'IC';
 
   const sharedPageName: any = post.sharedPost?.pageName;
+  const sharedPostAuthor =
+    post.sharedPost?.authorName ||
+    (typeof sharedPageName === 'string'
+      ? sharedPageName
+      : sharedPageName?.name) ||
+    t('originalPage');
 
-const sharedPostAuthor =
-  post.sharedPost?.authorName ||
-  (typeof sharedPageName === 'string'
-    ? sharedPageName
-    : sharedPageName?.name) ||
-  'เพจต้นทาง';
+  const originalUrl = post.facebookUrl || post.url || post.postUrl;
+
+  const renderFallbackMedia = (idx: number, compact: boolean = false) => {
+    const isVideoPost = post.isVideo || post.mediaType === 'Video';
+    return (
+      <a
+        href={originalUrl || '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          if (!originalUrl) e.preventDefault();
+          e.stopPropagation();
+        }}
+        className={`w-full ${
+          compact ? 'h-full min-h-[120px]' : 'h-56'
+        } bg-raised flex flex-col items-center justify-center p-4 text-center gap-2 hover:bg-line/50 transition-colors`}
+      >
+        <div className="w-10 h-10 rounded-xl bg-card border border-line flex items-center justify-center">
+          {isVideoPost ? (
+            <Film className={`w-5 h-5 ${platformMeta.iconColorClass}`} strokeWidth={1.5} />
+          ) : (
+            <ImageIcon className={`w-5 h-5 ${platformMeta.iconColorClass}`} strokeWidth={1.5} />
+          )}
+        </div>
+        <div className="space-y-0.5">
+          <div className="text-[13px] font-medium text-ink">
+            {platformMeta.label} · {post.mediaType || (isVideoPost ? 'Video' : `Media #${idx + 1}`)}
+          </div>
+          {!compact && (
+            <div className="text-[12px] text-ink-3">
+              {t('mediaFallbackHint')}
+            </div>
+          )}
+        </div>
+      </a>
+    );
+  };
 
   return (
-    <article className="bg-white border border-slate-200/90 rounded-xl overflow-hidden shadow-xs hover:border-slate-300 transition-colors">
-      {/* New Scraped Badge Indicator (Clean inline banner, not pill) */}
-      {post.isScrapedNew && (
-        <div className="bg-blue-50/70 border-b border-blue-100 px-5 py-1.5 text-xs font-medium text-blue-700 flex items-center justify-between">
-          <span>เพิ่ง Scrape สำเร็จจาก Apify Actor (Real-time)</span>
-          <span className="font-mono text-[11px] text-blue-600">ID: {post.postId || 'NEW'}</span>
-        </div>
-      )}
-
-      {/* Header Profile Zone */}
-      <div className="p-5 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {/* Profile Avatar with fallback */}
-            <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-gradient-to-br from-red-600 to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+    <article className="bg-card border border-line rounded-2xl overflow-hidden shadow-[var(--shadow-small)]">
+      {/* Header */}
+      <div className="p-6 pb-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-raised border border-line flex items-center justify-center text-ink-2 font-medium text-[13px]">
+              <span className="select-none">{avatarInitials}</span>
               {post.user?.profilePic ? (
                 <img
                   src={post.user.profilePic}
                   alt={pageDisplayName}
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
                   }}
                 />
               ) : null}
-              <span className="select-none">{pageDisplayName.slice(0, 2).toUpperCase()}</span>
             </div>
 
-            <div>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-slate-900 text-sm tracking-tight hover:text-blue-600 transition-colors">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <PlatformIcon
+                  className={`w-3.5 h-3.5 shrink-0 ${platformMeta.iconColorClass}`}
+                  strokeWidth={1.75}
+                />
+                <h3 className="font-medium text-ink text-[15px] leading-snug truncate">
                   {pageDisplayName}
-                </span>
-                {isMfuPage && (
-                  <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" aria-label="เพจยืนยันตัวตน" />
+                </h3>
+                {handleLabel && (
+                  <span className="hidden sm:inline font-mono text-[12px] text-ink-3 truncate">
+                    {handleLabel}
+                  </span>
                 )}
               </div>
 
-              {/* Unboxed Metadata with · separator (Zero-pill discipline) */}
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5 font-normal">
-                {relativeTime && (
-                  <>
-                    <span>{relativeTime}</span>
-                    <span aria-hidden="true">·</span>
-                  </>
-                )}
-                <span className="tabular-nums">{formattedDate}</span>
-                <span aria-hidden="true">·</span>
-                <span className="font-mono text-[11px] text-slate-400 truncate max-w-[140px]" title={postKey}>
-                  {postKey}
-                </span>
+              <div className="text-[12px] text-ink-3 mt-0.5 font-mono tabular-nums">
+                {formattedTimestamp}
               </div>
             </div>
           </div>
 
-          {/* Original Post Link & Copy Affordance */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={handleCopyLink}
-              title="คัดลอกลิงก์โพสต์"
-              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
+          {/* Right corner: Platform Badge + Copy action */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span
+              className="h-7 px-2.5 rounded-lg bg-raised border border-line inline-flex items-center gap-1.5 text-[12px] font-medium text-ink-2"
+              title={platformMeta.label}
             >
-              {isCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${platformMeta.dotClass}`}
+                aria-hidden="true"
+              />
+              <PlatformIcon
+                className={`w-3.5 h-3.5 ${platformMeta.iconColorClass}`}
+                strokeWidth={1.5}
+              />
+              <span>{platformMeta.label}</span>
+            </span>
+
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              title={isCopied ? t('copied') : t('copyLink')}
+              aria-label={isCopied ? t('copied') : t('copyLink')}
+              className="h-8 w-8 text-ink-3 hover:text-ink hover:bg-raised rounded-lg transition-colors inline-flex items-center justify-center"
+            >
+              {isCopied ? (
+                <Check className="w-4 h-4 text-positive" strokeWidth={1.5} />
+              ) : (
+                <Copy className="w-4 h-4" strokeWidth={1.5} />
+              )}
             </button>
-            {post.facebookUrl && (
-              <a
-                href={post.facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="เปิดโพสต์ต้นฉบับบน Facebook"
-                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
           </div>
         </div>
 
-        {/* Caption Prose */}
+        {/* Caption */}
         {caption && (
-          <div className="mt-3.5 text-slate-800 text-[14.5px] leading-relaxed whitespace-pre-line font-normal break-words">
+          <div className="mt-4 text-ink text-[15px] leading-relaxed whitespace-pre-line font-normal break-words">
             {displayedCaption}
             {isLongCaption && (
               <button
+                type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="ml-1 text-blue-600 hover:text-blue-700 font-medium text-xs inline-block"
+                className="ml-1.5 text-accent hover:text-accent-hover font-medium text-[13px] inline-block transition-colors"
               >
-                {isExpanded ? 'ย่อข้อความ' : 'ดูเพิ่มเติม'}
+                {isExpanded ? t('seeLess') : t('seeMore')}
               </button>
             )}
           </div>
         )}
       </div>
 
-      {/* Media Gallery Grid */}
+      {/* Full-bleed Media Gallery */}
       {images.length > 0 && (
-        <div className="bg-slate-50 border-y border-slate-100 overflow-hidden">
+        <div className="bg-raised border-y border-line overflow-hidden">
           {images.length === 1 && (
             <div
-              className="relative w-full max-h-[520px] overflow-hidden bg-slate-900/5 cursor-pointer group"
-              onClick={() => onImageClick?.(images[0])}
+              className="relative w-full max-h-[540px] overflow-hidden bg-raised cursor-pointer"
+              onClick={() => !imageErrors[0] && onImageClick?.(images[0])}
             >
               {!imageErrors[0] ? (
                 <img
                   src={images[0]}
-                  alt="Post visual attachment"
+                  alt={t('imageAlt', { n: 1 })}
                   referrerPolicy="no-referrer"
-                  className="w-full max-h-[520px] object-cover mx-auto group-hover:scale-[1.01] transition-transform duration-200"
+                  className="w-full max-h-[540px] object-cover mx-auto"
                   onError={() => handleImageError(0)}
                 />
               ) : (
-                <div className="w-full h-64 bg-linear-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center text-slate-500 gap-2">
-                  <Facebook className="w-8 h-8 text-slate-400" />
-                  <span className="text-xs font-medium">รูปภาพแนบในโพสต์ Facebook</span>
-                </div>
+                renderFallbackMedia(0, false)
               )}
             </div>
           )}
 
           {images.length === 2 && (
-            <div className="grid grid-cols-2 gap-1 bg-slate-200">
+            <div className="grid grid-cols-2 gap-1 bg-line">
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative aspect-4/3 overflow-hidden bg-slate-100 cursor-pointer group"
-                  onClick={() => onImageClick?.(img)}
+                  className="relative aspect-4/3 overflow-hidden bg-raised cursor-pointer"
+                  onClick={() => !imageErrors[idx] && onImageClick?.(img)}
                 >
                   {!imageErrors[idx] ? (
                     <img
                       src={img}
-                      alt={`Post attachment ${idx + 1}`}
+                      alt={t('imageAlt', { n: idx + 1 })}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+                      className="w-full h-full object-cover"
                       onError={() => handleImageError(idx)}
                     />
                   ) : (
-                    <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                      รูปภาพ {idx + 1}
-                    </div>
+                    renderFallbackMedia(idx, true)
                   )}
                 </div>
               ))}
@@ -218,44 +316,40 @@ const sharedPostAuthor =
           )}
 
           {images.length === 3 && (
-            <div className="grid grid-cols-3 gap-1 bg-slate-200">
+            <div className="grid grid-cols-3 gap-1 bg-line">
               <div
-                className="col-span-2 aspect-4/3 overflow-hidden bg-slate-100 cursor-pointer group"
-                onClick={() => onImageClick?.(images[0])}
+                className="col-span-2 aspect-4/3 overflow-hidden bg-raised cursor-pointer"
+                onClick={() => !imageErrors[0] && onImageClick?.(images[0])}
               >
                 {!imageErrors[0] ? (
                   <img
                     src={images[0]}
-                    alt="Post attachment 1"
+                    alt={t('imageAlt', { n: 1 })}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+                    className="w-full h-full object-cover"
                     onError={() => handleImageError(0)}
                   />
                 ) : (
-                  <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                    รูปภาพ 1
-                  </div>
+                  renderFallbackMedia(0, false)
                 )}
               </div>
               <div className="flex flex-col gap-1">
                 {images.slice(1, 3).map((img, idx) => (
                   <div
                     key={idx + 1}
-                    className="relative flex-1 min-h-[90px] overflow-hidden bg-slate-100 cursor-pointer group"
-                    onClick={() => onImageClick?.(img)}
+                    className="relative flex-1 min-h-[96px] overflow-hidden bg-raised cursor-pointer"
+                    onClick={() => !imageErrors[idx + 1] && onImageClick?.(img)}
                   >
                     {!imageErrors[idx + 1] ? (
                       <img
                         src={img}
-                        alt={`Post attachment ${idx + 2}`}
+                        alt={t('imageAlt', { n: idx + 2 })}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+                        className="w-full h-full object-cover"
                         onError={() => handleImageError(idx + 1)}
                       />
                     ) : (
-                      <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                        รูปภาพ {idx + 2}
-                      </div>
+                      renderFallbackMedia(idx + 1, true)
                     )}
                   </div>
                 ))}
@@ -264,32 +358,30 @@ const sharedPostAuthor =
           )}
 
           {images.length >= 4 && (
-            <div className="grid grid-cols-2 gap-1 bg-slate-200">
+            <div className="grid grid-cols-2 gap-1 bg-line">
               {images.slice(0, 4).map((img, idx) => {
                 const isLastWithMore = idx === 3 && images.length > 4;
                 const remaining = images.length - 4;
                 return (
                   <div
                     key={idx}
-                    className="relative aspect-4/3 overflow-hidden bg-slate-100 cursor-pointer group"
-                    onClick={() => onImageClick?.(img)}
+                    className="relative aspect-4/3 overflow-hidden bg-raised cursor-pointer"
+                    onClick={() => !imageErrors[idx] && onImageClick?.(img)}
                   >
                     {!imageErrors[idx] ? (
                       <img
                         src={img}
-                        alt={`Post attachment ${idx + 1}`}
+                        alt={t('imageAlt', { n: idx + 1 })}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+                        className="w-full h-full object-cover"
                         onError={() => handleImageError(idx)}
                       />
                     ) : (
-                      <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                        รูปภาพ {idx + 1}
-                      </div>
+                      renderFallbackMedia(idx, true)
                     )}
                     {isLastWithMore && (
-                      <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center text-white font-bold text-xl">
-                        +{remaining} ภาพ
+                      <div className="absolute inset-0 bg-ink/60 flex items-center justify-center text-white font-medium text-lg font-mono tabular-nums pointer-events-none">
+                        {t('morePhotos', { n: remaining })}
                       </div>
                     )}
                   </div>
@@ -300,81 +392,115 @@ const sharedPostAuthor =
         </div>
       )}
 
-      {/* Shared Post Container */}
+      {/* Shared Post */}
       {post.sharedPost && (
-        <div className="mx-5 my-3 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-          <div className="text-xs text-slate-500 font-medium mb-1">
-            โพสต์ที่แชร์โดย {sharedPostAuthor}
+        <div className="mx-6 my-4 p-4 bg-raised border border-line rounded-xl">
+          <div className="text-[12px] text-ink-3 font-medium mb-1">
+            {t('sharedFrom', { name: sharedPostAuthor })}
           </div>
-          <p className="text-sm text-slate-700 leading-relaxed italic">
-            "{post.sharedPost.text}"
+          <p className="text-[14px] text-ink-2 leading-relaxed line-clamp-4 whitespace-pre-line">
+            {post.sharedPost.text}
           </p>
           {post.sharedPost.url && (
             <a
               href={post.sharedPost.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+              className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-accent hover:text-accent-hover font-medium transition-colors"
             >
-              <span>เปิดโพสต์ที่แชร์</span>
-              <ExternalLink className="w-3 h-3" />
+              <span>{t('openShared')}</span>
+              <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.5} />
             </a>
           )}
         </div>
       )}
 
-      {/* Attached Link Card Preview */}
+      {/* Attached Link */}
       {post.attachedLink && (
-        <div className="mx-5 my-3">
+        <div className="mx-6 my-4">
           <a
             href={post.attachedLink.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 transition-colors bg-slate-50/50"
+            className="block border border-line rounded-xl p-4 hover:border-line-strong transition-colors bg-raised/60"
           >
-            <div className="p-3">
-              <span className="text-[11px] font-mono uppercase text-slate-500 block truncate">
-                {post.attachedLink.domain || new URL(post.attachedLink.url || 'https://facebook.com').hostname}
-              </span>
-              <h4 className="font-semibold text-slate-900 text-sm mt-0.5 line-clamp-1">
-                {post.attachedLink.title || post.attachedLink.url}
-              </h4>
-              {post.attachedLink.description && (
-                <p className="text-xs text-slate-600 mt-1 line-clamp-2">
-                  {post.attachedLink.description}
-                </p>
-              )}
-            </div>
+            <span className="text-[12px] font-mono text-ink-3 block truncate">
+              {post.attachedLink.domain ||
+                (() => {
+                  try {
+                    return new URL(post.attachedLink.url || 'https://facebook.com').hostname;
+                  } catch {
+                    return 'facebook.com';
+                  }
+                })()}
+            </span>
+            <h4 className="font-medium text-ink text-[14px] mt-1 line-clamp-1">
+              {post.attachedLink.title || post.attachedLink.url}
+            </h4>
+            {post.attachedLink.description && (
+              <p className="text-[13px] text-ink-2 mt-1 line-clamp-2">
+                {post.attachedLink.description}
+              </p>
+            )}
           </a>
         </div>
       )}
 
-      {/* Engagement & Action Footer */}
-      <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-        <div className="flex items-center gap-5">
-          <span className="flex items-center gap-1.5">
-            <ThumbsUp className="w-3.5 h-3.5 text-slate-400" />
-            <span className="font-mono tabular-nums">{post.likesCount?.toLocaleString() ?? 0}</span>
+      {/* Footer: Engagement Metrics & View Original Button */}
+      <div className="px-6 py-3.5 border-t border-line flex flex-wrap items-center justify-between gap-4 text-[13px] text-ink-2">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-5">
+          <span className="inline-flex items-center gap-1.5" title={t('likes')}>
+            <ThumbsUp className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
+            <span className="font-mono tabular-nums text-[12px] font-medium text-ink">
+              {formatNumber(post.likesCount ?? 0)}
+            </span>
+            <span className="hidden sm:inline text-[12px] text-ink-3">
+              {t('likes')}
+            </span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
-            <span className="font-mono tabular-nums">{post.commentsCount?.toLocaleString() ?? 0}</span>
+          <span
+            className="inline-flex items-center gap-1.5"
+            title={t('comments')}
+          >
+            <MessageSquare className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
+            <span className="font-mono tabular-nums text-[12px] font-medium text-ink">
+              {formatNumber(post.commentsCount ?? 0)}
+            </span>
+            <span className="hidden sm:inline text-[12px] text-ink-3">
+              {t('comments')}
+            </span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <Share2 className="w-3.5 h-3.5 text-slate-400" />
-            <span className="font-mono tabular-nums">{post.sharesCount?.toLocaleString() ?? 0}</span>
+          <span className="inline-flex items-center gap-1.5" title={t('shares')}>
+            <Share2 className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
+            <span className="font-mono tabular-nums text-[12px] font-medium text-ink">
+              {formatNumber(post.sharesCount ?? 0)}
+            </span>
+            <span className="hidden sm:inline text-[12px] text-ink-3">
+              {t('shares')}
+            </span>
           </span>
+          {post.viewsCount !== undefined && post.viewsCount > 0 && (
+            <span className="inline-flex items-center gap-1.5" title={t('views')}>
+              <Eye className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
+              <span className="font-mono tabular-nums text-[12px] font-medium text-ink">
+                {formatNumber(post.viewsCount)}
+              </span>
+              <span className="hidden sm:inline text-[12px] text-ink-3">
+                {t('views')}
+              </span>
+            </span>
+          )}
         </div>
 
-        {post.facebookUrl && (
+        {originalUrl && (
           <a
-            href={post.facebookUrl}
+            href={originalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium hover:underline text-xs"
+            className="h-8 px-3 rounded-lg bg-raised hover:bg-line border border-line inline-flex items-center gap-1.5 text-ink text-[12px] font-medium transition-colors"
           >
-            <span>ดูโพสต์ต้นฉบับบน Facebook</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <span>{t('openOriginal')}</span>
+            <ExternalLink className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.5} />
           </a>
         )}
       </div>

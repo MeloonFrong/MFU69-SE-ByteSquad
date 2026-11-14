@@ -1,343 +1,335 @@
 import { useState } from 'react';
-import { X, Play, Plus, Trash2, Check, Copy, AlertCircle, FileCode, ExternalLink } from 'lucide-react';
-import { ScraperRunInput, FacebookPost } from '../types/facebook';
+import {
+  AlertCircle,
+  CheckCircle2,
+  ExternalLink,
+  Play,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { FacebookPost, ScraperRunInput } from '../types/facebook';
 import { FacebookApiClient } from '../services/api';
+import { useI18n } from '../i18n/LanguageContext';
 
 interface ScraperModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onScrapeComplete: (newPostsCount: number) => void;
+  onScrapeComplete: (newPostsCount: number, newPosts?: FacebookPost[]) => void;
 }
 
-export function ScraperModal({ isOpen, onClose, onScrapeComplete }: ScraperModalProps) {
-  const [urls, setUrls] = useState<string[]>([
-    'https://www.facebook.com/MFU2Connect',
-    'https://www.facebook.com/profile.php?id=61563364138740',
-  ]);
+export function ScraperModal({
+  isOpen,
+  onClose,
+  onScrapeComplete,
+}: ScraperModalProps) {
+  const { t, formatNumber } = useI18n();
+  const [urls, setUrls] = useState<string[]>([]);
   const [newUrlInput, setNewUrlInput] = useState('');
-  const [resultsLimit, setResultsLimit] = useState<number>(2);
-  const [captionText, setCaptionText] = useState<boolean>(false);
+  const [resultsLimit, setResultsLimit] = useState<number>(3);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultData, setResultData] = useState<any>(null);
-  const [isCopied, setIsCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'config' | 'json' | 'preview'>('config');
 
   if (!isOpen) return null;
 
-  const handleAddUrl = () => {
-    if (!newUrlInput.trim()) return;
-    let url = newUrlInput.trim();
+  const normalizeInputUrl = (raw: string): string => {
+    let url = raw.trim();
     if (!url.startsWith('http')) {
       url = 'https://www.facebook.com/' + url;
     }
+    return url;
+  };
+
+  const handleAddUrl = () => {
+    if (!newUrlInput.trim()) return;
+    const url = normalizeInputUrl(newUrlInput);
     if (!urls.includes(url)) {
       setUrls([...urls, url]);
-      setNewUrlInput('');
     }
+    setNewUrlInput('');
+    setError(null);
   };
 
   const handleRemoveUrl = (index: number) => {
     setUrls(urls.filter((_, i) => i !== index));
   };
 
-  const currentPayload: ScraperRunInput = {
-    captionText,
-    resultsLimit,
-    startUrls: urls.map((url) => ({ url })),
-  };
-
   const handleExecuteScrape = async () => {
-    if (urls.length === 0) {
-      setError('กรุณาระบุอย่างน้อย 1 Facebook URL');
+    let activeUrls = [...urls];
+    if (newUrlInput.trim()) {
+      const pendingUrl = normalizeInputUrl(newUrlInput);
+      if (!activeUrls.includes(pendingUrl)) {
+        activeUrls.push(pendingUrl);
+      }
+      setUrls(activeUrls);
+      setNewUrlInput('');
+    }
+
+    if (activeUrls.length === 0) {
+      setError(t('scraperNeedUrl'));
       return;
     }
+
+    const payload: ScraperRunInput = {
+      captionText: false,
+      resultsLimit,
+      startUrls: activeUrls.map((url) => ({ url })),
+    };
 
     setIsRunning(true);
     setError(null);
     setResultData(null);
 
     try {
-      const response = await FacebookApiClient.runFacebookScraper(currentPayload);
+      const response = await FacebookApiClient.runFacebookScraper(payload);
       if (response.success) {
         setResultData(response);
-        setActiveTab('preview');
-        onScrapeComplete(response.postsAdded);
+        const rawItems = Array.isArray(response.data)
+          ? response.data
+          : response.data?.items || [response.data];
+        const normalizedItems = rawItems
+          .filter(Boolean)
+          .map((item: any) => FacebookApiClient.normalizePost(item));
+        onScrapeComplete(response.postsAdded, normalizedItems);
       } else {
-        setError('เกิดข้อผิดพลาดในการเรียก Scraper');
+        setError(t('scraperFailedTitle'));
       }
     } catch (err: any) {
-      setError(err.message || 'ไม่สามารถสั่งงาน Scraper ได้');
+      setError(err.message || t('scraperFailedTitle'));
     } finally {
       setIsRunning(false);
     }
   };
 
-  const handleCopyPayload = () => {
-    navigator.clipboard.writeText(JSON.stringify(currentPayload, null, 2));
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl shadow-xl overflow-hidden my-8">
-        {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              สั่งงาน Apify Facebook Posts Scraper
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5 font-mono">
-              POST /api/actors/facebook-posts-scraper/run
-            </p>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 overflow-y-auto">
+      <div className="bg-card border border-line-strong rounded-2xl w-full max-w-xl shadow-[var(--shadow-float)] overflow-hidden my-8">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-line flex items-center justify-between gap-4">
+          <h2 className="font-display text-[17px] font-semibold text-ink">
+            {t('toolScraper')}
+          </h2>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+            aria-label={t('closeImage')}
+            className="h-8 w-8 text-ink-3 hover:text-ink hover:bg-raised rounded-lg transition-colors inline-flex items-center justify-center"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Modal Nav Tabs */}
-        <div className="px-6 border-b border-slate-200 bg-slate-50 flex items-center gap-4 text-xs font-medium">
-          <button
-            onClick={() => setActiveTab('config')}
-            className={`py-3 transition-colors border-b-2 ${
-              activeTab === 'config'
-                ? 'border-blue-600 text-blue-600 font-semibold'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            ตั้งค่ารีเควสต์ (Parameters)
-          </button>
-          <button
-            onClick={() => setActiveTab('json')}
-            className={`py-3 transition-colors border-b-2 ${
-              activeTab === 'json'
-                ? 'border-blue-600 text-blue-600 font-semibold'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Payload JSON & HTTP Format
-          </button>
-          {resultData && (
-            <button
-              onClick={() => setActiveTab('preview')}
-              className={`py-3 transition-colors border-b-2 ${
-                activeTab === 'preview'
-                  ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              ผลลัพธ์ที่ได้ ({resultData.postsAdded} โพสต์)
-            </button>
-          )}
-        </div>
+        {/* Body */}
+        <div className="p-6 max-h-[68vh] overflow-y-auto space-y-6">
+          <p className="text-[13px] text-ink-2">{t('scraperDesc')}</p>
 
-        {/* Modal Body */}
-        <div className="p-6 max-h-[70vh] overflow-y-auto space-y-6">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div
+              role="alert"
+              className="p-4 bg-negative-soft border border-negative-line rounded-xl text-[13px] text-negative-ink flex items-start gap-2.5"
+            >
+              <AlertCircle
+                className="w-4 h-4 shrink-0 mt-0.5 text-negative"
+                strokeWidth={1.5}
+              />
               <span>{error}</span>
             </div>
           )}
 
-          {activeTab === 'config' && (
-            <div className="space-y-6">
-              {/* Target URLs */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-900">
-                    รายการโปรไฟล์หรือเพจ Facebook ที่ต้องการ Scrape (startUrls)
-                  </label>
-                  <span className="text-[11px] font-mono text-slate-400">
-                    {urls.length} URLs
-                  </span>
-                </div>
+          {/* Target URLs */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="scraper-url-input"
+                className="text-[13px] font-medium text-ink"
+              >
+                {t('scraperUrls')}
+              </label>
+              <span className="text-[12px] font-mono text-ink-3 tabular-nums">
+                {t('scraperUrlsCount', { n: formatNumber(urls.length) })}
+              </span>
+            </div>
 
-                <div className="space-y-2">
-                  {urls.map((url, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
-                    >
-                      <span className="font-mono text-slate-700 truncate">{url}</span>
-                      <button
-                        onClick={() => handleRemoveUrl(idx)}
-                        title="ลบ URL"
-                        className="p-1 text-slate-400 hover:text-red-600 rounded transition-colors shrink-0"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Add URL Row */}
-                <div className="flex gap-2 pt-1">
-                  <input
-                    type="text"
-                    placeholder="ใส่ URL เช่น https://www.facebook.com/MFU2Connect"
-                    value={newUrlInput}
-                    onChange={(e) => setNewUrlInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
-                    className="flex-1 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-hidden focus:border-blue-500"
-                  />
-                  <button
-                    onClick={handleAddUrl}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-colors flex items-center gap-1 shrink-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>เพิ่ม URL</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* resultsLimit */}
+            {urls.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-900">
-                    จำนวนโพสต์สูงสุดที่ดึงต่อโปรไฟล์ (resultsLimit)
-                  </label>
-                  <span className="text-xs font-mono font-semibold text-blue-600">
-                    {resultsLimit} โพสต์
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={20}
-                  value={resultsLimit}
-                  onChange={(e) => setResultsLimit(Number(e.target.value))}
-                  className="w-full accent-blue-600 cursor-pointer"
-                />
-                <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-                  <span>1 โพสต์ (ด่วน)</span>
-                  <span>10 โพสต์</span>
-                  <span>20 โพสต์</span>
-                </div>
+                {urls.map((url, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between gap-2 h-10 px-3 bg-raised border border-line rounded-lg text-[13px]"
+                  >
+                    <span className="font-mono text-ink-2 truncate">{url}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveUrl(idx)}
+                      title={t('scraperRemove')}
+                      aria-label={t('scraperRemove')}
+                      className="h-7 w-7 text-ink-3 hover:text-negative rounded-md transition-colors inline-flex items-center justify-center shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                  </div>
+                ))}
               </div>
+            )}
 
-              {/* captionText Toggle */}
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <div className="text-xs font-semibold text-slate-900">captionText</div>
-                  <div className="text-[11px] text-slate-500">
-                    กำหนดค่า captionText สำหรับ Apify Actor (ค่าปริยาย: false)
+            {/* Add URL */}
+            <div className="flex gap-2">
+              <input
+                id="scraper-url-input"
+                type="url"
+                placeholder={t('scraperAddPlaceholder')}
+                value={newUrlInput}
+                onChange={(e) => setNewUrlInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
+                className="flex-1 h-10 px-3 text-[13px] bg-card border border-line rounded-lg text-ink placeholder:text-ink-3 focus:outline-hidden focus:border-accent transition-colors"
+              />
+              <button
+                type="button"
+                onClick={handleAddUrl}
+                className="h-10 px-3.5 bg-raised hover:bg-line text-ink text-[13px] font-medium rounded-lg transition-colors inline-flex items-center gap-1.5 shrink-0"
+              >
+                <Plus className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
+                <span>{t('scraperAdd')}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* resultsLimit */}
+          <div className="space-y-2 pt-2 border-t border-line">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="scraper-limit-range"
+                className="text-[13px] font-medium text-ink"
+              >
+                {t('scraperLimit')}
+              </label>
+              <span className="text-[13px] font-mono font-medium text-ink tabular-nums">
+                {t('scraperLimitValue', { n: formatNumber(resultsLimit) })}
+              </span>
+            </div>
+            <input
+              id="scraper-limit-range"
+              type="range"
+              min={1}
+              max={20}
+              value={resultsLimit}
+              onChange={(e) => setResultsLimit(Number(e.target.value))}
+              className="w-full accent-accent cursor-pointer"
+            />
+            <div className="flex justify-between text-[12px] text-ink-3 font-mono tabular-nums">
+              <span>1</span>
+              <span>10</span>
+              <span>20</span>
+            </div>
+          </div>
+
+          {/* Scrape results preview when completed */}
+          {resultData && (
+            <div className="space-y-4 pt-4 border-t border-line">
+              {resultData.isSimulated ? (
+                <div
+                  role="alert"
+                  className="p-4 bg-negative-soft border border-negative-line rounded-xl text-[13px] text-negative-ink flex items-start gap-3"
+                >
+                  <AlertCircle
+                    className="w-5 h-5 text-negative shrink-0 mt-0.5"
+                    strokeWidth={1.5}
+                  />
+                  <div className="space-y-1">
+                    <div className="font-semibold">{t('scraperFailedTitle')}</div>
+                    <div className="text-ink-2">
+                      {t('scraperFailedBody', {
+                        url: FacebookApiClient.getBaseUrl(),
+                      })}
+                    </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setCaptionText(!captionText)}
-                  className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                    captionText ? 'bg-blue-600' : 'bg-slate-300'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                      captionText ? 'translate-x-4' : 'translate-x-0'
-                    }`}
+              ) : (
+                <div className="p-4 bg-raised border border-line rounded-xl text-[13px] text-ink flex items-start gap-3">
+                  <CheckCircle2
+                    className="w-5 h-5 text-positive shrink-0 mt-0.5"
+                    strokeWidth={1.5}
                   />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'json' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-700">
-                  HTTP Request Spec (ตรงกับ C# Backend):
-                </span>
-                <button
-                  onClick={handleCopyPayload}
-                  className="px-2.5 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors flex items-center gap-1.5"
-                >
-                  {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{isCopied ? 'คัดลอกแล้ว' : 'คัดลอก JSON'}</span>
-                </button>
-              </div>
-
-              <div className="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-xs overflow-x-auto">
-                <div className="text-blue-400 mb-1">POST {'{{baseUrl}}'}/api/actors/facebook-posts-scraper/run</div>
-                <div className="text-slate-400 mb-3">Content-Type: application/json</div>
-                <pre>{JSON.stringify(currentPayload, null, 2)}</pre>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'preview' && resultData && (
-            <div className="space-y-4">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center justify-between">
-                <span>
-                  Scrape สำเร็จ! ได้รับข้อมูลมาทั้งหมด <strong>{resultData.postsAdded}</strong> โพสต์
-                </span>
-                {resultData.isSimulated && (
-                  <span className="font-mono text-[11px] text-amber-700">
-                    (ผลลัพธ์จากโหมดจำลอง)
-                  </span>
-                )}
-              </div>
+                  <div className="space-y-1">
+                    <div className="font-medium">
+                      {t('scraperDoneTitle', {
+                        n: formatNumber(resultData.postsAdded),
+                      })}
+                    </div>
+                    <div className="text-ink-2">{t('scraperDoneBody')}</div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-slate-800">ตัวอย่างโพสต์ที่ได้รับ:</h4>
+                <h4 className="text-[13px] font-medium text-ink">
+                  {t('scraperResults')} ({formatNumber(resultData.postsAdded)})
+                </h4>
                 <div className="space-y-2">
-                  {(Array.isArray(resultData.data) ? resultData.data : [resultData.data]).map(
-                    (p: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1"
-                      >
-                        <div className="font-semibold text-slate-900">
-                          {p.pageName || p.user?.name || 'Facebook Post'}
-                        </div>
-                        <p className="text-slate-600 line-clamp-2">
-                          {p.caption || p.text || 'ไม่มีแคปชั่น'}
-                        </p>
-                        {p.facebookUrl && (
-                          <a
-                            href={p.facebookUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline pt-1"
-                          >
-                            <span>{p.facebookUrl}</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
+                  {(Array.isArray(resultData.data)
+                    ? resultData.data
+                    : [resultData.data]
+                  ).map((p: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="p-3.5 bg-raised border border-line rounded-xl text-[13px] space-y-1"
+                    >
+                      <div className="font-medium text-ink">
+                        {p.user?.name || p.pageName || t('untitledPost')}
                       </div>
-                    )
-                  )}
+                      <p className="text-ink-2 line-clamp-2">
+                        {p.caption || p.text || t('noCaption')}
+                      </p>
+                      {(p.facebookUrl || p.url) && (
+                        <a
+                          href={p.facebookUrl || p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[12px] text-accent hover:text-accent-hover pt-1"
+                        >
+                          <span className="truncate max-w-md">
+                            {p.facebookUrl || p.url}
+                          </span>
+                          <ExternalLink
+                            className="w-3.5 h-3.5 shrink-0"
+                            strokeWidth={1.5}
+                          />
+                        </a>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Modal Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            ปิดหน้าต่าง
-          </button>
+        {/* Footer */}
+        <div className="px-6 py-4 bg-raised/60 border-t border-line flex items-center justify-between gap-4">
+          <span className="text-[12px] text-ink-3">{t('scraperRunHint')}</span>
 
-          <button
-            onClick={handleExecuteScrape}
-            disabled={isRunning}
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-xs flex items-center gap-2 disabled:opacity-50"
-          >
-            <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-pulse' : ''}`} />
-            <span>
-              {isRunning
-                ? 'กำลังเชื่อมต่อ Apify Scraper...'
-                : 'เริ่ม Scrape ข้อมูล (Run Scraper)'}
-            </span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-9 px-4 text-[13px] font-medium text-ink-2 hover:text-ink rounded-lg transition-colors"
+            >
+              {t('closeImage')}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExecuteScrape}
+              disabled={isRunning}
+              className="h-9 px-4 bg-accent hover:bg-accent-hover text-white text-[13px] font-medium rounded-lg transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+            >
+              <Play className="w-4 h-4" strokeWidth={1.5} />
+              <span>
+                {isRunning ? t('scraperRunning') : t('scraperRun')}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
