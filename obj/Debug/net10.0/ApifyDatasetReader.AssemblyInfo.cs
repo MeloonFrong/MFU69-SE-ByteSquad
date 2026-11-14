@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApifyDatasetReader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b2bcb54cff90bd86929ee22cef574ce9249f2276")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55a7750396a61fb930633cf680082b47905a1f3b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApifyDatasetReader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApifyDatasetReader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
