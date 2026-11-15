@@ -93,5 +93,6 @@ export interface SubscriptionItem {
   displayName: string;
   url: string;
   postsLimit: number;
+  viewLimit?: number;
   tags?: string[];
 }

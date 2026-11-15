@@ -10,7 +10,11 @@ import {
   X,
 } from 'lucide-react';
 import { SubscriptionItem, SubscriptionPlatform } from '../types/facebook';
-import { normalizeTagList } from '../services/subscriptionUtils';
+import {
+  DEFAULT_POSTS_PER_PAGE,
+  DEFAULT_VIEW_POSTS_PER_PAGE,
+  normalizeTagList,
+} from '../services/subscriptionUtils';
 import { useI18n } from '../i18n/LanguageContext';
 
 interface RefreshConfigModalProps {
@@ -39,7 +43,8 @@ export function RefreshConfigModal({
       setDraftSubs(
         subscriptions.map((s) => ({
           ...s,
-          postsLimit: s.postsLimit || 1,
+          postsLimit: s.postsLimit || DEFAULT_POSTS_PER_PAGE,
+          viewLimit: s.viewLimit || DEFAULT_VIEW_POSTS_PER_PAGE,
           tags: normalizeTagList(s.tags),
         }))
       );
@@ -53,6 +58,15 @@ export function RefreshConfigModal({
     setDraftSubs((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, postsLimit: clamped } : item
+      )
+    );
+  };
+
+  const handleViewLimitChange = (id: string, nextViewLimit: number) => {
+    const clamped = Math.max(1, Math.min(50, nextViewLimit));
+    setDraftSubs((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, viewLimit: clamped } : item
       )
     );
   };
@@ -192,48 +206,114 @@ export function RefreshConfigModal({
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-2 shrink-0">
-                              <div
-                                className="h-8 px-1.5 rounded-lg bg-card border border-line inline-flex items-center gap-1"
-                                aria-label={t('refreshConfigPostsPerPage')}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleLimitChange(
-                                      sub.id,
-                                      sub.postsLimit - 1
-                                    )
-                                  }
-                                  disabled={sub.postsLimit <= 1}
-                                  className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
-                                  aria-label="Decrease posts limit"
-                                >
-                                  <Minus
-                                    className="w-3.5 h-3.5"
-                                    strokeWidth={1.5}
-                                  />
-                                </button>
-                                <span className="w-8 text-center font-mono text-[13px] font-medium text-ink tabular-nums">
-                                  {formatNumber(sub.postsLimit)}
+                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                              {/* Scrape limit (ขอดึง data ใหม่ — default 1) */}
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[11px] font-medium text-ink-3 whitespace-nowrap">
+                                  {t('refreshConfigScrapeLimit')}
                                 </span>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleLimitChange(
-                                      sub.id,
-                                      sub.postsLimit + 1
-                                    )
-                                  }
-                                  disabled={sub.postsLimit >= 20}
-                                  className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
-                                  aria-label="Increase posts limit"
+                                <div
+                                  className="h-8 px-1.5 rounded-lg bg-card border border-line inline-flex items-center gap-1"
+                                  aria-label={t('refreshConfigScrapeLimit')}
                                 >
-                                  <Plus
-                                    className="w-3.5 h-3.5"
-                                    strokeWidth={1.5}
-                                  />
-                                </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleLimitChange(
+                                        sub.id,
+                                        sub.postsLimit - 1
+                                      )
+                                    }
+                                    disabled={sub.postsLimit <= 1}
+                                    className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
+                                    aria-label="Decrease scrape limit"
+                                  >
+                                    <Minus
+                                      className="w-3.5 h-3.5"
+                                      strokeWidth={1.5}
+                                    />
+                                  </button>
+                                  <span className="w-7 text-center font-mono text-[13px] font-medium text-ink tabular-nums">
+                                    {formatNumber(sub.postsLimit)}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleLimitChange(
+                                        sub.id,
+                                        sub.postsLimit + 1
+                                      )
+                                    }
+                                    disabled={sub.postsLimit >= 20}
+                                    className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
+                                    aria-label="Increase scrape limit"
+                                  >
+                                    <Plus
+                                      className="w-3.5 h-3.5"
+                                      strokeWidth={1.5}
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* View limit (ขอดู data ที่มีอยู่ — default 10) */}
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[11px] font-medium text-ink-3 whitespace-nowrap">
+                                  {t('refreshConfigViewLimit')}
+                                </span>
+                                <div
+                                  className="h-8 px-1.5 rounded-lg bg-card border border-line inline-flex items-center gap-1"
+                                  aria-label={t('refreshConfigViewLimit')}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleViewLimitChange(
+                                        sub.id,
+                                        (sub.viewLimit ??
+                                          DEFAULT_VIEW_POSTS_PER_PAGE) - 1
+                                      )
+                                    }
+                                    disabled={
+                                      (sub.viewLimit ??
+                                        DEFAULT_VIEW_POSTS_PER_PAGE) <= 1
+                                    }
+                                    className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
+                                    aria-label="Decrease view limit"
+                                  >
+                                    <Minus
+                                      className="w-3.5 h-3.5"
+                                      strokeWidth={1.5}
+                                    />
+                                  </button>
+                                  <span className="w-7 text-center font-mono text-[13px] font-medium text-ink tabular-nums">
+                                    {formatNumber(
+                                      sub.viewLimit ??
+                                        DEFAULT_VIEW_POSTS_PER_PAGE
+                                    )}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleViewLimitChange(
+                                        sub.id,
+                                        (sub.viewLimit ??
+                                          DEFAULT_VIEW_POSTS_PER_PAGE) + 1
+                                      )
+                                    }
+                                    disabled={
+                                      (sub.viewLimit ??
+                                        DEFAULT_VIEW_POSTS_PER_PAGE) >= 50
+                                    }
+                                    className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
+                                    aria-label="Increase view limit"
+                                  >
+                                    <Plus
+                                      className="w-3.5 h-3.5"
+                                      strokeWidth={1.5}
+                                    />
+                                  </button>
+                                </div>
                               </div>
 
                               <button

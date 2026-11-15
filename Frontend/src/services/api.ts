@@ -1,6 +1,12 @@
 import { FacebookPost, RecentPostsResponse, ScraperRunInput, ApifyDataset, SubscriptionItem } from '../types/facebook';
 import { INITIAL_MOCK_POSTS, DEMO_MOCK_POSTS, MOCK_APIFY_DATASETS, normalizeSocialPost } from './mockData';
-import { doesPostMatchSubscription, filterPostsBySubscriptions, parseSubscriptionInput } from './subscriptionUtils';
+import {
+  DEFAULT_POSTS_PER_PAGE,
+  DEFAULT_VIEW_POSTS_PER_PAGE,
+  doesPostMatchSubscription,
+  filterPostsBySubscriptions,
+  parseSubscriptionInput,
+} from './subscriptionUtils';
 
 const BASE_URL_STORAGE_KEY = 'fb_scraper_backend_base_url';
 const AZURE_MIGRATION_STORAGE_KEY = 'fb_scraper_backend_azure_migrated_v1';
@@ -555,8 +561,8 @@ export class FacebookApiClient {
   }
 
   /**
-   * Strict Subscription-Only Storage Reader:
-   * Fetches stored posts ONLY for subscribed accounts and filters out any non-subscribed account.
+   * Strict Subscription-Only Storage Reader (ขอดู data ที่มีอยู่):
+   * Fetches stored posts ONLY for subscribed accounts using each account's viewLimit (default 10).
    */
   public static async fetchSubscribedPostsFromStorage(
     subscriptions: SubscriptionItem[]
@@ -571,7 +577,10 @@ export class FacebookApiClient {
 
     const results = await Promise.all(
       subscriptions.map(async (sub) => {
-        const limit = Math.max(1, sub.postsLimit || 1);
+        const limit = Math.max(
+          1,
+          sub.viewLimit ?? DEFAULT_VIEW_POSTS_PER_PAGE
+        );
         if (sub.platform === 'instagram') {
           const res = await this.getRecentInstagramPosts(sub.handle, limit);
           return { posts: res.posts, totalScanned: res.totalScanned, isSimulated: res.isSimulated };
@@ -609,12 +618,14 @@ export class FacebookApiClient {
   }
 
   /**
-   * Strict Subscription-Only Scraper Runner:
-   * Sends scraper requests ONLY for the user's subscribed accounts using each account's configured postsLimit,
-   * then strictly filters all results against `subscriptions`.
+   * Strict Subscription-Only Refresh Runner (ขอดึง data ใหม่ + ขอดู data ที่มีอยู่):
+   * Concurrently requests:
+   * 1. Scrape new posts (POST /api/actors/.../run) with postsLimit (default 1)
+   * 2. Fetch existing stored posts (GET /api/posts/recent...) with viewLimit (default 10)
    */
   public static async scrapeSubscribedAccounts(
-    subscriptions: SubscriptionItem[]
+    subscriptions: SubscriptionItem[],
+    onStorageLoaded?: (posts: FacebookPost[], isSimulated: boolean) => void
   ): Promise<{
     posts: FacebookPost[];
     postsAdded: number;
@@ -624,38 +635,52 @@ export class FacebookApiClient {
       return { posts: [], postsAdded: 0, isSimulated: false };
     }
 
-    let anyLiveSuccess = false;
-    const newlyScraped: FacebookPost[] = [];
+    const storagePromise = this.fetchSubscribedPostsFromStorage(
+      subscriptions
+    ).then((res) => {
+      onStorageLoaded?.(res.posts, res.isSimulated);
+      return res;
+    });
 
-    for (const sub of subscriptions) {
-      const limit = Math.max(1, sub.postsLimit || 1);
-      if (sub.platform === 'instagram') {
-        const res = await this.runInstagramScraper([sub.url], limit);
-        if (!res.isSimulated) anyLiveSuccess = true;
-        newlyScraped.push(...res.data);
-      } else if (sub.platform === 'tiktok') {
-        const res = await this.runTikTokScraper([sub.handle], limit);
-        if (!res.isSimulated) anyLiveSuccess = true;
-        newlyScraped.push(...res.data);
-      } else {
+    const scrapePromise = Promise.all(
+      subscriptions.map(async (sub) => {
+        const scrapeLimit = Math.max(
+          1,
+          sub.postsLimit || DEFAULT_POSTS_PER_PAGE
+        );
+        if (sub.platform === 'instagram') {
+          const res = await this.runInstagramScraper([sub.url], scrapeLimit);
+          return { posts: res.data, isSimulated: res.isSimulated };
+        }
+        if (sub.platform === 'tiktok') {
+          const res = await this.runTikTokScraper([sub.handle], scrapeLimit);
+          return { posts: res.data, isSimulated: res.isSimulated };
+        }
         const res = await this.runFacebookScraper({
           captionText: false,
-          resultsLimit: limit,
+          resultsLimit: scrapeLimit,
           startUrls: [{ url: sub.url }],
         });
-        if (!res.isSimulated) anyLiveSuccess = true;
         const rawItems = Array.isArray(res.data)
           ? res.data
           : res.data?.items || [res.data];
-        newlyScraped.push(
-          ...rawItems.filter(Boolean).map((item: any) => this.normalizePost(item))
-        );
-      }
-    }
+        return {
+          posts: rawItems
+            .filter(Boolean)
+            .map((item: any) => this.normalizePost(item)),
+          isSimulated: res.isSimulated,
+        };
+      })
+    );
 
-    // Merge with any stored posts for these subscriptions and apply strict subscription + per-page limit filter
-    const storageRes = await this.fetchSubscribedPostsFromStorage(subscriptions);
-    if (!storageRes.isSimulated) anyLiveSuccess = true;
+    const [storageRes, scrapeResults] = await Promise.all([
+      storagePromise,
+      scrapePromise,
+    ]);
+
+    const anyLiveSuccess =
+      !storageRes.isSimulated || scrapeResults.some((r) => !r.isSimulated);
+    const newlyScraped = scrapeResults.flatMap((r) => r.posts);
 
     const combined = this.deduplicatePosts([
       ...newlyScraped,

@@ -3,7 +3,9 @@ import { FacebookPost, SubscriptionItem } from './types/facebook';
 import { FacebookApiClient } from './services/api';
 import { DEMO_MOCK_POSTS } from './services/mockData';
 import {
+  DEFAULT_POSTS_PER_PAGE,
   DEFAULT_SUGGESTED_TAGS,
+  DEFAULT_VIEW_POSTS_PER_PAGE,
   filterPostsBySubscriptions,
   normalizeTag,
   normalizeTagList,
@@ -136,7 +138,7 @@ function AppShell() {
     checkStatus();
   }, [checkStatus]);
 
-  // Trigger Scraper & Storage sync strictly for subscribed accounts only
+  // Trigger Scraper (default 1) & Storage Reader (default 10) strictly for subscribed accounts
   const handleRefresh = useCallback(
     async (subsOverride?: SubscriptionItem[]) => {
       const targetSubs = subsOverride ?? subscriptions;
@@ -151,7 +153,20 @@ function AppShell() {
 
         setIsLoading(true);
         const result = await FacebookApiClient.scrapeSubscribedAccounts(
-          targetSubs
+          targetSubs,
+          (storagePosts, storageSimulated) => {
+            const initialFiltered = filterPostsBySubscriptions(
+              storagePosts,
+              targetSubs,
+              true,
+              (p) => FacebookApiClient.getPostTimestamp(p)
+            );
+            setPosts(initialFiltered);
+            setIsLoading(false);
+            if (!storageSimulated) {
+              setIsSimulated(false);
+            }
+          }
         );
         const strictlyFiltered = filterPostsBySubscriptions(
           result.posts,
@@ -171,7 +186,7 @@ function AppShell() {
     [subscriptions, checkStatus]
   );
 
-  // Add new page(s)/account(s) to Subscription list (default 1 post per page)
+  // Add new page(s)/account(s) to Subscription list (default scrape 1, view 10)
   const handleAddSubscriptions = async (newItems: SubscriptionItem[]) => {
     if (!newItems || newItems.length === 0) return;
 
@@ -182,12 +197,14 @@ function AppShell() {
       if (!existing) {
         mergedMap.set(item.id, {
           ...item,
-          postsLimit: item.postsLimit || 1,
+          postsLimit: item.postsLimit || DEFAULT_POSTS_PER_PAGE,
+          viewLimit: item.viewLimit || DEFAULT_VIEW_POSTS_PER_PAGE,
           tags: normalizeTagList(item.tags),
         });
       } else {
         mergedMap.set(item.id, {
           ...existing,
+          viewLimit: existing.viewLimit || DEFAULT_VIEW_POSTS_PER_PAGE,
           tags: normalizeTagList([
             ...(existing.tags || []),
             ...(item.tags || []),

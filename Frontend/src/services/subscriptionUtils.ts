@@ -1,6 +1,7 @@
 import { FacebookPost, SubscriptionItem, SubscriptionPlatform } from '../types/facebook';
 
 export const DEFAULT_POSTS_PER_PAGE = 1;
+export const DEFAULT_VIEW_POSTS_PER_PAGE = 10;
 
 export const DEFAULT_SUGGESTED_TAGS = [
   '#MFU',
@@ -72,13 +73,14 @@ export function resolveDisplayName(
 
 /**
  * Parse a user-entered URL or handle into a normalized SubscriptionItem
- * with a default postsLimit of 1 post per page and optional custom tags.
+ * with a default postsLimit (scrape limit) of 1 post and viewLimit of 10 posts per page.
  */
 export function parseSubscriptionInput(
   rawInput: string,
   fallbackPlatform: SubscriptionPlatform = 'facebook',
   postsLimit: number = DEFAULT_POSTS_PER_PAGE,
-  tags: string[] = []
+  tags: string[] = [],
+  viewLimit: number = DEFAULT_VIEW_POSTS_PER_PAGE
 ): SubscriptionItem | null {
   const trimmed = rawInput.trim();
   if (!trimmed) return null;
@@ -150,6 +152,10 @@ export function parseSubscriptionInput(
     postsLimit: Math.max(
       1,
       Math.min(50, Math.round(postsLimit || DEFAULT_POSTS_PER_PAGE))
+    ),
+    viewLimit: Math.max(
+      1,
+      Math.min(100, Math.round(viewLimit || DEFAULT_VIEW_POSTS_PER_PAGE))
     ),
     tags: normalizeTagList(tags),
   };
@@ -299,7 +305,12 @@ export function filterPostsBySubscriptions(
   for (const sub of subscriptions) {
     const subPosts = matched.filter((p) => doesPostMatchSubscription(p, sub));
     const ordered = sortFn ? [...subPosts].sort(sortFn) : subPosts;
-    collected.push(...ordered.slice(0, Math.max(1, sub.postsLimit)));
+    const maxToKeep = Math.max(
+      1,
+      sub.viewLimit ?? DEFAULT_VIEW_POSTS_PER_PAGE,
+      sub.postsLimit ?? DEFAULT_POSTS_PER_PAGE
+    );
+    collected.push(...ordered.slice(0, maxToKeep));
   }
 
   return sortFn ? collected.sort(sortFn) : collected;

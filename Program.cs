@@ -8,13 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ApifyDatasetService>();
 
-// อนุญาตให้ Frontend จากทุก Origin (รวมถึง Vite Dev/Preview และ Cloud Deployment) เรียก Backend ได้
+// อนุญาตให้ Frontend จาก Vite เรียก Backend ได้
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins("http://localhost:3000", "http://10.2.4.20:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
