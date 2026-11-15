@@ -84,6 +84,8 @@ export interface BackendConfig {
 
 export type SubscriptionPlatform = 'facebook' | 'instagram' | 'tiktok';
 
+export type SortOrder = 'newest' | 'most_liked';
+
 export interface SubscriptionItem {
   id: string;
   platform: SubscriptionPlatform;
@@ -91,4 +93,5 @@ export interface SubscriptionItem {
   displayName: string;
   url: string;
   postsLimit: number;
+  tags?: string[];
 }

@@ -1,7 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { FacebookPost, SubscriptionItem } from './types/facebook';
 import { FacebookApiClient } from './services/api';
-import { filterPostsBySubscriptions } from './services/subscriptionUtils';
+import { DEMO_MOCK_POSTS } from './services/mockData';
+import {
+  filterPostsBySubscriptions,
+  normalizeTagList,
+  parseSubscriptionInput,
+} from './services/subscriptionUtils';
 import { Navbar, ActiveSection } from './components/Navbar';
 import { FeedView } from './components/FeedView';
 import { ScraperModal } from './components/ScraperModal';
@@ -9,11 +14,59 @@ import { RefreshConfigModal } from './components/RefreshConfigModal';
 import { MediaGalleryModal } from './components/MediaGalleryModal';
 import { LanguageProvider, useI18n } from './i18n/LanguageContext';
 
+function getInitialPrototypeSubscriptions(): SubscriptionItem[] {
+  const isStandalonePrototype =
+    typeof window !== 'undefined' &&
+    Boolean(
+      (window as unknown as { __INFOCENTER_STANDALONE_PROTOTYPE__?: boolean })
+        .__INFOCENTER_STANDALONE_PROTOTYPE__
+    );
+
+  if (!isStandalonePrototype) {
+    return [];
+  }
+
+  const seeds: Array<{ url: string; tags: string[]; limit: number }> = [
+    {
+      url: 'https://www.facebook.com/MFU2Connect',
+      tags: ['MFU', 'Academic'],
+      limit: 2,
+    },
+    {
+      url: 'https://www.instagram.com/humansofny',
+      tags: ['News', 'Creator'],
+      limit: 2,
+    },
+    {
+      url: 'https://www.tiktok.com/@khaby.lame',
+      tags: ['Creator'],
+      limit: 2,
+    },
+  ];
+
+  return seeds
+    .map((seed) => {
+      return parseSubscriptionInput(seed.url, undefined, seed.limit, seed.tags);
+    })
+    .filter((item): item is SubscriptionItem => item !== null);
+}
+
 function AppShell() {
   const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<ActiveSection>('feed');
-  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>([]);
-  const [posts, setPosts] = useState<FacebookPost[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>(() =>
+    getInitialPrototypeSubscriptions()
+  );
+  const [posts, setPosts] = useState<FacebookPost[]>(() => {
+    const initialSubs = getInitialPrototypeSubscriptions();
+    if (initialSubs.length === 0) return [];
+    return filterPostsBySubscriptions(
+      DEMO_MOCK_POSTS,
+      initialSubs,
+      true,
+      (p) => FacebookApiClient.getPostTimestamp(p)
+    );
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedPage, setSelectedPage] = useState('all');
@@ -24,6 +77,14 @@ function AppShell() {
   const [isAddSourceOpen, setIsAddSourceOpen] = useState(false);
   const [isRefreshConfigOpen, setIsRefreshConfigOpen] = useState(false);
   const [galleryImage, setGalleryImage] = useState<string | null>(null);
+
+  const existingTags = useMemo(() => {
+    const set = new Set<string>();
+    subscriptions.forEach((sub) => {
+      (sub.tags || []).forEach((tag) => set.add(tag));
+    });
+    return Array.from(set);
+  }, [subscriptions]);
 
   const checkStatus = useCallback(async () => {
     try {
@@ -82,10 +143,20 @@ function AppShell() {
     const mergedMap = new Map<string, SubscriptionItem>();
     subscriptions.forEach((sub) => mergedMap.set(sub.id, sub));
     newItems.forEach((item) => {
-      if (!mergedMap.has(item.id)) {
+      const existing = mergedMap.get(item.id);
+      if (!existing) {
         mergedMap.set(item.id, {
           ...item,
           postsLimit: item.postsLimit || 1,
+          tags: normalizeTagList(item.tags),
+        });
+      } else {
+        mergedMap.set(item.id, {
+          ...existing,
+          tags: normalizeTagList([
+            ...(existing.tags || []),
+            ...(item.tags || []),
+          ]),
         });
       }
     });
@@ -167,6 +238,7 @@ function AppShell() {
         isOpen={isAddSourceOpen}
         onClose={() => setIsAddSourceOpen(false)}
         onAddSubscriptions={handleAddSubscriptions}
+        existingTags={existingTags}
       />
 
       <RefreshConfigModal

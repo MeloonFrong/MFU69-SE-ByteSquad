@@ -1,21 +1,27 @@
 import { useState, useMemo } from 'react';
 import {
   AlertCircle,
+  ArrowUpDown,
   Facebook,
+  Filter,
   Instagram,
   Layers,
+  MinusCircle,
   Music2,
   Plus,
   RefreshCw,
   Search,
   SlidersHorizontal,
+  Tag as TagIcon,
   X,
 } from 'lucide-react';
-import { FacebookPost, SubscriptionItem } from '../types/facebook';
+import { FacebookPost, SortOrder, SubscriptionItem } from '../types/facebook';
 import { FacebookApiClient } from '../services/api';
 import {
   doesPostMatchSubscription,
   filterPostsBySubscriptions,
+  findMatchingSubscription,
+  normalizeTagList,
 } from '../services/subscriptionUtils';
 import { PostCard, detectPostPlatform, SocialPlatform } from './PostCard';
 import { useI18n } from '../i18n/LanguageContext';
@@ -44,6 +50,7 @@ interface FollowedAccountItem {
   shortLabel: string;
   platform: SocialPlatform | 'all';
   postsLimit?: number;
+  tags: string[];
   subscription?: SubscriptionItem;
 }
 
@@ -64,10 +71,14 @@ export function FeedView({
 }: FeedViewProps) {
   const { t, formatNumber } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
+  const [includeKeywordsInput, setIncludeKeywordsInput] = useState('');
+  const [excludeKeywordsInput, setExcludeKeywordsInput] = useState('');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [selectedPlatform, setSelectedPlatform] =
     useState<PlatformFilter>('all');
+  const [selectedTag, setSelectedTag] = useState<string>('all');
 
-  // Requirement 3: Strict Subscription-Only filtering on every post in the feed
+  // Strict Subscription-Only filtering on every post in the feed
   const subscribedPosts = useMemo(() => {
     return filterPostsBySubscriptions(
       posts,
@@ -76,6 +87,28 @@ export function FeedView({
       (p) => FacebookApiClient.getPostTimestamp(p)
     );
   }, [posts, subscriptions]);
+
+  // Collect all unique tags across subscribed accounts (FR-3)
+  const allSubscribedTags = useMemo(() => {
+    return normalizeTagList(subscriptions.flatMap((s) => s.tags || []));
+  }, [subscriptions]);
+
+  // Count posts per tag across subscribedPosts
+  const tagPostCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allSubscribedTags.forEach((tag) => {
+      counts[tag.toLowerCase()] = 0;
+    });
+    subscribedPosts.forEach((post) => {
+      const ownerSub = findMatchingSubscription(post, subscriptions);
+      const tags = ownerSub?.tags || [];
+      tags.forEach((tag) => {
+        const key = tag.toLowerCase();
+        counts[key] = (counts[key] || 0) + 1;
+      });
+    });
+    return counts;
+  }, [allSubscribedTags, subscribedPosts, subscriptions]);
 
   // Count strictly subscribed posts per platform
   const platformCounts = useMemo(() => {
@@ -123,17 +156,26 @@ export function FeedView({
         shortLabel,
         platform: sub.platform,
         postsLimit: sub.postsLimit,
+        tags: normalizeTagList(sub.tags),
         subscription: sub,
       };
     });
   }, [subscriptions, t]);
 
-  // Filter Followed Accounts by selectedPlatform
+  // Filter Followed Accounts by selectedPlatform and selectedTag
   const visibleAccounts: FollowedAccountItem[] = useMemo(() => {
-    const filtered =
-      selectedPlatform === 'all'
-        ? allAccounts
-        : allAccounts.filter((acc) => acc.platform === selectedPlatform);
+    const filtered = allAccounts.filter((acc) => {
+      if (selectedPlatform !== 'all' && acc.platform !== selectedPlatform) {
+        return false;
+      }
+      if (
+        selectedTag !== 'all' &&
+        !acc.tags.some((tItem) => tItem.toLowerCase() === selectedTag.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
 
     if (filtered.length === 0) {
       return [];
@@ -146,10 +188,11 @@ export function FeedView({
         label: t('sourceAll'),
         shortLabel: t('sourceAll'),
         platform: 'all',
+        tags: [],
       },
       ...filtered,
     ];
-  }, [allAccounts, selectedPlatform, t]);
+  }, [allAccounts, selectedPlatform, selectedTag, t]);
 
   const handlePlatformSelect = (plat: PlatformFilter) => {
     setSelectedPlatform(plat);
@@ -165,9 +208,45 @@ export function FeedView({
     }
   };
 
-  // Filter subscribedPosts by selectedPage, selectedPlatform, searchQuery, and display limit
+  const handleTagSelect = (tag: string) => {
+    setSelectedTag(tag);
+    if (tag !== 'all' && selectedPage !== 'all') {
+      const currentAcc = allAccounts.find(
+        (a) =>
+          a.id.toLowerCase() === selectedPage.toLowerCase() ||
+          a.handle.toLowerCase() === selectedPage.toLowerCase()
+      );
+      if (
+        currentAcc &&
+        !currentAcc.tags.some((tItem) => tItem.toLowerCase() === tag.toLowerCase())
+      ) {
+        onPageChange('all');
+      }
+    }
+  };
+
+  // Parse comma-separated keyword lists for FR-4 Include and Exclude filters
+  const includeKeywords = useMemo(() => {
+    return includeKeywordsInput
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+  }, [includeKeywordsInput]);
+
+  const excludeKeywords = useMemo(() => {
+    return excludeKeywordsInput
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+  }, [excludeKeywordsInput]);
+
+  // Filter subscribedPosts by selectedPage, selectedPlatform, selectedTag (FR-3),
+  // searchQuery, includeKeywords & excludeKeywords (FR-4), then sort (FR-4) and slice by limit
   const filteredPosts = useMemo(() => {
     const matching = subscribedPosts.filter((post) => {
+      const ownerSub = findMatchingSubscription(post, subscriptions);
+
+      // Filter by selected account
       if (selectedPage !== 'all') {
         const selectedAcc = allAccounts.find(
           (a) =>
@@ -182,11 +261,22 @@ export function FeedView({
           return false;
         }
       }
+
+      // Filter by selected platform
       if (selectedPlatform !== 'all') {
         if (detectPostPlatform(post) !== selectedPlatform) return false;
       }
-      if (!searchQuery.trim()) return true;
-      const query = searchQuery.toLowerCase();
+
+      // FR-3: Filter by selected tag
+      if (selectedTag !== 'all') {
+        const subTags = ownerSub?.tags || [];
+        if (
+          !subTags.some((tItem) => tItem.toLowerCase() === selectedTag.toLowerCase())
+        ) {
+          return false;
+        }
+      }
+
       const caption = (
         post.caption ||
         post.text ||
@@ -194,11 +284,59 @@ export function FeedView({
         ''
       ).toLowerCase();
       const author = (post.user?.name || post.pageName || '').toLowerCase();
-      return caption.includes(query) || author.includes(query);
+      const searchableText = `${caption} ${author}`;
+
+      // General search query
+      if (searchQuery.trim()) {
+        const query = searchQuery.trim().toLowerCase();
+        if (!searchableText.includes(query)) return false;
+      }
+
+      // FR-4: Must Include keywords (every keyword in includeKeywords must appear)
+      if (includeKeywords.length > 0) {
+        const hasAllIncluded = includeKeywords.every((kw) =>
+          searchableText.includes(kw)
+        );
+        if (!hasAllIncluded) return false;
+      }
+
+      // FR-4: Exclude keywords (if any keyword in excludeKeywords appears, hide post)
+      if (excludeKeywords.length > 0) {
+        const hasAnyExcluded = excludeKeywords.some((kw) =>
+          searchableText.includes(kw)
+        );
+        if (hasAnyExcluded) return false;
+      }
+
+      return true;
     });
 
-    return matching.slice(0, limit);
-  }, [subscribedPosts, selectedPage, allAccounts, selectedPlatform, searchQuery, limit]);
+    // FR-4: Sort posts by Latest or Most Liked
+    const sorted = [...matching].sort((a, b) => {
+      if (sortOrder === 'most_liked') {
+        const likesDiff = (b.likesCount ?? 0) - (a.likesCount ?? 0);
+        if (likesDiff !== 0) return likesDiff;
+      }
+      return (
+        FacebookApiClient.getPostTimestamp(b) -
+        FacebookApiClient.getPostTimestamp(a)
+      );
+    });
+
+    return sorted.slice(0, limit);
+  }, [
+    subscribedPosts,
+    subscriptions,
+    selectedPage,
+    allAccounts,
+    selectedPlatform,
+    selectedTag,
+    searchQuery,
+    includeKeywords,
+    excludeKeywords,
+    sortOrder,
+    limit,
+  ]);
 
   const selectedAccountObj = allAccounts.find(
     (a) =>
@@ -287,6 +425,22 @@ export function FeedView({
 
   const hasSubscriptions = subscriptions.length > 0;
   const hasAnyPosts = subscribedPosts.length > 0;
+  const hasActiveFilters =
+    Boolean(searchQuery.trim()) ||
+    includeKeywords.length > 0 ||
+    excludeKeywords.length > 0 ||
+    selectedTag !== 'all' ||
+    selectedPlatform !== 'all' ||
+    selectedPage !== 'all';
+
+  const handleResetAllFilters = () => {
+    setSearchQuery('');
+    setIncludeKeywordsInput('');
+    setExcludeKeywordsInput('');
+    setSelectedTag('all');
+    setSelectedPlatform('all');
+    onPageChange('all');
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -326,7 +480,7 @@ export function FeedView({
 
       {/* 3-Column Social Feed Hub Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_300px] gap-6 items-start">
-        {/* LEFT COLUMN: Platform Filter & Subscribed Accounts */}
+        {/* LEFT COLUMN: Platform Filter, Tag Filter (FR-3) & Subscribed Accounts */}
         <aside className="hidden lg:block sticky top-22 space-y-4">
           {/* Platform Filter Card */}
           <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
@@ -364,7 +518,64 @@ export function FeedView({
             </nav>
           </div>
 
-          {/* Followed / Subscribed Accounts Card */}
+          {/* FR-3: Tag Filter Card */}
+          <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
+            <div className="px-2 pb-2 flex items-center justify-between gap-2">
+              <span className="text-[12px] font-medium text-ink-3 truncate">
+                {t('tagsTitle')}
+              </span>
+              <TagIcon className="w-3.5 h-3.5 text-ink-3 shrink-0" strokeWidth={1.5} />
+            </div>
+
+            {allSubscribedTags.length > 0 ? (
+              <nav className="space-y-1" aria-label={t('tagsTitle')}>
+                <button
+                  type="button"
+                  onClick={() => handleTagSelect('all')}
+                  className={`w-full h-8 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center justify-between gap-2 ${
+                    selectedTag === 'all'
+                      ? 'bg-raised text-ink font-medium'
+                      : 'text-ink-2 hover:text-ink hover:bg-raised/60'
+                  }`}
+                >
+                  <span className="truncate">{t('tagAll')}</span>
+                  <span className="font-mono text-[12px] text-ink-3 tabular-nums">
+                    {formatNumber(subscribedPosts.length)}
+                  </span>
+                </button>
+                {allSubscribedTags.map((tag) => {
+                  const isActive =
+                    selectedTag.toLowerCase() === tag.toLowerCase();
+                  const count = tagPostCounts[tag.toLowerCase()] || 0;
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => handleTagSelect(tag)}
+                      className={`w-full h-8 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center justify-between gap-2 ${
+                        isActive
+                          ? 'bg-raised text-ink font-medium'
+                          : 'text-ink-2 hover:text-ink hover:bg-raised/60'
+                      }`}
+                    >
+                      <span className="font-mono text-[12px] truncate">
+                        {tag}
+                      </span>
+                      <span className="font-mono text-[12px] text-ink-3 tabular-nums">
+                        {formatNumber(count)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </nav>
+            ) : (
+              <p className="px-2 pt-1 text-[12px] text-ink-3 leading-relaxed">
+                {t('noTagsYet')}
+              </p>
+            )}
+          </div>
+
+          {/* Followed / Subscribed Accounts Card (with Tag Badges underneath account name) */}
           <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
             <div className="px-2 pb-2 flex items-center justify-between gap-2">
               <span className="text-[12px] font-medium text-ink-3 truncate">
@@ -394,20 +605,35 @@ export function FeedView({
                       key={src.id}
                       type="button"
                       onClick={() => onPageChange(src.id)}
-                      className={`w-full h-9 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center justify-between gap-2 ${
+                      className={`w-full py-2 px-2.5 rounded-lg text-left text-[13px] transition-colors flex flex-col gap-1 ${
                         isActive
                           ? 'bg-raised text-ink font-medium'
                           : 'text-ink-2 hover:text-ink hover:bg-raised/60'
                       }`}
                     >
-                      <span className="flex items-center gap-2.5 min-w-0">
-                        {renderPlatformLogo(src.platform)}
-                        <span className="truncate">{src.label}</span>
-                      </span>
-                      {src.postsLimit !== undefined && (
-                        <span className="font-mono text-[11px] text-ink-3 tabular-nums shrink-0">
-                          {formatNumber(src.postsLimit)}
+                      <div className="w-full flex items-center justify-between gap-2">
+                        <span className="flex items-center gap-2.5 min-w-0">
+                          {renderPlatformLogo(src.platform)}
+                          <span className="truncate">{src.label}</span>
                         </span>
+                        {src.postsLimit !== undefined && (
+                          <span className="font-mono text-[11px] text-ink-3 tabular-nums shrink-0">
+                            {formatNumber(src.postsLimit)}
+                          </span>
+                        )}
+                      </div>
+
+                      {src.tags.length > 0 && (
+                        <div className="pl-6 flex flex-wrap gap-1">
+                          {src.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-1.5 py-0.5 rounded-sm bg-card border border-line font-mono text-[10px] leading-tight text-ink-3"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </button>
                   );
@@ -433,7 +659,7 @@ export function FeedView({
 
         {/* CENTER COLUMN: Main Social Feed */}
         <div className="min-w-0 space-y-5">
-          {/* Feed Header & Search Controls Card */}
+          {/* Feed Header, Search, FR-4 Keyword Include/Exclude & Sorting Controls Card */}
           <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
               <div>
@@ -451,7 +677,7 @@ export function FeedView({
               </div>
             </div>
 
-            {/* Mobile/Tablet Platform & Account Switchers */}
+            {/* Mobile/Tablet Platform, Tag & Account Switchers */}
             <div className="lg:hidden space-y-2">
               <div className="flex items-center gap-1 p-1 bg-raised border border-line rounded-xl overflow-x-auto">
                 {platforms.map((plat) => {
@@ -481,6 +707,40 @@ export function FeedView({
                 })}
               </div>
 
+              {allSubscribedTags.length > 0 && (
+                <div className="flex items-center gap-1 p-1 bg-raised border border-line rounded-xl overflow-x-auto">
+                  <button
+                    type="button"
+                    onClick={() => handleTagSelect('all')}
+                    className={`h-7 px-2.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap shrink-0 ${
+                      selectedTag === 'all'
+                        ? 'bg-card text-ink shadow-[var(--shadow-small)]'
+                        : 'text-ink-2 hover:text-ink'
+                    }`}
+                  >
+                    {t('tagAll')}
+                  </button>
+                  {allSubscribedTags.map((tag) => {
+                    const isActive =
+                      selectedTag.toLowerCase() === tag.toLowerCase();
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => handleTagSelect(tag)}
+                        className={`h-7 px-2.5 rounded-lg font-mono text-[12px] transition-colors whitespace-nowrap shrink-0 ${
+                          isActive
+                            ? 'bg-card text-ink font-medium shadow-[var(--shadow-small)]'
+                            : 'text-ink-2 hover:text-ink'
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               {visibleAccounts.length > 0 && (
                 <div className="flex items-center gap-1 p-1 bg-raised border border-line rounded-xl overflow-x-auto">
                   {visibleAccounts.map((src) => {
@@ -509,7 +769,7 @@ export function FeedView({
               )}
             </div>
 
-            {/* Search & Display Limit Bar */}
+            {/* Row 1: Search, Sort Order (FR-4) & Display Limit Bar */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="relative flex-1">
                 <Search
@@ -522,7 +782,7 @@ export function FeedView({
                   placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-10 pl-10 pr-9 text-[14px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
+                  className="w-full h-10 pl-10 pr-9 text-[13px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
                 />
                 {searchQuery && (
                   <button
@@ -537,9 +797,26 @@ export function FeedView({
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
+                <div className="relative flex items-center">
+                  <ArrowUpDown
+                    className="w-3.5 h-3.5 text-ink-3 absolute left-3 pointer-events-none"
+                    strokeWidth={1.5}
+                  />
+                  <select
+                    id="feed-sort-select"
+                    aria-label={t('sortLabel')}
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                    className="h-10 pl-8 pr-3 text-[13px] bg-raised border border-line rounded-lg text-ink focus:outline-hidden focus:border-accent transition-colors"
+                  >
+                    <option value="newest">{t('sortNewest')}</option>
+                    <option value="most_liked">{t('sortMostLiked')}</option>
+                  </select>
+                </div>
+
                 <label
                   htmlFor="feed-limit-select"
-                  className="text-[13px] text-ink-3 whitespace-nowrap"
+                  className="text-[13px] text-ink-3 whitespace-nowrap hidden sm:inline"
                 >
                   {t('showLabel')}
                 </label>
@@ -554,6 +831,59 @@ export function FeedView({
                   <option value={20}>{t('limitOption', { n: 20 })}</option>
                   <option value={50}>{t('limitOption', { n: 50 })}</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Row 2: FR-4 Keyword Include & Exclude Filters */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="relative">
+                <Filter
+                  className="w-3.5 h-3.5 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  strokeWidth={1.5}
+                />
+                <input
+                  type="text"
+                  aria-label={t('includeKeywordsLabel')}
+                  placeholder={t('includeKeywordsPlaceholder')}
+                  value={includeKeywordsInput}
+                  onChange={(e) => setIncludeKeywordsInput(e.target.value)}
+                  className="w-full h-9 pl-9 pr-8 text-[12px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
+                />
+                {includeKeywordsInput && (
+                  <button
+                    type="button"
+                    onClick={() => setIncludeKeywordsInput('')}
+                    aria-label="Clear include filter"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink rounded-md"
+                  >
+                    <X className="w-3 h-3" strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+
+              <div className="relative">
+                <MinusCircle
+                  className="w-3.5 h-3.5 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  strokeWidth={1.5}
+                />
+                <input
+                  type="text"
+                  aria-label={t('excludeKeywordsLabel')}
+                  placeholder={t('excludeKeywordsPlaceholder')}
+                  value={excludeKeywordsInput}
+                  onChange={(e) => setExcludeKeywordsInput(e.target.value)}
+                  className="w-full h-9 pl-9 pr-8 text-[12px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
+                />
+                {excludeKeywordsInput && (
+                  <button
+                    type="button"
+                    onClick={() => setExcludeKeywordsInput('')}
+                    aria-label="Clear exclude filter"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink rounded-md"
+                  >
+                    <X className="w-3 h-3" strokeWidth={1.5} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -651,26 +981,17 @@ export function FeedView({
                   ? t('emptyPlatformBody', { platform: selectedPlatformLabel })
                   : t('emptyBody')}
               </p>
-              <div className="pt-2 flex items-center justify-center gap-2">
-                {searchQuery && (
+              {hasActiveFilters && (
+                <div className="pt-2 flex items-center justify-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="h-9 px-4 text-[13px] font-medium text-ink bg-raised hover:bg-line rounded-lg transition-colors"
-                  >
-                    {t('clearSearch')}
-                  </button>
-                )}
-                {selectedPlatform !== 'all' && (
-                  <button
-                    type="button"
-                    onClick={() => handlePlatformSelect('all')}
+                    onClick={handleResetAllFilters}
                     className="h-9 px-4 text-[13px] font-medium text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors"
                   >
-                    {t('showAllPlatforms')}
+                    {t('clearFilters')}
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
         </div>

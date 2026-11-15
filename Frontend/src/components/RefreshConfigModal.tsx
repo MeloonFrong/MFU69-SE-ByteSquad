@@ -6,17 +6,26 @@ import {
   Music2,
   Plus,
   RefreshCw,
+  Tag as TagIcon,
   Trash2,
   X,
 } from 'lucide-react';
 import { SubscriptionItem, SubscriptionPlatform } from '../types/facebook';
+import {
+  DEFAULT_SUGGESTED_TAGS,
+  normalizeTag,
+  normalizeTagList,
+} from '../services/subscriptionUtils';
 import { useI18n } from '../i18n/LanguageContext';
 
 interface RefreshConfigModalProps {
   isOpen: boolean;
   subscriptions: SubscriptionItem[];
   onClose: () => void;
-  onSaveConfig: (updatedSubscriptions: SubscriptionItem[], triggerRefresh?: boolean) => void;
+  onSaveConfig: (
+    updatedSubscriptions: SubscriptionItem[],
+    triggerRefresh?: boolean
+  ) => void;
   onOpenAddSubscription: () => void;
 }
 
@@ -29,14 +38,29 @@ export function RefreshConfigModal({
 }: RefreshConfigModalProps) {
   const { t, formatNumber } = useI18n();
   const [draftSubs, setDraftSubs] = useState<SubscriptionItem[]>(subscriptions);
+  const [newTagInputs, setNewTagInputs] = useState<Record<string, string>>({});
+  const [customTags, setCustomTags] = useState<string[]>([]);
 
   useEffect(() => {
     if (isOpen) {
-      setDraftSubs(subscriptions.map((s) => ({ ...s, postsLimit: s.postsLimit || 1 })));
+      setDraftSubs(
+        subscriptions.map((s) => ({
+          ...s,
+          postsLimit: s.postsLimit || 1,
+          tags: normalizeTagList(s.tags),
+        }))
+      );
+      setNewTagInputs({});
     }
   }, [isOpen, subscriptions]);
 
   if (!isOpen) return null;
+
+  const allKnownTags = normalizeTagList([
+    ...DEFAULT_SUGGESTED_TAGS,
+    ...customTags,
+    ...draftSubs.flatMap((s) => s.tags || []),
+  ]);
 
   const handleLimitChange = (id: string, nextLimit: number) => {
     const clamped = Math.max(1, Math.min(20, nextLimit));
@@ -45,6 +69,43 @@ export function RefreshConfigModal({
         item.id === id ? { ...item, postsLimit: clamped } : item
       )
     );
+  };
+
+  const handleToggleAccountTag = (id: string, tag: string) => {
+    const norm = normalizeTag(tag);
+    if (!norm) return;
+    setDraftSubs((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const current = item.tags || [];
+        const hasTag = current.some(
+          (tItem) => tItem.toLowerCase() === norm.toLowerCase()
+        );
+        return {
+          ...item,
+          tags: hasTag
+            ? current.filter(
+                (tItem) => tItem.toLowerCase() !== norm.toLowerCase()
+              )
+            : normalizeTagList([...current, norm]),
+        };
+      })
+    );
+  };
+
+  const handleAddNewTagToAccount = (id: string) => {
+    const raw = newTagInputs[id] || '';
+    const norm = normalizeTag(raw);
+    if (!norm) return;
+    setCustomTags((prev) => normalizeTagList([...prev, norm]));
+    setDraftSubs((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, tags: normalizeTagList([...(item.tags || []), norm]) }
+          : item
+      )
+    );
+    setNewTagInputs((prev) => ({ ...prev, [id]: '' }));
   };
 
   const handleUnsubscribe = (id: string) => {
@@ -128,7 +189,9 @@ export function RefreshConfigModal({
             <div className="space-y-5">
               {categories.map((cat) => {
                 const Icon = cat.Icon;
-                const items = draftSubs.filter((s) => s.platform === cat.platform);
+                const items = draftSubs.filter(
+                  (s) => s.platform === cat.platform
+                );
 
                 return (
                   <div key={cat.platform} className="space-y-2.5">
@@ -152,62 +215,148 @@ export function RefreshConfigModal({
                         {t('refreshConfigCategoryEmpty')}
                       </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         {items.map((sub) => (
                           <div
                             key={sub.id}
-                            className="p-3.5 bg-raised border border-line rounded-xl flex items-center justify-between gap-3"
+                            className="p-3.5 bg-raised border border-line rounded-xl space-y-3"
                           >
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[13px] font-medium text-ink truncate">
-                                {sub.displayName}
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[13px] font-medium text-ink truncate">
+                                  {sub.displayName}
+                                </div>
+                                <div className="text-[12px] font-mono text-ink-3 truncate">
+                                  {sub.url}
+                                </div>
                               </div>
-                              <div className="text-[12px] font-mono text-ink-3 truncate">
-                                {sub.url}
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                <div
+                                  className="h-8 px-1.5 rounded-lg bg-card border border-line inline-flex items-center gap-1"
+                                  aria-label={t('refreshConfigPostsPerPage')}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleLimitChange(
+                                        sub.id,
+                                        sub.postsLimit - 1
+                                      )
+                                    }
+                                    disabled={sub.postsLimit <= 1}
+                                    className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
+                                    aria-label="Decrease posts limit"
+                                  >
+                                    <Minus
+                                      className="w-3.5 h-3.5"
+                                      strokeWidth={1.5}
+                                    />
+                                  </button>
+                                  <span className="w-8 text-center font-mono text-[13px] font-medium text-ink tabular-nums">
+                                    {formatNumber(sub.postsLimit)}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleLimitChange(
+                                        sub.id,
+                                        sub.postsLimit + 1
+                                      )
+                                    }
+                                    disabled={sub.postsLimit >= 20}
+                                    className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
+                                    aria-label="Increase posts limit"
+                                  >
+                                    <Plus
+                                      className="w-3.5 h-3.5"
+                                      strokeWidth={1.5}
+                                    />
+                                  </button>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleUnsubscribe(sub.id)}
+                                  title={t('unsubscribeTooltip')}
+                                  aria-label={t('unsubscribeTooltip')}
+                                  className="h-8 w-8 rounded-lg text-ink-3 hover:text-negative hover:bg-card transition-colors inline-flex items-center justify-center"
+                                >
+                                  <Trash2
+                                    className="w-4 h-4"
+                                    strokeWidth={1.5}
+                                  />
+                                </button>
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-2 shrink-0">
-                              <div
-                                className="h-8 px-1.5 rounded-lg bg-card border border-line inline-flex items-center gap-1"
-                                aria-label={t('refreshConfigPostsPerPage')}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleLimitChange(sub.id, sub.postsLimit - 1)
-                                  }
-                                  disabled={sub.postsLimit <= 1}
-                                  className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
-                                  aria-label="Decrease posts limit"
-                                >
-                                  <Minus className="w-3.5 h-3.5" strokeWidth={1.5} />
-                                </button>
-                                <span className="w-8 text-center font-mono text-[13px] font-medium text-ink tabular-nums">
-                                  {formatNumber(sub.postsLimit)}
+                            {/* FR-3 Multi-Tag Editor for this Subscribed Account */}
+                            <div className="pt-2 border-t border-line space-y-2">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="inline-flex items-center gap-1 text-[11px] text-ink-3 mr-1">
+                                  <TagIcon
+                                    className="w-3 h-3"
+                                    strokeWidth={1.5}
+                                  />
+                                  <span>{t('editTagsLabel')}</span>
                                 </span>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleLimitChange(sub.id, sub.postsLimit + 1)
-                                  }
-                                  disabled={sub.postsLimit >= 20}
-                                  className="w-6 h-6 rounded-md text-ink-2 hover:text-ink hover:bg-raised disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center transition-colors"
-                                  aria-label="Increase posts limit"
-                                >
-                                  <Plus className="w-3.5 h-3.5" strokeWidth={1.5} />
-                                </button>
+                                {allKnownTags.map((tag) => {
+                                  const active = (sub.tags || []).some(
+                                    (tItem) =>
+                                      tItem.toLowerCase() === tag.toLowerCase()
+                                  );
+                                  return (
+                                    <button
+                                      key={tag}
+                                      type="button"
+                                      onClick={() =>
+                                        handleToggleAccountTag(sub.id, tag)
+                                      }
+                                      className={`h-6 px-2 rounded-sm text-[11px] font-mono transition-colors border ${
+                                        active
+                                          ? 'bg-accent text-white border-accent'
+                                          : 'bg-card text-ink-3 border-line hover:text-ink'
+                                      }`}
+                                    >
+                                      {tag}
+                                    </button>
+                                  );
+                                })}
                               </div>
 
-                              <button
-                                type="button"
-                                onClick={() => handleUnsubscribe(sub.id)}
-                                title={t('unsubscribeTooltip')}
-                                aria-label={t('unsubscribeTooltip')}
-                                className="h-8 w-8 rounded-lg text-ink-3 hover:text-negative hover:bg-card transition-colors inline-flex items-center justify-center"
-                              >
-                                <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                              </button>
+                              <div className="flex gap-1.5">
+                                <input
+                                  type="text"
+                                  placeholder={t('tagInputPlaceholder')}
+                                  value={newTagInputs[sub.id] || ''}
+                                  onChange={(e) =>
+                                    setNewTagInputs((prev) => ({
+                                      ...prev,
+                                      [sub.id]: e.target.value,
+                                    }))
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      handleAddNewTagToAccount(sub.id);
+                                    }
+                                  }}
+                                  className="flex-1 h-8 px-2.5 text-[12px] bg-card border border-line rounded-lg text-ink placeholder:text-ink-3 focus:outline-hidden focus:border-accent transition-colors"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleAddNewTagToAccount(sub.id)
+                                  }
+                                  className="h-8 px-2.5 bg-card hover:bg-line border border-line text-ink text-[11px] font-medium rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
+                                >
+                                  <Plus
+                                    className="w-3 h-3 text-ink-3"
+                                    strokeWidth={1.5}
+                                  />
+                                  <span>{t('addTagButton')}</span>
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}

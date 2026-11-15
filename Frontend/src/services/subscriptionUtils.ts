@@ -2,6 +2,36 @@ import { FacebookPost, SubscriptionItem, SubscriptionPlatform } from '../types/f
 
 export const DEFAULT_POSTS_PER_PAGE = 1;
 
+export const DEFAULT_SUGGESTED_TAGS = [
+  '#MFU',
+  '#Academic',
+  '#Activity',
+  '#News',
+  '#Creator',
+];
+
+export function normalizeTag(raw: string): string {
+  const cleaned = raw.trim().replace(/^#+/, '').trim();
+  if (!cleaned) return '';
+  return `#${cleaned}`;
+}
+
+export function normalizeTagList(tags?: string[]): string[] {
+  if (!tags || !Array.isArray(tags)) return [];
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const t of tags) {
+    const norm = normalizeTag(t);
+    if (!norm) continue;
+    const key = norm.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(norm);
+    }
+  }
+  return result;
+}
+
 export function detectPlatformFromPost(post: FacebookPost): SubscriptionPlatform {
   if (
     post.platform === 'facebook' ||
@@ -42,12 +72,13 @@ export function resolveDisplayName(
 
 /**
  * Parse a user-entered URL or handle into a normalized SubscriptionItem
- * with a default postsLimit of 1 post per page.
+ * with a default postsLimit of 1 post per page and optional custom tags.
  */
 export function parseSubscriptionInput(
   rawInput: string,
   fallbackPlatform: SubscriptionPlatform = 'facebook',
-  postsLimit: number = DEFAULT_POSTS_PER_PAGE
+  postsLimit: number = DEFAULT_POSTS_PER_PAGE,
+  tags: string[] = []
 ): SubscriptionItem | null {
   const trimmed = rawInput.trim();
   if (!trimmed) return null;
@@ -116,9 +147,51 @@ export function parseSubscriptionInput(
     handle,
     displayName: resolveDisplayName(platform, handle),
     url: canonicalUrl,
-    postsLimit: Math.max(1, Math.min(50, Math.round(postsLimit || DEFAULT_POSTS_PER_PAGE))),
+    postsLimit: Math.max(
+      1,
+      Math.min(50, Math.round(postsLimit || DEFAULT_POSTS_PER_PAGE))
+    ),
+    tags: normalizeTagList(tags),
   };
 }
+
+export const PRESET_SUBSCRIPTION_SOURCES: Array<{
+  label: string;
+  url: string;
+  platform: SubscriptionPlatform;
+  defaultTags: string[];
+}> = [
+  {
+    label: 'MFU2Connect',
+    url: 'https://www.facebook.com/MFU2Connect',
+    platform: 'facebook',
+    defaultTags: ['#MFU', '#Academic'],
+  },
+  {
+    label: 'ISC MFU',
+    url: 'https://www.facebook.com/profile.php?id=61563364138740',
+    platform: 'facebook',
+    defaultTags: ['#MFU', '#Activity'],
+  },
+  {
+    label: 'Humans of NY',
+    url: 'https://www.instagram.com/humansofny/',
+    platform: 'instagram',
+    defaultTags: ['#News', '#Creator'],
+  },
+  {
+    label: 'Khaby Lame',
+    url: 'https://www.tiktok.com/@khaby.lame',
+    platform: 'tiktok',
+    defaultTags: ['#Creator'],
+  },
+  {
+    label: 'Zenless Zone Zero',
+    url: 'https://www.tiktok.com/@zenlesszonezero',
+    platform: 'tiktok',
+    defaultTags: ['#Activity'],
+  },
+];
 
 /**
  * Strictly checks if a post belongs to a specific subscribed page/account.
@@ -183,6 +256,16 @@ export function doesPostMatchSubscription(
   }
 
   return false;
+}
+
+/**
+ * Find the SubscriptionItem that owns a given post.
+ */
+export function findMatchingSubscription(
+  post: FacebookPost,
+  subscriptions: SubscriptionItem[]
+): SubscriptionItem | undefined {
+  return subscriptions.find((sub) => doesPostMatchSubscription(post, sub));
 }
 
 /**

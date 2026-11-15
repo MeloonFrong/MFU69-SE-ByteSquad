@@ -5,12 +5,17 @@ import {
   Instagram,
   Music2,
   Plus,
+  Tag as TagIcon,
   Trash2,
   X,
 } from 'lucide-react';
 import { SubscriptionItem } from '../types/facebook';
 import {
   DEFAULT_POSTS_PER_PAGE,
+  DEFAULT_SUGGESTED_TAGS,
+  PRESET_SUBSCRIPTION_SOURCES,
+  normalizeTag,
+  normalizeTagList,
   parseSubscriptionInput,
 } from '../services/subscriptionUtils';
 import { useI18n } from '../i18n/LanguageContext';
@@ -19,20 +24,33 @@ interface ScraperModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddSubscriptions: (newItems: SubscriptionItem[]) => Promise<void> | void;
+  existingTags?: string[];
 }
 
 export function ScraperModal({
   isOpen,
   onClose,
   onAddSubscriptions,
+  existingTags = [],
 }: ScraperModalProps) {
   const { t, formatNumber } = useI18n();
   const [queuedItems, setQueuedItems] = useState<SubscriptionItem[]>([]);
   const [newUrlInput, setNewUrlInput] = useState('');
+  const [selectedTagsForNew, setSelectedTagsForNew] = useState<string[]>([]);
+  const [customTagInput, setCustomTagInput] = useState('');
+  const [customCreatedTags, setCustomCreatedTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  const allAvailableTags = normalizeTagList([
+    ...DEFAULT_SUGGESTED_TAGS,
+    ...existingTags,
+    ...customCreatedTags,
+    ...selectedTagsForNew,
+    ...queuedItems.flatMap((q) => q.tags || []),
+  ]);
 
   const renderPlatformIcon = (platform: SubscriptionItem['platform']) => {
     if (platform === 'instagram') {
@@ -59,22 +77,108 @@ export function ScraperModal({
     );
   };
 
+  const handleToggleTagForNew = (tag: string) => {
+    const norm = normalizeTag(tag);
+    if (!norm) return;
+    setSelectedTagsForNew((prev) =>
+      prev.some((tItem) => tItem.toLowerCase() === norm.toLowerCase())
+        ? prev.filter((tItem) => tItem.toLowerCase() !== norm.toLowerCase())
+        : [...prev, norm]
+    );
+  };
+
+  const handleCreateCustomTag = () => {
+    const norm = normalizeTag(customTagInput);
+    if (!norm) return;
+    setCustomCreatedTags((prev) => normalizeTagList([...prev, norm]));
+    setSelectedTagsForNew((prev) => normalizeTagList([...prev, norm]));
+    setCustomTagInput('');
+  };
+
   const handleAddUrlToQueue = () => {
     if (!newUrlInput.trim()) return;
     const parsed = parseSubscriptionInput(
       newUrlInput,
       'facebook',
-      DEFAULT_POSTS_PER_PAGE
+      DEFAULT_POSTS_PER_PAGE,
+      selectedTagsForNew
     );
     if (!parsed) {
       setError(t('scraperNeedUrl'));
       return;
     }
-    if (!queuedItems.some((item) => item.id === parsed.id)) {
-      setQueuedItems((prev) => [...prev, parsed]);
-    }
+    setQueuedItems((prev) => {
+      const exists = prev.find((item) => item.id === parsed.id);
+      if (exists) {
+        return prev.map((item) =>
+          item.id === parsed.id
+            ? {
+                ...item,
+                tags: normalizeTagList([
+                  ...(item.tags || []),
+                  ...(parsed.tags || []),
+                ]),
+              }
+            : item
+        );
+      }
+      return [...prev, parsed];
+    });
     setNewUrlInput('');
     setError(null);
+  };
+
+  const handleQuickAddPreset = (preset: (typeof PRESET_SUBSCRIPTION_SOURCES)[number]) => {
+    const mergedTags = normalizeTagList([
+      ...preset.defaultTags,
+      ...selectedTagsForNew,
+    ]);
+    const parsed = parseSubscriptionInput(
+      preset.url,
+      preset.platform,
+      DEFAULT_POSTS_PER_PAGE,
+      mergedTags
+    );
+    if (!parsed) return;
+    setQueuedItems((prev) => {
+      if (prev.some((item) => item.id === parsed.id)) {
+        return prev.map((item) =>
+          item.id === parsed.id
+            ? {
+                ...item,
+                tags: normalizeTagList([
+                  ...(item.tags || []),
+                  ...mergedTags,
+                ]),
+              }
+            : item
+        );
+      }
+      return [...prev, parsed];
+    });
+    setError(null);
+  };
+
+  const handleToggleQueuedItemTag = (itemId: string, tag: string) => {
+    const norm = normalizeTag(tag);
+    if (!norm) return;
+    setQueuedItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== itemId) return item;
+        const current = item.tags || [];
+        const hasTag = current.some(
+          (tItem) => tItem.toLowerCase() === norm.toLowerCase()
+        );
+        return {
+          ...item,
+          tags: hasTag
+            ? current.filter(
+                (tItem) => tItem.toLowerCase() !== norm.toLowerCase()
+              )
+            : normalizeTagList([...current, norm]),
+        };
+      })
+    );
   };
 
   const handleRemoveQueued = (id: string) => {
@@ -87,10 +191,24 @@ export function ScraperModal({
       const pending = parseSubscriptionInput(
         newUrlInput,
         'facebook',
-        DEFAULT_POSTS_PER_PAGE
+        DEFAULT_POSTS_PER_PAGE,
+        selectedTagsForNew
       );
-      if (pending && !finalItems.some((item) => item.id === pending.id)) {
-        finalItems.push(pending);
+      if (pending) {
+        const existingIdx = finalItems.findIndex(
+          (item) => item.id === pending.id
+        );
+        if (existingIdx >= 0) {
+          finalItems[existingIdx] = {
+            ...finalItems[existingIdx],
+            tags: normalizeTagList([
+              ...(finalItems[existingIdx].tags || []),
+              ...(pending.tags || []),
+            ]),
+          };
+        } else {
+          finalItems.push(pending);
+        }
       }
       setNewUrlInput('');
     }
@@ -105,6 +223,7 @@ export function ScraperModal({
     try {
       await onAddSubscriptions(finalItems);
       setQueuedItems([]);
+      setSelectedTagsForNew([]);
       onClose();
     } catch (err: any) {
       setError(err.message || t('scraperFailedTitle'));
@@ -132,7 +251,7 @@ export function ScraperModal({
         </div>
 
         {/* Body */}
-        <div className="p-6 max-h-[68vh] overflow-y-auto space-y-5">
+        <div className="p-6 max-h-[72vh] overflow-y-auto space-y-5">
           <p className="text-[13px] text-ink-2 leading-relaxed">
             {t('addSubscriptionDesc')}
           </p>
@@ -151,7 +270,7 @@ export function ScraperModal({
           )}
 
           {/* URL Input */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="subscription-url-input"
@@ -184,13 +303,94 @@ export function ScraperModal({
               </button>
             </div>
 
-            {queuedItems.length > 0 && (
-              <div className="space-y-2 pt-1">
-                {queuedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between gap-3 h-11 px-3.5 bg-raised border border-line rounded-xl text-[13px]"
+            {/* Quick-add sample presets for fast demo testing */}
+            <div className="pt-1 space-y-1.5">
+              <div className="text-[11px] text-ink-3">
+                {t('presetSourcesLabel')}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {PRESET_SUBSCRIPTION_SOURCES.map((preset) => (
+                  <button
+                    key={preset.url}
+                    type="button"
+                    onClick={() => handleQuickAddPreset(preset)}
+                    className="h-7 px-2.5 rounded-md bg-raised hover:bg-line border border-line text-[12px] text-ink-2 hover:text-ink transition-colors inline-flex items-center gap-1.5"
                   >
+                    {renderPlatformIcon(preset.platform)}
+                    <span>+ {preset.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* FR-3: Multi-Tagging Creation & Selection */}
+          <div className="space-y-2.5 pt-3 border-t border-line">
+            <div className="flex items-center gap-1.5 text-[13px] font-medium text-ink">
+              <TagIcon className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.5} />
+              <span>{t('suggestedTagsLabel')}</span>
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder={t('tagInputPlaceholder')}
+                value={customTagInput}
+                onChange={(e) => setCustomTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCreateCustomTag();
+                  }
+                }}
+                className="flex-1 h-9 px-3 text-[12px] bg-card border border-line rounded-lg text-ink placeholder:text-ink-3 focus:outline-hidden focus:border-accent transition-colors"
+              />
+              <button
+                type="button"
+                onClick={handleCreateCustomTag}
+                className="h-9 px-3 bg-raised hover:bg-line border border-line text-ink text-[12px] font-medium rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.5} />
+                <span>{t('addTagButton')}</span>
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {allAvailableTags.map((tag) => {
+                const isSelected = selectedTagsForNew.some(
+                  (tItem) => tItem.toLowerCase() === tag.toLowerCase()
+                );
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => handleToggleTagForNew(tag)}
+                    aria-pressed={isSelected}
+                    className={`h-7 px-2.5 rounded-md text-[12px] font-mono transition-colors inline-flex items-center gap-1 border ${
+                      isSelected
+                        ? 'bg-accent text-white border-accent font-medium'
+                        : 'bg-raised text-ink-2 border-line hover:text-ink'
+                    }`}
+                  >
+                    <span>{tag}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Queued Items with Per-Source Multi-Tag Management */}
+          {queuedItems.length > 0 && (
+            <div className="space-y-2 pt-3 border-t border-line">
+              <div className="text-[12px] font-medium text-ink-2">
+                {t('addSubscriptionQueueTitle')}
+              </div>
+              {queuedItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="p-3 bg-raised border border-line rounded-xl text-[13px] space-y-2"
+                >
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       {renderPlatformIcon(item.platform)}
                       <div className="min-w-0">
@@ -218,10 +418,33 @@ export function ScraperModal({
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+
+                  {/* Per-item tag chips */}
+                  <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                    {allAvailableTags.map((tag) => {
+                      const active = (item.tags || []).some(
+                        (tItem) => tItem.toLowerCase() === tag.toLowerCase()
+                      );
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => handleToggleQueuedItemTag(item.id, tag)}
+                          className={`h-6 px-2 rounded-sm text-[11px] font-mono transition-colors border ${
+                            active
+                              ? 'bg-accent text-white border-accent'
+                              : 'bg-card text-ink-3 border-line hover:text-ink'
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Footer */}

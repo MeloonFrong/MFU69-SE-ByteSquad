@@ -113,6 +113,27 @@ const en = {
   addSubscriptionSubmitting: 'Subscribing & fetching',
   addSubscriptionDefaultNote: 'Each new source starts with a default refresh limit of 1 post',
 
+  // FR-3: Multi-Tagging & Tag Filter
+  tagsTitle: 'Filter by tag',
+  tagAll: 'All tags',
+  noTagsYet: 'No tags assigned yet',
+  assignTagsLabel: 'Tags for this source',
+  tagInputPlaceholder: 'Type a tag (e.g. #MFU) and press Enter',
+  addTagButton: 'Add tag',
+  suggestedTagsLabel: 'Select or create tags',
+  presetSourcesLabel: 'Quick-add sample sources',
+  editTagsLabel: 'Tags',
+
+  // FR-4: Keyword Include / Exclude & Sorting
+  includeKeywordsLabel: 'Include',
+  includeKeywordsPlaceholder: 'Must include words (e.g. MFU, scholarship)',
+  excludeKeywordsLabel: 'Exclude',
+  excludeKeywordsPlaceholder: 'Hide posts with words (e.g. ad, giveaway)',
+  sortLabel: 'Sort by',
+  sortNewest: 'Latest posts',
+  sortMostLiked: 'Most liked',
+  clearFilters: 'Reset filters',
+
   // Connection error alert
   offlineTitle: 'Cannot reach the C# backend server',
   offlineBody:
@@ -330,6 +351,25 @@ const th: Record<StringKey, string> = {
   addSubscriptionSubmit: 'เพิ่มการติดตามและดึงข้อมูล',
   addSubscriptionSubmitting: 'กำลังเพิ่มและดึงข้อมูล',
   addSubscriptionDefaultNote: 'เพจใหม่ทุกเพจจะถูกตั้งค่าเริ่มต้นไว้ที่ 1 โพสต์ต่อเพจ',
+
+  tagsTitle: 'กรองตามแท็ก',
+  tagAll: 'ทุกแท็ก',
+  noTagsYet: 'ยังไม่มีแท็กที่กำหนด',
+  assignTagsLabel: 'ป้ายแท็กของแหล่งข้อมูลนี้',
+  tagInputPlaceholder: 'พิมพ์ชื่อแท็กใหม่ (เช่น #MFU) แล้วกด Enter',
+  addTagButton: 'เพิ่มแท็ก',
+  suggestedTagsLabel: 'เลือกหรือสร้างแท็ก (ติดได้หลายแท็ก)',
+  presetSourcesLabel: 'เพิ่มแหล่งข้อมูลตัวอย่างอย่างเร็ว',
+  editTagsLabel: 'แท็ก',
+
+  includeKeywordsLabel: 'ต้องมีคำว่า (Include)',
+  includeKeywordsPlaceholder: 'แสดงเฉพาะโพสต์ที่มีคำนี้ (คั่นด้วย ,)',
+  excludeKeywordsLabel: 'ยกเว้นคำว่า (Exclude)',
+  excludeKeywordsPlaceholder: 'ซ่อนโพสต์ที่มีคำนี้ออก (คั่นด้วย ,)',
+  sortLabel: 'เรียงตาม',
+  sortNewest: 'โพสต์ล่าสุด',
+  sortMostLiked: 'ยอดไลก์สูงสุด',
+  clearFilters: 'ล้างตัวกรอง',
 
   offlineTitle: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ C# Backend ได้',
   offlineBody:
