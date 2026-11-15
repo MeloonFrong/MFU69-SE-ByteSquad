@@ -1,4 +1,9 @@
-- AI usage in making the backend (Kunut) -
+# AI Usage Log
+
+# Kunut Wongtidatorn
+# Student ID: 6931503026
+
+- AI usage in making the backend
 
   1. AI usage in making the old backend
     Files can be viewed in Branch: Backend branch
@@ -28,8 +33,10 @@
       Frontend/src/services/api.ts
       Frontend/src/components/DatasetViewer.tsx
 
+# AI Usage Log
 
-- AI Usage Log (6931503004-Htet Wai Yan)
+# Htet Wai Yan
+# Student ID: 6931503004
 
 **Project:** MFU69-SE-ByteSquad  
 **AI Tool Used:** ChatGPT  
@@ -98,3 +105,21 @@ ChatGPT supported the development and integration process through explanations, 
 **Purpose of AI Usage:**
 
 ChatGPT was used as an assistant to support diagram creation, documentation preparation, and presentation materials. I reviewed and adjusted the generated content to match our project's prototype and requirements.
+
+# AI Usage Log
+
+# Aung Phone Pyae Oo
+# Student ID: 6931503091
+
+**AI Tool:** ChatGPT (OpenAI)
+
+**Purpose:** Assistance with creating UML diagrams for the InfoCenter project.
+
+**AI Assistance:**
+- Helped identify classes, attributes, and relationships for the Class Diagram.
+- Helped design the Deployment Diagram.
+- Generated Mermaid and PlantUML code.
+- Helped fix diagram errors and improve formatting.
+
+**My Contribution:**
+Reviewed, edited, and verified the diagrams before adding them to the GitHub repository.
