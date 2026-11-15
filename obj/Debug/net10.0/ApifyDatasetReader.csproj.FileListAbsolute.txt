@@ -1,5 +1,9 @@
 C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\appsettings.json
+C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\Frontend\metadata.json
+C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\Frontend\package-lock.json
+C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\Frontend\package.json
+C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\Frontend\tsconfig.json
 C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\ApifyDatasetReader.staticwebassets.endpoints.json
 C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\ApifyDatasetReader.exe
 C:\Users\User\source\repos\ApifyDatasetReader\bin\Debug\net10.0\ApifyDatasetReader.deps.json
@@ -16,6 +20,7 @@ C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\ApifyDatasetRead
 C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\ApifyDatasetReader.csproj.CoreCompileInputs.cache
 C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\ApifyDatasetReader.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\ApifyDatasetReader.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\ApifyDatasetReader.sourcelink.json
 C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\User\source\repos\ApifyDatasetReader\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json

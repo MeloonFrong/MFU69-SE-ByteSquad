@@ -1,8 +1,9 @@
 @baseUrl = http://localhost:5030
 
+### Facebook Scraper
 POST {{baseUrl}}/api/actors/facebook-posts-scraper/run
 Content-Type: application/json
-Accept: application/jsonori
+Accept: application/json
 
 {
     "captionText": false,
@@ -10,12 +11,72 @@ Accept: application/jsonori
     "startUrls": [
         {
             "url": "https://www.facebook.com/MFU2Connect"
+        },
+        {
+            "url": "https://www.facebook.com/profile.php?id=61563364138740"
         }
     ]
 }
 
-@baseUrl = http://localhost:5030
+### Instagram Scraper
+POST {{baseUrl}}/api/actors/instagram-scraper/run
+Content-Type: application/json
+Accept: application/json
+
+{
+    "resultsType": "posts",
+    "directUrls": [
+        "https://www.instagram.com/humansofny/"
+    ],
+    "resultsLimit": 10,
+    "addParentData": false
+}
+
+### TikTok Scraper
+GET {{baseUrl}}/
+Accept: application/json
+
+###
+
+### Run TikTok Posts Scraper
+
+POST {{baseUrl}}/api/actors/tiktok-posts-scraper/run
+Content-Type: application/json
+Accept: application/json
+
+{
+  "aiVideoDescription": false,
+  "aiVideoSummary": false,
+  "commentsPerPost": 0,
+  "excludePinnedPosts": false,
+  "maxFollowersPerProfile": 0,
+  "maxFollowingPerProfile": 0,
+  "maxRepliesPerComment": 0,
+  "profileScrapeSections": ["videos"],
+  "profiles": ["khaby.lame", "zenlesszonezero"],
+  "proxyCountryCode": "None",
+  "resultsPerPage": 2,
+  "scrapeAdditionalAuthorMeta": false,
+  "scrapeRelatedSearchWords": false,
+  "scrapeRelatedVideos": false,
+  "shouldDownloadAvatars": false,
+  "shouldDownloadCovers": false,
+  "shouldDownloadMusicCovers": false,
+  "shouldDownloadSlideshowImages": false,
+  "shouldDownloadVideos": false,
+  "topLevelCommentsPerPost": 0
+}
 
 ### Test: Get 10 recent unique posts
 GET {{baseUrl}}/api/posts/recent?page=MFU2Connect&limit=10
+Accept: application/json
+
+### Test: Get 10 recent unique posts from Instagram
+
+GET {{baseUrl}}/api/posts/recent/instagram?profile=humansofny&limit=10
+Accept: application/json
+
+### Get recent TikTok posts
+
+GET {{baseUrl}}/api/posts/recent/tiktok?profile=zenlesszonezero&limit=10
 Accept: application/json

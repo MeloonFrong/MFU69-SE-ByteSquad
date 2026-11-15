@@ -1,37 +1,27 @@
-
 using System.Text.Json;
 
 public static class PostDataProcessor
 {
+    // ==============================
+    // Facebook: Get Recent Posts
+    // ==============================
     public static List<JsonElement> GetRecentPosts(
         IEnumerable<JsonElement> allPosts,
         string page,
         int limit)
     {
-        // 1. ตรวจสอบข้อมูลเบื้องต้น
         if (string.IsNullOrWhiteSpace(page))
-        {
-            throw new ArgumentException(
-                "Page name is required.", nameof(page));
-        }
+            throw new ArgumentException("Page is required.", nameof(page));
 
         if (limit < 1 || limit > 100)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(limit), "Limit must be between 1 and 100.");
-        }
+            throw new ArgumentOutOfRangeException(nameof(limit));
 
-        // 2. กรองเฉพาะโพสต์ของเพจที่ต้องการ
-        var pagePosts = allPosts
-            .Where(post => IsFromPage(post, page));
+        var pagePosts = allPosts.Where(post => IsFromPage(post, page));
 
-        // 3. ตัดโพสต์ซ้ำด้วย postId
-        // หากไม่มี postId จะลองใช้ URL แทน
         var uniquePosts = pagePosts
             .GroupBy(GetPostKey, StringComparer.OrdinalIgnoreCase)
             .Select(group => group.First());
 
-        // 4. เรียงเวลาใหม่ไปเก่า
         var sortedPosts = uniquePosts
             .OrderByDescending(GetTimestamp)
             .ThenBy(post => GetPostKey(post))
@@ -40,6 +30,132 @@ public static class PostDataProcessor
 
         return sortedPosts;
     }
+
+    // ==============================
+    // Instagram: Get Recent Posts
+    // ==============================
+    public static List<JsonElement> GetRecentInstagramPosts(
+        IEnumerable<JsonElement> allPosts,
+        string profile,
+        int limit)
+    {
+        if (string.IsNullOrWhiteSpace(profile))
+            throw new ArgumentException("Profile is required.", nameof(profile));
+
+        if (limit < 1 || limit > 100)
+            throw new ArgumentOutOfRangeException(nameof(limit));
+
+        var profilePosts = allPosts.Where(post =>
+            post.TryGetProperty("ownerUsername", out var username) &&
+            username.ValueKind == JsonValueKind.String &&
+            string.Equals(
+                username.GetString(),
+                profile,
+                StringComparison.OrdinalIgnoreCase));
+
+        var uniquePosts = profilePosts
+            .GroupBy(post =>
+            {
+                if (post.TryGetProperty("id", out var id))
+                    return id.ToString();
+
+                if (post.TryGetProperty("url", out var url))
+                    return url.ToString();
+
+                return string.Empty;
+            })
+            .Select(group => group.First());
+
+        var sortedPosts = uniquePosts
+            .OrderByDescending(post =>
+            {
+                if (post.TryGetProperty("timestamp", out var timestamp) &&
+                    DateTimeOffset.TryParse(timestamp.ToString(), out var date))
+                {
+                    return date;
+                }
+
+                return DateTimeOffset.MinValue;
+            })
+            .Take(limit)
+            .ToList();
+
+        return sortedPosts;
+    }
+
+
+    // ==============================
+    // TikTok: Get Recent Posts
+    // ==============================
+   
+public static List<JsonElement> GetRecentTikTokPosts(
+    IEnumerable<JsonElement> allPosts,
+    string profile,
+    int limit)
+{
+    if (string.IsNullOrWhiteSpace(profile))
+        throw new ArgumentException("Profile is required.", nameof(profile));
+
+    if (limit < 1 || limit > 100)
+        throw new ArgumentOutOfRangeException(nameof(limit));
+
+    var requestedProfile = profile.Trim().TrimStart('@');
+
+    // กรองโพสต์จาก authorMeta.name
+    var profilePosts = allPosts.Where(post =>
+    {
+        if (!post.TryGetProperty("authorMeta", out var authorMeta))
+            return false;
+
+        if (authorMeta.ValueKind != JsonValueKind.Object)
+            return false;
+
+        if (!authorMeta.TryGetProperty("name", out var username))
+            return false;
+
+        return string.Equals(
+            username.GetString()?.Trim(),
+            requestedProfile,
+            StringComparison.OrdinalIgnoreCase);
+    });
+
+    // ตัดโพสต์ซ้ำโดยใช้ ID
+    var uniquePosts = profilePosts
+        .GroupBy(post =>
+        {
+            if (post.TryGetProperty("id", out var id))
+                return id.ToString();
+
+            if (post.TryGetProperty("webVideoUrl", out var url))
+                return url.ToString();
+
+            return post.GetRawText();
+        })
+        .Select(group => group.First());
+
+    // เรียงโพสต์จากใหม่ไปเก่า
+    var sortedPosts = uniquePosts
+        .OrderByDescending(post =>
+        {
+            if (post.TryGetProperty("createTimeISO", out var timestamp) &&
+                DateTimeOffset.TryParse(
+                    timestamp.ToString(),
+                    out var date))
+            {
+                return date;
+            }
+
+            return DateTimeOffset.MinValue;
+        })
+        .Take(limit)
+        .ToList();
+
+    return sortedPosts;
+}
+
+
+
+    // เมธอด IsFromPage เดิมเริ่มต่อจากตรงนี้
 
     private static bool IsFromPage(
         JsonElement post,
@@ -112,4 +228,5 @@ public static class PostDataProcessor
         // ให้ไปอยู่ท้ายรายการ
         return long.MinValue;
     }
+    
 }
