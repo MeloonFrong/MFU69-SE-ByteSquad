@@ -20,13 +20,13 @@ Designed for university students, new hires, and digital professionals who suffe
 
 ## 2. Team Members (Group 17: ByteSquad)
 
-| Student ID | Full Name | GitHub Account | Role & Responsibilities |
-| :--- | :--- | :--- | :--- |
-| `6931503004` | **Htet Wai Yan** | [@htetwaiyan](https://github.com/htetwaiyan) | Lead Developer, C# .NET Backend (`Program.cs`), Apify & SQLite Integration, Frontend Redesign & Standalone Prototype |
-| `6931503026` | **Kunut Wongtidatorn** | [@6931503026-netizen](https://github.com/6931503026-netizen) | Requirements Lead (SRS), Backend/API Integration, Traceability Matrix & QA Verification |
-| `6931503084` | **Anansit Inta** | [@MeloonFrong](https://github.com/MeloonFrong) | System Architect, UML Diagrams (`docs/design/`) & Technical Documentation |
-| `6931503091` | **Aung Phone Pyae Oo** | [@APPOfrom2069](https://github.com/APPOfrom2069) | UI/UX Designer, Multi-Tagging & Filtering Workflows, Bilingual (`TH`/`EN`) Localization |
-| `6931503096` | **Swan Naing Aung** | [@Arkash-Drayven](https://github.com/Arkash-Drayven) | QA Engineer (`docs/Testing.md`), Demo Presentation Slides (`slides/`) & Final Report |
+| Student ID | Full Name | GitHub Account |
+| :--- | :--- | :--- |
+| `6931503004` | **Htet Wai Yan** | [@htetwaiyan](https://github.com/htetwaiyan) |
+| `6931503026` | **Kunut Wongtidatorn** | [@6931503026-netizen](https://github.com/6931503026-netizen) |
+| `6931503084` | **Anansit Inta** | [@MeloonFrong](https://github.com/MeloonFrong) |
+| `6931503091` | **Aung Phone Pyae Oo** | [@APPOfrom2069](https://github.com/APPOfrom2069) |
+| `6931503096` | **Swan Naing Aung** | [@Arkash-Drayven](https://github.com/Arkash-Drayven) |
 
 ---
 
