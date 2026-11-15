@@ -71,3 +71,6 @@ sequenceDiagram
     App-->>UI: Update displayed feed
     UI-->>User: Show filtered posts
 ```
+## Diagram Summary
+
+These sequence diagrams illustrate how users interact with InfoCenter. They cover loading the feed, adding social media sources, and filtering or searching posts.
