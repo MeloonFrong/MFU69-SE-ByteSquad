@@ -81,4 +81,21 @@ AI-generated suggestions were not considered proof of functionality; actual resu
 **Conclusion:**
 
 ChatGPT supported the development and integration process through explanations, debugging, and documentation. The student remained responsible for implementation, testing, verification, and the final submission.
-  
+
+**AI Usage Log – Swan Naing Aung**
+
+**Student Name:** Swan Naing Aung
+
+**Student ID:** 6931503096
+
+**AI Tool Used:** ChatGPT
+
+**Tasks Completed with AI Assistance:**
+
+1. **UML Diagrams:** Used ChatGPT to help create the Sequence Diagrams and Component Diagram for the InfoCenter web application prototype.
+2. **Documentation:** Used ChatGPT to assist in writing, organizing, and formatting the UML diagram documentation in Markdown (`.md`) format.
+3. **Demo Slide:** Used ChatGPT to assist in preparing and improving the project demonstration slide.
+
+**Purpose of AI Usage:**
+
+ChatGPT was used as an assistant to support diagram creation, documentation preparation, and presentation materials. I reviewed and adjusted the generated content to match our project's prototype and requirements.
