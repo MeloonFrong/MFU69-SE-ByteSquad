@@ -23,4 +23,8 @@
       ApifyDatasetsService.cs
       PostdataProcessor.cs
       Program.cs
-    
+    And editing these files in the frontend for it to work with the backend: 
+      Frontend/components/PostCard.tsx
+      Frontend/src/services/api.ts
+      Frontend/src/components/DatasetViewer.tsx
+  
