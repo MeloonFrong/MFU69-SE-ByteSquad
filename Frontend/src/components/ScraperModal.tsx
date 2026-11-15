@@ -26,6 +26,7 @@ interface ScraperModalProps {
   onAddSubscriptions: (newItems: SubscriptionItem[]) => Promise<void> | void;
   existingTags?: string[];
   onCreateTag?: (newTag: string) => void;
+  onDeleteTag?: (tag: string) => void;
 }
 
 export function ScraperModal({
@@ -34,6 +35,7 @@ export function ScraperModal({
   onAddSubscriptions,
   existingTags = [],
   onCreateTag,
+  onDeleteTag,
 }: ScraperModalProps) {
   const { t, formatNumber } = useI18n();
   const [queuedItems, setQueuedItems] = useState<SubscriptionItem[]>([]);
@@ -96,6 +98,27 @@ export function ScraperModal({
     setSelectedTagsForNew((prev) => normalizeTagList([...prev, norm]));
     onCreateTag?.(norm);
     setCustomTagInput('');
+  };
+
+  const handleDeleteTag = (rawTag: string) => {
+    const norm = normalizeTag(rawTag);
+    if (!norm) return;
+    const lower = norm.toLowerCase();
+    setCustomCreatedTags((prev) =>
+      prev.filter((tItem) => tItem.toLowerCase() !== lower)
+    );
+    setSelectedTagsForNew((prev) =>
+      prev.filter((tItem) => tItem.toLowerCase() !== lower)
+    );
+    setQueuedItems((prev) =>
+      prev.map((item) => ({
+        ...item,
+        tags: (item.tags || []).filter(
+          (tItem) => tItem.toLowerCase() !== lower
+        ),
+      }))
+    );
+    onDeleteTag?.(norm);
   };
 
   const handleAddUrlToQueue = () => {
@@ -309,31 +332,54 @@ export function ScraperModal({
             </div>
 
             {/* Existing Tags Selection */}
-            <div className="flex flex-wrap gap-1.5 pt-0.5">
-              {allAvailableTags.map((tag) => {
-                const isSelected = selectedTagsForNew.some(
-                  (tItem) => tItem.toLowerCase() === tag.toLowerCase()
-                );
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => handleToggleTagForNew(tag)}
-                    aria-pressed={isSelected}
-                    className={`h-7 px-2.5 rounded-md text-[12px] font-mono transition-colors inline-flex items-center gap-1.5 border ${
-                      isSelected
-                        ? 'bg-accent text-white border-accent font-medium'
-                        : 'bg-raised text-ink-2 border-line hover:text-ink'
-                    }`}
-                  >
-                    {isSelected && (
-                      <Check className="w-3 h-3 shrink-0" strokeWidth={2} />
-                    )}
-                    <span>{tag}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {allAvailableTags.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                {allAvailableTags.map((tag) => {
+                  const isSelected = selectedTagsForNew.some(
+                    (tItem) => tItem.toLowerCase() === tag.toLowerCase()
+                  );
+                  return (
+                    <div
+                      key={tag}
+                      className={`h-7 rounded-md text-[12px] font-mono transition-colors inline-flex items-center border ${
+                        isSelected
+                          ? 'bg-accent text-white border-accent font-medium'
+                          : 'bg-raised text-ink-2 border-line'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleToggleTagForNew(tag)}
+                        aria-pressed={isSelected}
+                        className={`h-full pl-2.5 pr-1.5 inline-flex items-center gap-1.5 transition-colors ${
+                          isSelected ? 'text-white' : 'hover:text-ink'
+                        }`}
+                      >
+                        {isSelected && (
+                          <Check className="w-3 h-3 shrink-0" strokeWidth={2} />
+                        )}
+                        <span>{tag}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTag(tag)}
+                        title={t('deleteTagTooltip')}
+                        aria-label={`${t('deleteTagTooltip')} ${tag}`}
+                        className={`h-full px-1.5 inline-flex items-center justify-center rounded-r-md transition-colors ${
+                          isSelected
+                            ? 'text-white/80 hover:text-white hover:bg-white/15'
+                            : 'text-ink-3 hover:text-negative hover:bg-line'
+                        }`}
+                      >
+                        <X className="w-3 h-3 shrink-0" strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-[12px] text-ink-3 pt-0.5">{t('noTagsYet')}</p>
+            )}
           </div>
 
           {/* Queued Items with Per-Source Tag Assignment */}

@@ -45,6 +45,7 @@ interface FeedViewProps {
   onOpenAddSubscription: () => void;
   onOpenRefreshConfig: () => void;
   onCreateTag?: (newTag: string) => void;
+  onDeleteTag?: (tag: string) => void;
   onToggleSubscriptionTag?: (subscriptionId: string, tag: string) => void;
   onImageClick: (url: string) => void;
   isSimulated: boolean;
@@ -73,6 +74,7 @@ export function FeedView({
   onOpenAddSubscription,
   onOpenRefreshConfig,
   onCreateTag,
+  onDeleteTag,
   onToggleSubscriptionTag,
   onImageClick,
   isSimulated,
@@ -151,6 +153,19 @@ export function FeedView({
       prev.filter((tItem) => tItem.toLowerCase() !== norm.toLowerCase())
     );
     setGlobalNewTagInput('');
+  };
+
+  const handleDeleteTag = (rawTag: string) => {
+    const norm = normalizeTag(rawTag);
+    if (!norm) return;
+    const lower = norm.toLowerCase();
+    setLocalCreatedTags((prev) =>
+      prev.filter((tItem) => tItem.toLowerCase() !== lower)
+    );
+    setHiddenTags((prev) =>
+      prev.filter((tItem) => tItem.toLowerCase() !== lower)
+    );
+    onDeleteTag?.(norm);
   };
 
   const handleCreateTagForSource = (sourceId: string) => {
@@ -655,41 +670,60 @@ export function FeedView({
                   </button>
                 </div>
 
-                {/* 3. Existing Tags List (click to check/uncheck show/hide) */}
+                {/* 3. Existing Tags List (click to check/uncheck show/hide, or X to delete) */}
                 <div className="space-y-1 pt-1 border-t border-line max-h-56 overflow-y-auto">
-                  {allKnownTags.map((tag) => {
-                    const shown = isTagShown(tag);
-                    const count = tagPostCounts[tag.toLowerCase()] || 0;
-                    return (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => handleToggleTagVisibility(tag)}
-                        aria-pressed={shown}
-                        className={`w-full h-8 px-2.5 rounded-lg text-left text-[12px] transition-colors flex items-center justify-between gap-2 border ${
-                          shown
-                            ? 'bg-card text-ink border-line font-medium'
-                            : 'bg-transparent text-ink-3 border-transparent opacity-60 hover:opacity-100'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2 min-w-0">
-                          <span
-                            className={`w-4 h-4 rounded-sm flex items-center justify-center border shrink-0 ${
+                  {allKnownTags.length > 0 ? (
+                    allKnownTags.map((tag) => {
+                      const shown = isTagShown(tag);
+                      const count = tagPostCounts[tag.toLowerCase()] || 0;
+                      return (
+                        <div key={tag} className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleTagVisibility(tag)}
+                            aria-pressed={shown}
+                            className={`flex-1 min-w-0 h-8 px-2.5 rounded-lg text-left text-[12px] transition-colors flex items-center justify-between gap-2 border ${
                               shown
-                                ? 'bg-accent border-accent text-white'
-                                : 'bg-card border-line text-transparent'
+                                ? 'bg-card text-ink border-line font-medium'
+                                : 'bg-transparent text-ink-3 border-transparent opacity-60 hover:opacity-100'
                             }`}
                           >
-                            <Check className="w-3 h-3" strokeWidth={2.25} />
-                          </span>
-                          <span className="font-mono truncate">{tag}</span>
-                        </span>
-                        <span className="font-mono text-[11px] text-ink-3 tabular-nums">
-                          {formatNumber(count)}
-                        </span>
-                      </button>
-                    );
-                  })}
+                            <span className="flex items-center gap-2 min-w-0">
+                              <span
+                                className={`w-4 h-4 rounded-sm flex items-center justify-center border shrink-0 ${
+                                  shown
+                                    ? 'bg-accent border-accent text-white'
+                                    : 'bg-card border-line text-transparent'
+                                }`}
+                              >
+                                <Check
+                                  className="w-3 h-3"
+                                  strokeWidth={2.25}
+                                />
+                              </span>
+                              <span className="font-mono truncate">{tag}</span>
+                            </span>
+                            <span className="font-mono text-[11px] text-ink-3 tabular-nums">
+                              {formatNumber(count)}
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteTag(tag)}
+                            title={t('deleteTagTooltip')}
+                            aria-label={`${t('deleteTagTooltip')} ${tag}`}
+                            className="h-8 w-8 rounded-lg text-ink-3 hover:text-negative hover:bg-card transition-colors inline-flex items-center justify-center shrink-0"
+                          >
+                            <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          </button>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="py-1.5 px-1 text-[12px] text-ink-3">
+                      {t('noTagsYet')}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -828,45 +862,67 @@ export function FeedView({
 
                           {/* 2. Existing Tags List (click to assign / un-assign to this source; NO Show/Hide All button) */}
                           <div className="space-y-1 pt-1 border-t border-line max-h-48 overflow-y-auto">
-                            {allKnownTags.map((tag) => {
-                              const assigned = src.tags.some(
-                                (tItem) =>
-                                  tItem.toLowerCase() === tag.toLowerCase()
-                              );
-                              return (
-                                <button
-                                  key={tag}
-                                  type="button"
-                                  onClick={() =>
-                                    onToggleSubscriptionTag?.(src.id, tag)
-                                  }
-                                  aria-pressed={assigned}
-                                  className={`w-full h-8 px-2.5 rounded-lg text-left text-[12px] transition-colors flex items-center justify-between gap-2 border ${
-                                    assigned
-                                      ? 'bg-card text-ink border-line font-medium'
-                                      : 'bg-transparent text-ink-3 border-transparent hover:bg-card/60 hover:text-ink'
-                                  }`}
-                                >
-                                  <span className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className={`w-4 h-4 rounded-sm flex items-center justify-center border shrink-0 ${
+                            {allKnownTags.length > 0 ? (
+                              allKnownTags.map((tag) => {
+                                const assigned = src.tags.some(
+                                  (tItem) =>
+                                    tItem.toLowerCase() === tag.toLowerCase()
+                                );
+                                return (
+                                  <div
+                                    key={tag}
+                                    className="flex items-center gap-1"
+                                  >
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        onToggleSubscriptionTag?.(src.id, tag)
+                                      }
+                                      aria-pressed={assigned}
+                                      className={`flex-1 min-w-0 h-8 px-2.5 rounded-lg text-left text-[12px] transition-colors flex items-center justify-between gap-2 border ${
                                         assigned
-                                          ? 'bg-accent border-accent text-white'
-                                          : 'bg-card border-line text-transparent'
+                                          ? 'bg-card text-ink border-line font-medium'
+                                          : 'bg-transparent text-ink-3 border-transparent hover:bg-card/60 hover:text-ink'
                                       }`}
                                     >
-                                      <Check
-                                        className="w-3 h-3"
-                                        strokeWidth={2.25}
+                                      <span className="flex items-center gap-2 min-w-0">
+                                        <span
+                                          className={`w-4 h-4 rounded-sm flex items-center justify-center border shrink-0 ${
+                                            assigned
+                                              ? 'bg-accent border-accent text-white'
+                                              : 'bg-card border-line text-transparent'
+                                          }`}
+                                        >
+                                          <Check
+                                            className="w-3 h-3"
+                                            strokeWidth={2.25}
+                                          />
+                                        </span>
+                                        <span className="font-mono truncate">
+                                          {tag}
+                                        </span>
+                                      </span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteTag(tag)}
+                                      title={t('deleteTagTooltip')}
+                                      aria-label={`${t('deleteTagTooltip')} ${tag}`}
+                                      className="h-8 w-8 rounded-lg text-ink-3 hover:text-negative hover:bg-card transition-colors inline-flex items-center justify-center shrink-0"
+                                    >
+                                      <X
+                                        className="w-3.5 h-3.5"
+                                        strokeWidth={1.5}
                                       />
-                                    </span>
-                                    <span className="font-mono truncate">
-                                      {tag}
-                                    </span>
-                                  </span>
-                                </button>
-                              );
-                            })}
+                                    </button>
+                                  </div>
+                                );
+                              })
+                            ) : (
+                              <p className="py-1.5 px-1 text-[12px] text-ink-3">
+                                {t('noTagsYet')}
+                              </p>
+                            )}
                           </div>
                         </div>
                       )}

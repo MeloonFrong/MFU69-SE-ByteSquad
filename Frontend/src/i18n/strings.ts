@@ -118,7 +118,8 @@ const en = {
   // FR-3: Multi-Tagging & Tag Filter
   tagsTitle: 'Filter by tag',
   tagAll: 'All tags',
-  noTagsYet: 'No tags assigned yet',
+  noTagsYet: 'No tags created yet',
+  deleteTagTooltip: 'Delete tag',
   assignTagsLabel: 'Tags for this source',
   tagInputPlaceholder: 'Type a tag (e.g. #MFU) and press Enter',
   addTagButton: 'Create tag',
@@ -365,7 +366,8 @@ const th: Record<StringKey, string> = {
 
   tagsTitle: 'กรองตามแท็ก',
   tagAll: 'ทุกแท็ก',
-  noTagsYet: 'ยังไม่มีแท็กที่กำหนด',
+  noTagsYet: 'ยังไม่มีแท็กที่สร้างไว้',
+  deleteTagTooltip: 'ลบแท็ก',
   assignTagsLabel: 'ป้ายแท็กของแหล่งข้อมูลนี้',
   tagInputPlaceholder: 'พิมพ์ชื่อแท็กใหม่ (เช่น #MFU) แล้วกด Enter',
   addTagButton: 'สร้างแท็ก',

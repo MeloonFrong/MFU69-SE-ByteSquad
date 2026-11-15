@@ -33,17 +33,17 @@ function getInitialPrototypeSubscriptions(): SubscriptionItem[] {
   const seeds: Array<{ url: string; tags: string[]; limit: number }> = [
     {
       url: 'https://www.facebook.com/MFU2Connect',
-      tags: ['MFU', 'Academic'],
+      tags: [],
       limit: 2,
     },
     {
       url: 'https://www.instagram.com/humansofny',
-      tags: ['News', 'Creator'],
+      tags: [],
       limit: 2,
     },
     {
       url: 'https://www.tiktok.com/@khaby.lame',
-      tags: ['Creator'],
+      tags: [],
       limit: 2,
     },
   ];
@@ -95,6 +95,23 @@ function AppShell() {
     const norm = normalizeTag(rawTag);
     if (!norm) return;
     setCustomTags((prev) => normalizeTagList([...prev, norm]));
+  }, []);
+
+  const handleDeleteTag = useCallback((rawTag: string) => {
+    const norm = normalizeTag(rawTag);
+    if (!norm) return;
+    const lower = norm.toLowerCase();
+    setCustomTags((prev) =>
+      prev.filter((tItem) => tItem.toLowerCase() !== lower)
+    );
+    setSubscriptions((prev) =>
+      prev.map((sub) => ({
+        ...sub,
+        tags: (sub.tags || []).filter(
+          (tItem) => tItem.toLowerCase() !== lower
+        ),
+      }))
+    );
   }, []);
 
   const handleToggleSubscriptionTag = useCallback(
@@ -270,6 +287,7 @@ function AppShell() {
           onOpenAddSubscription={() => setIsAddSourceOpen(true)}
           onOpenRefreshConfig={() => setIsRefreshConfigOpen(true)}
           onCreateTag={handleCreateTag}
+          onDeleteTag={handleDeleteTag}
           onToggleSubscriptionTag={handleToggleSubscriptionTag}
           onImageClick={(url) => setGalleryImage(url)}
           isSimulated={isSimulated}
@@ -295,6 +313,7 @@ function AppShell() {
         onAddSubscriptions={handleAddSubscriptions}
         existingTags={existingTags}
         onCreateTag={handleCreateTag}
+        onDeleteTag={handleDeleteTag}
       />
 
       <RefreshConfigModal

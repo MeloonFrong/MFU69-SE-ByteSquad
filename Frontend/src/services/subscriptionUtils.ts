@@ -3,13 +3,7 @@ import { FacebookPost, SubscriptionItem, SubscriptionPlatform } from '../types/f
 export const DEFAULT_POSTS_PER_PAGE = 1;
 export const DEFAULT_VIEW_POSTS_PER_PAGE = 10;
 
-export const DEFAULT_SUGGESTED_TAGS = [
-  '#MFU',
-  '#Academic',
-  '#Activity',
-  '#News',
-  '#Creator',
-];
+export const DEFAULT_SUGGESTED_TAGS: string[] = [];
 
 export function normalizeTag(raw: string): string {
   const cleaned = raw.trim().replace(/^#+/, '').trim();
