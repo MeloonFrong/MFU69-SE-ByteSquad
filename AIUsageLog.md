@@ -82,11 +82,10 @@ AI-generated suggestions were not considered proof of functionality; actual resu
 
 ChatGPT supported the development and integration process through explanations, debugging, and documentation. The student remained responsible for implementation, testing, verification, and the final submission.
 
-**AI Usage Log – Swan Naing Aung**
+# AI Usage Log
 
-**Student Name:** Swan Naing Aung
-
-**Student ID:** 6931503096
+# Swan Naing Aung
+# Student ID: 6931503096
 
 **AI Tool Used:** ChatGPT
 
