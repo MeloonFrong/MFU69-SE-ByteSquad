@@ -30,19 +30,9 @@ Designed for university students, new hires, and digital professionals who suffe
 
 ---
 
-## 3. How to Open the Clickable Prototype (No Server Required)
+## 3. How to Open the Clickable Prototype
 
-For rapid M3 evaluation without installing `.NET` or `Node.js`, a **100% self-contained single-file clickable prototype** is pre-built at [`prototype/index.html`](./prototype/index.html).
-
-- 🌐 **Open Live Clickable Prototype in Browser (1-Click via GitHub Preview):**  
-  👉 **[Launch Clickable Prototype (`prototype/index.html`)](https://htmlpreview.github.io/?https://github.com/MeloonFrong/MFU69-SE-ByteSquad/blob/frontend-polish/prototype/index.html)**
-- 💻 **Or Open Locally Offline (`file://`):**  
-  👉 **[`prototype/index.html`](./prototype/index.html)** (download/clone and double-click to open in any browser)
-
-### Opening Instructions
-1. Clone or download this repository.
-2. Navigate to the [`prototype/`](./prototype/) folder and **double-click `index.html`** to open it directly in any modern web browser (`Chrome`, `Edge`, `Firefox`, or `Safari`) via `file://`.
-3. **No backend server, local web server, or internet connection is required.** The prototype bundles all compiled UI components, styles, and normalized multi-platform sample datasets (`MFU2Connect`, `humansofny`, `khaby.lame`, `ISC MFU`, `zenlesszonezero`).
+👉 **[clickable prototype](http://10.2.4.20:3000/)**
 
 ### 5-Step Happy-Path Walkthrough (Testing FR-1 to FR-4)
 1. **Verify Unified Feed & Original Link (FR-2):** Upon opening `prototype/index.html`, inspect the unified feed containing normalized Facebook, Instagram, and TikTok posts. Click an image to open the Lightbox, or click **`ดูโพสต์ต้นฉบับ / View Original`** on any card to open the native post URL.
@@ -94,8 +84,7 @@ npm run dev
 | Path / Document | Description |
 | :--- | :--- |
 | **Clickable Prototype** | |
-| [Launch Live Clickable Prototype](https://htmlpreview.github.io/?https://github.com/MeloonFrong/MFU69-SE-ByteSquad/blob/frontend-polish/prototype/index.html) | **1-Click Online Clickable Prototype** (renders `prototype/index.html` directly in browser) |
-| [`prototype/index.html`](./prototype/index.html) | **Standalone Clickable Prototype Source** (opens locally via double-click / `file://` with zero server) |
+| [clickable prototype](http://10.2.4.20:3000/) | **Live Clickable Prototype** (`http://10.2.4.20:3000/`) |
 | **Milestone Reports & Core Docs (`docs/`)** | |
 | [`docs/final-report.md`](./docs/final-report.md) | **M3 Final Project Report & Complete Golden Thread Table** (`Problem → FR → Design → Prototype → Test`) |
 | [`docs/SRS.md`](./docs/SRS.md) | **Software Requirements Specification (Markdown)** with updated Section 7 Traceability Matrix |
