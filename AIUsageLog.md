@@ -29,7 +29,7 @@
       Frontend/src/components/DatasetViewer.tsx
 
 
-  # AI Usage Log (6931503004-Htet Wai Yan)
+- AI Usage Log (6931503004-Htet Wai Yan)
 
 **Project:** MFU69-SE-ByteSquad  
 **AI Tool Used:** ChatGPT  
