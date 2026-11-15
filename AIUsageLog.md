@@ -15,3 +15,12 @@
     Tools: Google AI Studio, AI: Gemini, Models: Gemini 4 Hydrogen
     Usage: Use to vibe-code the placeholder Frontend
 
+  3. AI usage: Adding features to the backend and testing with the placeholder.
+    Files can be viewed in Branch: BackendFix_&_PlaceholderFrontend
+
+    AI: ChatGPT, Models: GPT-6 Astra
+    Usage: Editing these files in the backend:
+      ApifyDatasetsService.cs
+      PostdataProcessor.cs
+      Program.cs
+    
