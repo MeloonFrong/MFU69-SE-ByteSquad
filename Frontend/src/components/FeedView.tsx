@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import {
   AlertCircle,
-  ArrowUpDown,
   Check,
   ChevronDown,
   ChevronUp,
@@ -18,7 +17,7 @@ import {
   Tag as TagIcon,
   X,
 } from 'lucide-react';
-import { FacebookPost, SortOrder, SubscriptionItem } from '../types/facebook';
+import { FacebookPost, SubscriptionItem } from '../types/facebook';
 import { FacebookApiClient } from '../services/api';
 import {
   DEFAULT_SUGGESTED_TAGS,
@@ -40,8 +39,8 @@ interface FeedViewProps {
   isRefreshing?: boolean;
   selectedPage: string;
   onPageChange: (page: string) => void;
-  limit: number;
-  onLimitChange: (limit: number) => void;
+  limit?: number;
+  onLimitChange?: (limit: number) => void;
   onRefresh: () => void;
   onOpenAddSubscription: () => void;
   onOpenRefreshConfig: () => void;
@@ -70,8 +69,6 @@ export function FeedView({
   isRefreshing = false,
   selectedPage,
   onPageChange,
-  limit,
-  onLimitChange,
   onRefresh,
   onOpenAddSubscription,
   onOpenRefreshConfig,
@@ -84,7 +81,6 @@ export function FeedView({
   const [searchQuery, setSearchQuery] = useState('');
   const [includeKeywordsInput, setIncludeKeywordsInput] = useState('');
   const [excludeKeywordsInput, setExcludeKeywordsInput] = useState('');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [selectedPlatform, setSelectedPlatform] =
     useState<PlatformFilter>('all');
 
@@ -378,19 +374,15 @@ export function FeedView({
       return true;
     });
 
-    // FR-4: Sort posts by Latest or Most Liked
+    // Sort posts chronologically (newest first)
     const sorted = [...matching].sort((a, b) => {
-      if (sortOrder === 'most_liked') {
-        const likesDiff = (b.likesCount ?? 0) - (a.likesCount ?? 0);
-        if (likesDiff !== 0) return likesDiff;
-      }
       return (
         FacebookApiClient.getPostTimestamp(b) -
         FacebookApiClient.getPostTimestamp(a)
       );
     });
 
-    return sorted.slice(0, limit);
+    return sorted;
   }, [
     subscribedPosts,
     subscriptions,
@@ -402,8 +394,6 @@ export function FeedView({
     searchQuery,
     includeKeywords,
     excludeKeywords,
-    sortOrder,
-    limit,
   ]);
 
   const selectedAccountObj = allAccounts.find(
@@ -904,32 +894,22 @@ export function FeedView({
 
         {/* CENTER COLUMN: Main Social Feed */}
         <div className="min-w-0 space-y-5">
-          {/* Feed Header, "+ เพิ่มแหล่งข้อมูล" button, Search, FR-4 Keyword Include/Exclude & Sorting Controls Card */}
+          {/* Search & Keyword Filter Controls Card */}
           <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h1 className="font-display text-[24px] leading-tight font-semibold text-ink tracking-tight">
+            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+              <div className="min-w-0">
+                <h1 className="font-display text-[20px] leading-snug font-medium text-ink">
                   {t('feedTitle')}
                 </h1>
                 <p className="text-[13px] text-ink-2 mt-1">{subtitle}</p>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0">
-                <span className="text-[12px] text-ink-3 font-mono tabular-nums">
-                  {t('showingCount', {
-                    shown: formatNumber(filteredPosts.length),
-                    total: formatNumber(subscribedPosts.length),
-                  })}
-                </span>
-                <button
-                  type="button"
-                  onClick={onOpenAddSubscription}
-                  className="h-9 px-3.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center gap-1.5"
-                >
-                  <Plus className="w-4 h-4" strokeWidth={1.75} />
-                  <span>{t('addSourceTooltip')}</span>
-                </button>
-              </div>
+              <span className="text-[12px] text-ink-3 font-mono tabular-nums shrink-0">
+                {t('showingCount', {
+                  shown: formatNumber(filteredPosts.length),
+                  total: formatNumber(subscribedPosts.length),
+                })}
+              </span>
             </div>
 
             {/* Mobile/Tablet Platform Switcher */}
@@ -963,9 +943,9 @@ export function FeedView({
               </div>
             </div>
 
-            {/* Row 1: Search, Sort Order (FR-4) & Display Limit Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="relative flex-1">
+            {/* Search & Keyword Include/Exclude Controls */}
+            <div className="space-y-3">
+              <div className="relative">
                 <Search
                   className="w-4 h-4 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                   strokeWidth={1.5}
@@ -990,94 +970,57 @@ export function FeedView({
                 )}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="relative flex items-center">
-                  <ArrowUpDown
-                    className="w-3.5 h-3.5 text-ink-3 absolute left-3 pointer-events-none"
+              {/* FR-4 Keyword Include & Exclude Filters */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="relative">
+                  <Filter
+                    className="w-3.5 h-3.5 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                     strokeWidth={1.5}
                   />
-                  <select
-                    id="feed-sort-select"
-                    aria-label={t('sortLabel')}
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-                    className="h-10 pl-8 pr-3 text-[13px] bg-raised border border-line rounded-lg text-ink focus:outline-hidden focus:border-accent transition-colors"
-                  >
-                    <option value="newest">{t('sortNewest')}</option>
-                    <option value="most_liked">{t('sortMostLiked')}</option>
-                  </select>
+                  <input
+                    type="text"
+                    aria-label={t('includeKeywordsLabel')}
+                    placeholder={t('includeKeywordsPlaceholder')}
+                    value={includeKeywordsInput}
+                    onChange={(e) => setIncludeKeywordsInput(e.target.value)}
+                    className="w-full h-9 pl-9 pr-8 text-[12px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                  {includeKeywordsInput && (
+                    <button
+                      type="button"
+                      onClick={() => setIncludeKeywordsInput('')}
+                      aria-label="Clear include filter"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink rounded-md"
+                    >
+                      <X className="w-3 h-3" strokeWidth={1.5} />
+                    </button>
+                  )}
                 </div>
 
-                <label
-                  htmlFor="feed-limit-select"
-                  className="text-[13px] text-ink-3 whitespace-nowrap hidden sm:inline"
-                >
-                  {t('showLabel')}
-                </label>
-                <select
-                  id="feed-limit-select"
-                  value={limit}
-                  onChange={(e) => onLimitChange(Number(e.target.value))}
-                  className="h-10 px-3 text-[13px] bg-raised border border-line rounded-lg text-ink focus:outline-hidden focus:border-accent transition-colors font-mono tabular-nums"
-                >
-                  <option value={5}>{t('limitOption', { n: 5 })}</option>
-                  <option value={10}>{t('limitOption', { n: 10 })}</option>
-                  <option value={20}>{t('limitOption', { n: 20 })}</option>
-                  <option value={50}>{t('limitOption', { n: 50 })}</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Row 2: FR-4 Keyword Include & Exclude Filters */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <div className="relative">
-                <Filter
-                  className="w-3.5 h-3.5 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                  strokeWidth={1.5}
-                />
-                <input
-                  type="text"
-                  aria-label={t('includeKeywordsLabel')}
-                  placeholder={t('includeKeywordsPlaceholder')}
-                  value={includeKeywordsInput}
-                  onChange={(e) => setIncludeKeywordsInput(e.target.value)}
-                  className="w-full h-9 pl-9 pr-8 text-[12px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
-                />
-                {includeKeywordsInput && (
-                  <button
-                    type="button"
-                    onClick={() => setIncludeKeywordsInput('')}
-                    aria-label="Clear include filter"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink rounded-md"
-                  >
-                    <X className="w-3 h-3" strokeWidth={1.5} />
-                  </button>
-                )}
-              </div>
-
-              <div className="relative">
-                <MinusCircle
-                  className="w-3.5 h-3.5 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                  strokeWidth={1.5}
-                />
-                <input
-                  type="text"
-                  aria-label={t('excludeKeywordsLabel')}
-                  placeholder={t('excludeKeywordsPlaceholder')}
-                  value={excludeKeywordsInput}
-                  onChange={(e) => setExcludeKeywordsInput(e.target.value)}
-                  className="w-full h-9 pl-9 pr-8 text-[12px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
-                />
-                {excludeKeywordsInput && (
-                  <button
-                    type="button"
-                    onClick={() => setExcludeKeywordsInput('')}
-                    aria-label="Clear exclude filter"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink rounded-md"
-                  >
-                    <X className="w-3 h-3" strokeWidth={1.5} />
-                  </button>
-                )}
+                <div className="relative">
+                  <MinusCircle
+                    className="w-3.5 h-3.5 text-ink-3 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                    strokeWidth={1.5}
+                  />
+                  <input
+                    type="text"
+                    aria-label={t('excludeKeywordsLabel')}
+                    placeholder={t('excludeKeywordsPlaceholder')}
+                    value={excludeKeywordsInput}
+                    onChange={(e) => setExcludeKeywordsInput(e.target.value)}
+                    className="w-full h-9 pl-9 pr-8 text-[12px] bg-raised border border-line rounded-lg text-ink placeholder:text-ink-3 focus:bg-card focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                  {excludeKeywordsInput && (
+                    <button
+                      type="button"
+                      onClick={() => setExcludeKeywordsInput('')}
+                      aria-label="Clear exclude filter"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink rounded-md"
+                    >
+                      <X className="w-3 h-3" strokeWidth={1.5} />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1192,56 +1135,33 @@ export function FeedView({
 
         {/* RIGHT COLUMN: Refresh & Edit Refresh Config Controls ONLY */}
         <aside className="space-y-4 lg:sticky lg:top-22">
-          <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-[13px] font-medium text-ink">
-                {t('quickControlsTitle')}
-              </h2>
-              <span className="font-mono text-[11px] text-ink-3 tabular-nums">
-                {t('subscribedSummary', {
-                  n: formatNumber(subscriptions.length),
-                })}
-              </span>
-            </div>
+          <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)] space-y-2.5">
+            <button
+              type="button"
+              onClick={onRefresh}
+              disabled={isLoading || isRefreshing || !hasSubscriptions}
+              className="w-full h-10 px-4 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${
+                  isLoading || isRefreshing ? 'animate-spin' : ''
+                }`}
+                strokeWidth={1.5}
+              />
+              <span>{t('refreshButton')}</span>
+            </button>
 
-            <p className="text-[12px] text-ink-3 leading-relaxed">
-              {t('syncNowDesc')}
-            </p>
-
-            <div className="space-y-2 pt-1">
-              <button
-                type="button"
-                onClick={onRefresh}
-                disabled={isLoading || isRefreshing || !hasSubscriptions}
-                className="w-full h-10 px-4 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${
-                    isLoading || isRefreshing ? 'animate-spin' : ''
-                  }`}
-                  strokeWidth={1.5}
-                />
-                <span>{t('refreshButton')}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={onOpenRefreshConfig}
-                className="w-full h-9 px-4 rounded-lg bg-raised hover:bg-line border border-line text-ink text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2"
-              >
-                <SlidersHorizontal
-                  className="w-4 h-4 text-ink-3"
-                  strokeWidth={1.5}
-                />
-                <span>{t('editRefreshConfigButton')}</span>
-              </button>
-            </div>
-
-            {!hasSubscriptions && (
-              <p className="text-[11px] text-ink-3 leading-relaxed pt-1">
-                {t('noSubscriptionsHint')}
-              </p>
-            )}
+            <button
+              type="button"
+              onClick={onOpenRefreshConfig}
+              className="w-full h-10 px-4 rounded-lg bg-raised hover:bg-line border border-line text-ink text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2"
+            >
+              <SlidersHorizontal
+                className="w-4 h-4 text-ink-3"
+                strokeWidth={1.5}
+              />
+              <span>{t('editRefreshConfigButton')}</span>
+            </button>
           </div>
         </aside>
       </div>

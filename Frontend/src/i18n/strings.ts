@@ -41,9 +41,9 @@ const en = {
   sourceKhabyShort: 'Khabane lame',
 
   // Center column: Main Social Feed
-  feedTitle: 'Unified social feed',
-  feedSubtitleAll: 'Latest posts across followed social media channels',
-  feedSubtitleOne: 'Posts from {source}',
+  feedTitle: 'Search & filter posts',
+  feedSubtitleAll: 'Search captions and accounts, or filter by included and excluded keywords',
+  feedSubtitleOne: 'Search and filter posts from {source}',
   searchLabel: 'Search posts',
   searchPlaceholder: 'Search captions or accounts',
   showLabel: 'Show',
@@ -292,9 +292,9 @@ const th: Record<StringKey, string> = {
   sourceZzzShort: 'Zenless Zone Zero',
   sourceKhabyShort: 'Khabane lame',
 
-  feedTitle: 'ฟีดรวมโซเชียลมีเดีย',
-  feedSubtitleAll: 'อัปเดตโพสต์ล่าสุดจากทุกช่องทางโซเชียลที่ติดตาม',
-  feedSubtitleOne: 'โพสต์จาก {source}',
+  feedTitle: 'ค้นหาและกรองโพสต์',
+  feedSubtitleAll: 'ค้นหาข้อความแคปชัน ชื่อแอคเคาท์ หรือกรองคำที่ต้องการและคำที่ต้องการซ่อน',
+  feedSubtitleOne: 'ค้นหาและกรองโพสต์จาก {source}',
   searchLabel: 'ค้นหาโพสต์',
   searchPlaceholder: 'ค้นหาข้อความแคปชัน หรือชื่อแอคเคาท์',
   showLabel: 'แสดง',
