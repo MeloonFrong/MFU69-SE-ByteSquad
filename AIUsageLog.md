@@ -9,3 +9,9 @@
       PostdataProcessor.cs
       Program.cs
 
+  2. AI usage in making the Frontend(Placeholder)
+    Files can be viewed at: [Frontend-Placeholder](https://drive.google.com/drive/folders/1KoV6SCDnvSbDoaQqwjIZCYHJPtxe0x2l?usp=sharing)
+
+    Tools: Google AI Studio, AI: Gemini, Models: Gemini 4 Hydrogen
+    Usage: Use to vibe-code the placeholder Frontend
+
