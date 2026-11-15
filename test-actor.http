@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5030
+@baseUrl = https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net
 
 ### Facebook Scraper, replace MFU2Connect and the profile.php?id=61563364138740 with the profile names you want to scrape posts from
 POST {{baseUrl}}/api/actors/facebook-posts-scraper/run
@@ -28,7 +28,7 @@ Accept: application/json
     "directUrls": [
         "https://www.instagram.com/humansofny/"
     ],
-    "resultsLimit": 10,
+    "resultsLimit": 1,
     "addParentData": false
 }
 
