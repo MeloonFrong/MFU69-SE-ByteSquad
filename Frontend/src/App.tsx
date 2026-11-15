@@ -3,7 +3,9 @@ import { FacebookPost, SubscriptionItem } from './types/facebook';
 import { FacebookApiClient } from './services/api';
 import { DEMO_MOCK_POSTS } from './services/mockData';
 import {
+  DEFAULT_SUGGESTED_TAGS,
   filterPostsBySubscriptions,
+  normalizeTag,
   normalizeTagList,
   parseSubscriptionInput,
 } from './services/subscriptionUtils';
@@ -77,14 +79,47 @@ function AppShell() {
   const [isAddSourceOpen, setIsAddSourceOpen] = useState(false);
   const [isRefreshConfigOpen, setIsRefreshConfigOpen] = useState(false);
   const [galleryImage, setGalleryImage] = useState<string | null>(null);
+  const [customTags, setCustomTags] = useState<string[]>([]);
 
   const existingTags = useMemo(() => {
-    const set = new Set<string>();
-    subscriptions.forEach((sub) => {
-      (sub.tags || []).forEach((tag) => set.add(tag));
-    });
-    return Array.from(set);
-  }, [subscriptions]);
+    return normalizeTagList([
+      ...DEFAULT_SUGGESTED_TAGS,
+      ...customTags,
+      ...subscriptions.flatMap((sub) => sub.tags || []),
+    ]);
+  }, [customTags, subscriptions]);
+
+  const handleCreateTag = useCallback((rawTag: string) => {
+    const norm = normalizeTag(rawTag);
+    if (!norm) return;
+    setCustomTags((prev) => normalizeTagList([...prev, norm]));
+  }, []);
+
+  const handleToggleSubscriptionTag = useCallback(
+    (subscriptionId: string, rawTag: string) => {
+      const norm = normalizeTag(rawTag);
+      if (!norm) return;
+      setCustomTags((prev) => normalizeTagList([...prev, norm]));
+      setSubscriptions((prev) =>
+        prev.map((sub) => {
+          if (sub.id !== subscriptionId) return sub;
+          const current = sub.tags || [];
+          const hasTag = current.some(
+            (tItem) => tItem.toLowerCase() === norm.toLowerCase()
+          );
+          return {
+            ...sub,
+            tags: hasTag
+              ? current.filter(
+                  (tItem) => tItem.toLowerCase() !== norm.toLowerCase()
+                )
+              : normalizeTagList([...current, norm]),
+          };
+        })
+      );
+    },
+    []
+  );
 
   const checkStatus = useCallback(async () => {
     try {
@@ -207,6 +242,7 @@ function AppShell() {
         <FeedView
           posts={posts}
           subscriptions={subscriptions}
+          availableTags={existingTags}
           isLoading={isLoading}
           isRefreshing={isRefreshing}
           selectedPage={selectedPage}
@@ -216,6 +252,8 @@ function AppShell() {
           onRefresh={() => handleRefresh()}
           onOpenAddSubscription={() => setIsAddSourceOpen(true)}
           onOpenRefreshConfig={() => setIsRefreshConfigOpen(true)}
+          onCreateTag={handleCreateTag}
+          onToggleSubscriptionTag={handleToggleSubscriptionTag}
           onImageClick={(url) => setGalleryImage(url)}
           isSimulated={isSimulated}
         />
@@ -239,6 +277,7 @@ function AppShell() {
         onClose={() => setIsAddSourceOpen(false)}
         onAddSubscriptions={handleAddSubscriptions}
         existingTags={existingTags}
+        onCreateTag={handleCreateTag}
       />
 
       <RefreshConfigModal

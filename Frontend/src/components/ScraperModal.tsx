@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   AlertCircle,
+  Check,
   Facebook,
   Instagram,
   Music2,
@@ -13,7 +14,6 @@ import { SubscriptionItem } from '../types/facebook';
 import {
   DEFAULT_POSTS_PER_PAGE,
   DEFAULT_SUGGESTED_TAGS,
-  PRESET_SUBSCRIPTION_SOURCES,
   normalizeTag,
   normalizeTagList,
   parseSubscriptionInput,
@@ -25,6 +25,7 @@ interface ScraperModalProps {
   onClose: () => void;
   onAddSubscriptions: (newItems: SubscriptionItem[]) => Promise<void> | void;
   existingTags?: string[];
+  onCreateTag?: (newTag: string) => void;
 }
 
 export function ScraperModal({
@@ -32,6 +33,7 @@ export function ScraperModal({
   onClose,
   onAddSubscriptions,
   existingTags = [],
+  onCreateTag,
 }: ScraperModalProps) {
   const { t, formatNumber } = useI18n();
   const [queuedItems, setQueuedItems] = useState<SubscriptionItem[]>([]);
@@ -92,6 +94,7 @@ export function ScraperModal({
     if (!norm) return;
     setCustomCreatedTags((prev) => normalizeTagList([...prev, norm]));
     setSelectedTagsForNew((prev) => normalizeTagList([...prev, norm]));
+    onCreateTag?.(norm);
     setCustomTagInput('');
   };
 
@@ -125,37 +128,6 @@ export function ScraperModal({
       return [...prev, parsed];
     });
     setNewUrlInput('');
-    setError(null);
-  };
-
-  const handleQuickAddPreset = (preset: (typeof PRESET_SUBSCRIPTION_SOURCES)[number]) => {
-    const mergedTags = normalizeTagList([
-      ...preset.defaultTags,
-      ...selectedTagsForNew,
-    ]);
-    const parsed = parseSubscriptionInput(
-      preset.url,
-      preset.platform,
-      DEFAULT_POSTS_PER_PAGE,
-      mergedTags
-    );
-    if (!parsed) return;
-    setQueuedItems((prev) => {
-      if (prev.some((item) => item.id === parsed.id)) {
-        return prev.map((item) =>
-          item.id === parsed.id
-            ? {
-                ...item,
-                tags: normalizeTagList([
-                  ...(item.tags || []),
-                  ...mergedTags,
-                ]),
-              }
-            : item
-        );
-      }
-      return [...prev, parsed];
-    });
     setError(null);
   };
 
@@ -269,7 +241,7 @@ export function ScraperModal({
             </div>
           )}
 
-          {/* URL Input */}
+          {/* 1. URL Input ONLY (No recommended/preset sources) */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <label
@@ -302,35 +274,16 @@ export function ScraperModal({
                 <span>{t('scraperAdd')}</span>
               </button>
             </div>
-
-            {/* Quick-add sample presets for fast demo testing */}
-            <div className="pt-1 space-y-1.5">
-              <div className="text-[11px] text-ink-3">
-                {t('presetSourcesLabel')}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {PRESET_SUBSCRIPTION_SOURCES.map((preset) => (
-                  <button
-                    key={preset.url}
-                    type="button"
-                    onClick={() => handleQuickAddPreset(preset)}
-                    className="h-7 px-2.5 rounded-md bg-raised hover:bg-line border border-line text-[12px] text-ink-2 hover:text-ink transition-colors inline-flex items-center gap-1.5"
-                  >
-                    {renderPlatformIcon(preset.platform)}
-                    <span>+ {preset.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* FR-3: Multi-Tagging Creation & Selection */}
-          <div className="space-y-2.5 pt-3 border-t border-line">
+          {/* 2. Create Tag Button & Select Existing Tags to attach */}
+          <div className="space-y-3 pt-3 border-t border-line">
             <div className="flex items-center gap-1.5 text-[13px] font-medium text-ink">
               <TagIcon className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.5} />
-              <span>{t('suggestedTagsLabel')}</span>
+              <span>{t('selectExistingTagsLabel')}</span>
             </div>
 
+            {/* Create Tag Control at the top */}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -348,13 +301,14 @@ export function ScraperModal({
               <button
                 type="button"
                 onClick={handleCreateCustomTag}
-                className="h-9 px-3 bg-raised hover:bg-line border border-line text-ink text-[12px] font-medium rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
+                className="h-9 px-3 bg-raised hover:bg-line border border-line text-ink text-[12px] font-medium rounded-lg transition-colors inline-flex items-center gap-1.5 shrink-0"
               >
-                <Plus className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.5} />
-                <span>{t('addTagButton')}</span>
+                <Plus className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.75} />
+                <span>{t('createTagButton')}</span>
               </button>
             </div>
 
+            {/* Existing Tags Selection */}
             <div className="flex flex-wrap gap-1.5 pt-0.5">
               {allAvailableTags.map((tag) => {
                 const isSelected = selectedTagsForNew.some(
@@ -366,12 +320,15 @@ export function ScraperModal({
                     type="button"
                     onClick={() => handleToggleTagForNew(tag)}
                     aria-pressed={isSelected}
-                    className={`h-7 px-2.5 rounded-md text-[12px] font-mono transition-colors inline-flex items-center gap-1 border ${
+                    className={`h-7 px-2.5 rounded-md text-[12px] font-mono transition-colors inline-flex items-center gap-1.5 border ${
                       isSelected
                         ? 'bg-accent text-white border-accent font-medium'
                         : 'bg-raised text-ink-2 border-line hover:text-ink'
                     }`}
                   >
+                    {isSelected && (
+                      <Check className="w-3 h-3 shrink-0" strokeWidth={2} />
+                    )}
                     <span>{tag}</span>
                   </button>
                 );
@@ -379,7 +336,7 @@ export function ScraperModal({
             </div>
           </div>
 
-          {/* Queued Items with Per-Source Multi-Tag Management */}
+          {/* Queued Items with Per-Source Tag Assignment */}
           {queuedItems.length > 0 && (
             <div className="space-y-2 pt-3 border-t border-line">
               <div className="text-[12px] font-medium text-ink-2">
@@ -404,9 +361,6 @@ export function ScraperModal({
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="font-mono text-[11px] text-ink-3 tabular-nums">
-                        {t('scraperLimitValue', { n: item.postsLimit })}
-                      </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveQueued(item.id)}
@@ -419,7 +373,7 @@ export function ScraperModal({
                     </div>
                   </div>
 
-                  {/* Per-item tag chips */}
+                  {/* Per-item existing tag selection */}
                   <div className="flex flex-wrap items-center gap-1 pt-0.5">
                     {allAvailableTags.map((tag) => {
                       const active = (item.tags || []).some(
@@ -430,13 +384,19 @@ export function ScraperModal({
                           key={tag}
                           type="button"
                           onClick={() => handleToggleQueuedItemTag(item.id, tag)}
-                          className={`h-6 px-2 rounded-sm text-[11px] font-mono transition-colors border ${
+                          className={`h-6 px-2 rounded-sm text-[11px] font-mono transition-colors inline-flex items-center gap-1 border ${
                             active
                               ? 'bg-accent text-white border-accent'
                               : 'bg-card text-ink-3 border-line hover:text-ink'
                           }`}
                         >
-                          {tag}
+                          {active && (
+                            <Check
+                              className="w-2.5 h-2.5 shrink-0"
+                              strokeWidth={2}
+                            />
+                          )}
+                          <span>{tag}</span>
                         </button>
                       );
                     })}

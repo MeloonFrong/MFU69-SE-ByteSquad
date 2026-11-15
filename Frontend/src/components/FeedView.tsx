@@ -2,6 +2,9 @@ import { useState, useMemo } from 'react';
 import {
   AlertCircle,
   ArrowUpDown,
+  Check,
+  ChevronDown,
+  ChevronUp,
   Facebook,
   Filter,
   Instagram,
@@ -18,9 +21,11 @@ import {
 import { FacebookPost, SortOrder, SubscriptionItem } from '../types/facebook';
 import { FacebookApiClient } from '../services/api';
 import {
+  DEFAULT_SUGGESTED_TAGS,
   doesPostMatchSubscription,
   filterPostsBySubscriptions,
   findMatchingSubscription,
+  normalizeTag,
   normalizeTagList,
 } from '../services/subscriptionUtils';
 import { PostCard, detectPostPlatform, SocialPlatform } from './PostCard';
@@ -30,6 +35,7 @@ import { PlatformFilter } from '../i18n/strings';
 interface FeedViewProps {
   posts: FacebookPost[];
   subscriptions: SubscriptionItem[];
+  availableTags?: string[];
   isLoading: boolean;
   isRefreshing?: boolean;
   selectedPage: string;
@@ -39,6 +45,8 @@ interface FeedViewProps {
   onRefresh: () => void;
   onOpenAddSubscription: () => void;
   onOpenRefreshConfig: () => void;
+  onCreateTag?: (newTag: string) => void;
+  onToggleSubscriptionTag?: (subscriptionId: string, tag: string) => void;
   onImageClick: (url: string) => void;
   isSimulated: boolean;
 }
@@ -57,6 +65,7 @@ interface FollowedAccountItem {
 export function FeedView({
   posts,
   subscriptions,
+  availableTags = [],
   isLoading,
   isRefreshing = false,
   selectedPage,
@@ -66,6 +75,8 @@ export function FeedView({
   onRefresh,
   onOpenAddSubscription,
   onOpenRefreshConfig,
+  onCreateTag,
+  onToggleSubscriptionTag,
   onImageClick,
   isSimulated,
 }: FeedViewProps) {
@@ -76,7 +87,16 @@ export function FeedView({
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [selectedPlatform, setSelectedPlatform] =
     useState<PlatformFilter>('all');
-  const [selectedTag, setSelectedTag] = useState<string>('all');
+
+  // "แสดงแท็ก" (Show Tags) expandable window state & hidden tags set
+  const [isShowTagsOpen, setIsShowTagsOpen] = useState(false);
+  const [hiddenTags, setHiddenTags] = useState<string[]>([]);
+  const [globalNewTagInput, setGlobalNewTagInput] = useState('');
+  const [localCreatedTags, setLocalCreatedTags] = useState<string[]>([]);
+
+  // Per-source tag assignment window state (expanded when clicking a subscribed source)
+  const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const [sourceNewTagInput, setSourceNewTagInput] = useState('');
 
   // Strict Subscription-Only filtering on every post in the feed
   const subscribedPosts = useMemo(() => {
@@ -88,15 +108,75 @@ export function FeedView({
     );
   }, [posts, subscriptions]);
 
-  // Collect all unique tags across subscribed accounts (FR-3)
-  const allSubscribedTags = useMemo(() => {
-    return normalizeTagList(subscriptions.flatMap((s) => s.tags || []));
-  }, [subscriptions]);
+  // Collect all known tags (FR-3)
+  const allKnownTags = useMemo(() => {
+    return normalizeTagList([
+      ...DEFAULT_SUGGESTED_TAGS,
+      ...availableTags,
+      ...localCreatedTags,
+      ...subscriptions.flatMap((s) => s.tags || []),
+    ]);
+  }, [availableTags, localCreatedTags, subscriptions]);
+
+  const hiddenTagsLowerSet = useMemo(() => {
+    return new Set(hiddenTags.map((tag) => tag.toLowerCase()));
+  }, [hiddenTags]);
+
+  const isTagShown = (tag: string) => {
+    return !hiddenTagsLowerSet.has(tag.toLowerCase());
+  };
+
+  const handleToggleTagVisibility = (tag: string) => {
+    const norm = normalizeTag(tag);
+    if (!norm) return;
+    const lower = norm.toLowerCase();
+    setHiddenTags((prev) =>
+      prev.some((tItem) => tItem.toLowerCase() === lower)
+        ? prev.filter((tItem) => tItem.toLowerCase() !== lower)
+        : [...prev, norm]
+    );
+  };
+
+  const handleShowAllTags = () => {
+    setHiddenTags([]);
+  };
+
+  const handleHideAllTags = () => {
+    setHiddenTags([...allKnownTags]);
+  };
+
+  const handleCreateGlobalTag = () => {
+    const norm = normalizeTag(globalNewTagInput);
+    if (!norm) return;
+    setLocalCreatedTags((prev) => normalizeTagList([...prev, norm]));
+    onCreateTag?.(norm);
+    // Ensure newly created tag is shown
+    setHiddenTags((prev) =>
+      prev.filter((tItem) => tItem.toLowerCase() !== norm.toLowerCase())
+    );
+    setGlobalNewTagInput('');
+  };
+
+  const handleCreateTagForSource = (sourceId: string) => {
+    const norm = normalizeTag(sourceNewTagInput);
+    if (!norm) return;
+    setLocalCreatedTags((prev) => normalizeTagList([...prev, norm]));
+    onCreateTag?.(norm);
+    // Assign the newly created tag to this source if not already assigned
+    const targetSub = subscriptions.find((s) => s.id === sourceId);
+    const alreadyHas = (targetSub?.tags || []).some(
+      (tItem) => tItem.toLowerCase() === norm.toLowerCase()
+    );
+    if (!alreadyHas) {
+      onToggleSubscriptionTag?.(sourceId, norm);
+    }
+    setSourceNewTagInput('');
+  };
 
   // Count posts per tag across subscribedPosts
   const tagPostCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    allSubscribedTags.forEach((tag) => {
+    allKnownTags.forEach((tag) => {
       counts[tag.toLowerCase()] = 0;
     });
     subscribedPosts.forEach((post) => {
@@ -108,7 +188,7 @@ export function FeedView({
       });
     });
     return counts;
-  }, [allSubscribedTags, subscribedPosts, subscriptions]);
+  }, [allKnownTags, subscribedPosts, subscriptions]);
 
   // Count strictly subscribed posts per platform
   const platformCounts = useMemo(() => {
@@ -162,16 +242,10 @@ export function FeedView({
     });
   }, [subscriptions, t]);
 
-  // Filter Followed Accounts by selectedPlatform and selectedTag
+  // Filter Followed Accounts by selectedPlatform
   const visibleAccounts: FollowedAccountItem[] = useMemo(() => {
     const filtered = allAccounts.filter((acc) => {
       if (selectedPlatform !== 'all' && acc.platform !== selectedPlatform) {
-        return false;
-      }
-      if (
-        selectedTag !== 'all' &&
-        !acc.tags.some((tItem) => tItem.toLowerCase() === selectedTag.toLowerCase())
-      ) {
         return false;
       }
       return true;
@@ -192,7 +266,7 @@ export function FeedView({
       },
       ...filtered,
     ];
-  }, [allAccounts, selectedPlatform, selectedTag, t]);
+  }, [allAccounts, selectedPlatform, t]);
 
   const handlePlatformSelect = (plat: PlatformFilter) => {
     setSelectedPlatform(plat);
@@ -203,23 +277,6 @@ export function FeedView({
           a.handle.toLowerCase() === selectedPage.toLowerCase()
       );
       if (currentAcc && currentAcc.platform !== plat) {
-        onPageChange('all');
-      }
-    }
-  };
-
-  const handleTagSelect = (tag: string) => {
-    setSelectedTag(tag);
-    if (tag !== 'all' && selectedPage !== 'all') {
-      const currentAcc = allAccounts.find(
-        (a) =>
-          a.id.toLowerCase() === selectedPage.toLowerCase() ||
-          a.handle.toLowerCase() === selectedPage.toLowerCase()
-      );
-      if (
-        currentAcc &&
-        !currentAcc.tags.some((tItem) => tItem.toLowerCase() === tag.toLowerCase())
-      ) {
         onPageChange('all');
       }
     }
@@ -240,7 +297,11 @@ export function FeedView({
       .filter(Boolean);
   }, [excludeKeywordsInput]);
 
-  // Filter subscribedPosts by selectedPage, selectedPlatform, selectedTag (FR-3),
+  const areAllTagsHidden =
+    allKnownTags.length > 0 &&
+    allKnownTags.every((tag) => hiddenTagsLowerSet.has(tag.toLowerCase()));
+
+  // Filter subscribedPosts by selectedPage, selectedPlatform, Tag Show/Hide state (FR-3),
   // searchQuery, includeKeywords & excludeKeywords (FR-4), then sort (FR-4) and slice by limit
   const filteredPosts = useMemo(() => {
     const matching = subscribedPosts.filter((post) => {
@@ -267,13 +328,19 @@ export function FeedView({
         if (detectPostPlatform(post) !== selectedPlatform) return false;
       }
 
-      // FR-3: Filter by selected tag
-      if (selectedTag !== 'all') {
-        const subTags = ownerSub?.tags || [];
-        if (
-          !subTags.some((tItem) => tItem.toLowerCase() === selectedTag.toLowerCase())
-        ) {
+      // FR-3: Filter by Shown / Hidden tags
+      if (hiddenTagsLowerSet.size > 0) {
+        if (areAllTagsHidden) {
           return false;
+        }
+        const subTags = ownerSub?.tags || [];
+        if (subTags.length > 0) {
+          const hasAnyShownTag = subTags.some(
+            (tItem) => !hiddenTagsLowerSet.has(tItem.toLowerCase())
+          );
+          if (!hasAnyShownTag) {
+            return false;
+          }
         }
       }
 
@@ -292,7 +359,7 @@ export function FeedView({
         if (!searchableText.includes(query)) return false;
       }
 
-      // FR-4: Must Include keywords (every keyword in includeKeywords must appear)
+      // FR-4: Must Include keywords
       if (includeKeywords.length > 0) {
         const hasAllIncluded = includeKeywords.every((kw) =>
           searchableText.includes(kw)
@@ -300,7 +367,7 @@ export function FeedView({
         if (!hasAllIncluded) return false;
       }
 
-      // FR-4: Exclude keywords (if any keyword in excludeKeywords appears, hide post)
+      // FR-4: Exclude keywords
       if (excludeKeywords.length > 0) {
         const hasAnyExcluded = excludeKeywords.some((kw) =>
           searchableText.includes(kw)
@@ -330,7 +397,8 @@ export function FeedView({
     selectedPage,
     allAccounts,
     selectedPlatform,
-    selectedTag,
+    hiddenTagsLowerSet,
+    areAllTagsHidden,
     searchQuery,
     includeKeywords,
     excludeKeywords,
@@ -429,7 +497,7 @@ export function FeedView({
     Boolean(searchQuery.trim()) ||
     includeKeywords.length > 0 ||
     excludeKeywords.length > 0 ||
-    selectedTag !== 'all' ||
+    hiddenTags.length > 0 ||
     selectedPlatform !== 'all' ||
     selectedPage !== 'all';
 
@@ -437,10 +505,12 @@ export function FeedView({
     setSearchQuery('');
     setIncludeKeywordsInput('');
     setExcludeKeywordsInput('');
-    setSelectedTag('all');
+    setHiddenTags([]);
     setSelectedPlatform('all');
     onPageChange('all');
   };
+
+  const shownTagsCount = allKnownTags.filter((tag) => isTagShown(tag)).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -479,8 +549,8 @@ export function FeedView({
       )}
 
       {/* 3-Column Social Feed Hub Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_300px] gap-6 items-start">
-        {/* LEFT COLUMN: Platform Filter, Tag Filter (FR-3) & Subscribed Accounts */}
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_290px] gap-6 items-start">
+        {/* LEFT COLUMN: Platform Filter, "แสดงแท็ก" (Show Tags) Window & Subscribed Accounts */}
         <aside className="hidden lg:block sticky top-22 space-y-4">
           {/* Platform Filter Card */}
           <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
@@ -518,64 +588,124 @@ export function FeedView({
             </nav>
           </div>
 
-          {/* FR-3: Tag Filter Card */}
-          <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
-            <div className="px-2 pb-2 flex items-center justify-between gap-2">
-              <span className="text-[12px] font-medium text-ink-3 truncate">
-                {t('tagsTitle')}
+          {/* FR-3: "แสดงแท็ก" (Show Tags) Button & Expandable Window */}
+          <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)] space-y-3">
+            <button
+              type="button"
+              onClick={() => setIsShowTagsOpen((prev) => !prev)}
+              aria-expanded={isShowTagsOpen}
+              className="w-full h-9 px-3 rounded-lg bg-raised hover:bg-line border border-line text-[13px] font-medium text-ink transition-colors flex items-center justify-between gap-2"
+            >
+              <span className="inline-flex items-center gap-2">
+                <TagIcon
+                  className="w-4 h-4 text-ink-2 shrink-0"
+                  strokeWidth={1.5}
+                />
+                <span>{t('showTagsButton')}</span>
               </span>
-              <TagIcon className="w-3.5 h-3.5 text-ink-3 shrink-0" strokeWidth={1.5} />
-            </div>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="font-mono text-[11px] text-ink-3 tabular-nums">
+                  {formatNumber(shownTagsCount)}/{formatNumber(allKnownTags.length)}
+                </span>
+                {isShowTagsOpen ? (
+                  <ChevronUp className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
+                ) : (
+                  <ChevronDown
+                    className="w-4 h-4 text-ink-3"
+                    strokeWidth={1.5}
+                  />
+                )}
+              </span>
+            </button>
 
-            {allSubscribedTags.length > 0 ? (
-              <nav className="space-y-1" aria-label={t('tagsTitle')}>
-                <button
-                  type="button"
-                  onClick={() => handleTagSelect('all')}
-                  className={`w-full h-8 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center justify-between gap-2 ${
-                    selectedTag === 'all'
-                      ? 'bg-raised text-ink font-medium'
-                      : 'text-ink-2 hover:text-ink hover:bg-raised/60'
-                  }`}
-                >
-                  <span className="truncate">{t('tagAll')}</span>
-                  <span className="font-mono text-[12px] text-ink-3 tabular-nums">
-                    {formatNumber(subscribedPosts.length)}
-                  </span>
-                </button>
-                {allSubscribedTags.map((tag) => {
-                  const isActive =
-                    selectedTag.toLowerCase() === tag.toLowerCase();
-                  const count = tagPostCounts[tag.toLowerCase()] || 0;
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => handleTagSelect(tag)}
-                      className={`w-full h-8 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center justify-between gap-2 ${
-                        isActive
-                          ? 'bg-raised text-ink font-medium'
-                          : 'text-ink-2 hover:text-ink hover:bg-raised/60'
-                      }`}
-                    >
-                      <span className="font-mono text-[12px] truncate">
-                        {tag}
-                      </span>
-                      <span className="font-mono text-[12px] text-ink-3 tabular-nums">
-                        {formatNumber(count)}
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
-            ) : (
-              <p className="px-2 pt-1 text-[12px] text-ink-3 leading-relaxed">
-                {t('noTagsYet')}
-              </p>
+            {isShowTagsOpen && (
+              <div className="p-3 bg-raised/60 border border-line rounded-xl space-y-2.5">
+                {/* 1. Top-most item: Create Tag input & button */}
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    placeholder={t('tagInputPlaceholder')}
+                    value={globalNewTagInput}
+                    onChange={(e) => setGlobalNewTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCreateGlobalTag();
+                      }
+                    }}
+                    className="flex-1 min-w-0 h-8 px-2.5 text-[12px] bg-card border border-line rounded-lg text-ink placeholder:text-ink-3 focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCreateGlobalTag}
+                    className="h-8 px-2.5 bg-accent hover:bg-accent-hover text-white text-[12px] font-medium rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" strokeWidth={1.75} />
+                    <span>{t('createTagButton')}</span>
+                  </button>
+                </div>
+
+                {/* 2. Show All / Hide All buttons */}
+                <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                  <button
+                    type="button"
+                    onClick={handleShowAllTags}
+                    disabled={hiddenTags.length === 0}
+                    className="flex-1 h-7 px-2 rounded-md bg-card hover:bg-line border border-line text-[11px] font-medium text-ink disabled:opacity-40 transition-colors"
+                  >
+                    {t('showAllTags')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleHideAllTags}
+                    disabled={areAllTagsHidden}
+                    className="flex-1 h-7 px-2 rounded-md bg-card hover:bg-line border border-line text-[11px] font-medium text-ink disabled:opacity-40 transition-colors"
+                  >
+                    {t('hideAllTags')}
+                  </button>
+                </div>
+
+                {/* 3. Existing Tags List (click to check/uncheck show/hide) */}
+                <div className="space-y-1 pt-1 border-t border-line max-h-56 overflow-y-auto">
+                  {allKnownTags.map((tag) => {
+                    const shown = isTagShown(tag);
+                    const count = tagPostCounts[tag.toLowerCase()] || 0;
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => handleToggleTagVisibility(tag)}
+                        aria-pressed={shown}
+                        className={`w-full h-8 px-2.5 rounded-lg text-left text-[12px] transition-colors flex items-center justify-between gap-2 border ${
+                          shown
+                            ? 'bg-card text-ink border-line font-medium'
+                            : 'bg-transparent text-ink-3 border-transparent opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span
+                            className={`w-4 h-4 rounded-sm flex items-center justify-center border shrink-0 ${
+                              shown
+                                ? 'bg-accent border-accent text-white'
+                                : 'bg-card border-line text-transparent'
+                            }`}
+                          >
+                            <Check className="w-3 h-3" strokeWidth={2.25} />
+                          </span>
+                          <span className="font-mono truncate">{tag}</span>
+                        </span>
+                        <span className="font-mono text-[11px] text-ink-3 tabular-nums">
+                          {formatNumber(count)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Followed / Subscribed Accounts Card (with Tag Badges underneath account name) */}
+          {/* Followed / Subscribed Accounts Card (Click an account to expand its Tag Assignment Window) */}
           <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
             <div className="px-2 pb-2 flex items-center justify-between gap-2">
               <span className="text-[12px] font-medium text-ink-3 truncate">
@@ -586,59 +716,174 @@ export function FeedView({
                 onClick={onOpenAddSubscription}
                 title={t('addSourceTooltip')}
                 aria-label={t('addSourceTooltip')}
-                className="w-6 h-6 rounded-md bg-raised hover:bg-line border border-line text-ink-2 hover:text-ink transition-colors inline-flex items-center justify-center shrink-0"
+                className="h-6 px-2 rounded-md bg-raised hover:bg-line border border-line text-[11px] font-medium text-ink-2 hover:text-ink transition-colors inline-flex items-center gap-1 shrink-0"
               >
-                <Plus className="w-3.5 h-3.5" strokeWidth={1.75} />
+                <Plus className="w-3 h-3" strokeWidth={1.75} />
+                <span>{t('addSourceTooltip')}</span>
               </button>
             </div>
 
             {visibleAccounts.length > 0 ? (
-              <nav className="space-y-1" aria-label={t('sourcesTitle')}>
+              <div className="space-y-1" aria-label={t('sourcesTitle')}>
+                <p className="px-2 pb-1 text-[11px] text-ink-3">
+                  {t('clickSourceToManageTags')}
+                </p>
                 {visibleAccounts.map((src) => {
-                  const isActive =
-                    src.id === 'all'
-                      ? selectedPage === 'all'
-                      : selectedPage.toLowerCase() === src.id.toLowerCase() ||
-                        selectedPage.toLowerCase() === src.handle.toLowerCase();
-                  return (
-                    <button
-                      key={src.id}
-                      type="button"
-                      onClick={() => onPageChange(src.id)}
-                      className={`w-full py-2 px-2.5 rounded-lg text-left text-[13px] transition-colors flex flex-col gap-1 ${
-                        isActive
-                          ? 'bg-raised text-ink font-medium'
-                          : 'text-ink-2 hover:text-ink hover:bg-raised/60'
-                      }`}
-                    >
-                      <div className="w-full flex items-center justify-between gap-2">
-                        <span className="flex items-center gap-2.5 min-w-0">
-                          {renderPlatformLogo(src.platform)}
-                          <span className="truncate">{src.label}</span>
-                        </span>
-                        {src.postsLimit !== undefined && (
-                          <span className="font-mono text-[11px] text-ink-3 tabular-nums shrink-0">
-                            {formatNumber(src.postsLimit)}
-                          </span>
-                        )}
-                      </div>
+                  const isAllItem = src.id === 'all';
+                  const isActive = isAllItem
+                    ? selectedPage === 'all'
+                    : selectedPage.toLowerCase() === src.id.toLowerCase() ||
+                      selectedPage.toLowerCase() === src.handle.toLowerCase();
+                  const isTagPanelExpanded =
+                    !isAllItem && expandedSourceId === src.id;
 
-                      {src.tags.length > 0 && (
-                        <div className="pl-6 flex flex-wrap gap-1">
-                          {src.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-1.5 py-0.5 rounded-sm bg-card border border-line font-mono text-[10px] leading-tight text-ink-3"
-                            >
-                              {tag}
+                  return (
+                    <div key={src.id} className="space-y-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isAllItem) {
+                            onPageChange('all');
+                            setExpandedSourceId(null);
+                          } else {
+                            setExpandedSourceId((prev) =>
+                              prev === src.id ? null : src.id
+                            );
+                            setSourceNewTagInput('');
+                          }
+                        }}
+                        aria-expanded={!isAllItem ? isTagPanelExpanded : undefined}
+                        className={`w-full py-2 px-2.5 rounded-lg text-left text-[13px] transition-colors flex flex-col gap-1 ${
+                          isActive || isTagPanelExpanded
+                            ? 'bg-raised text-ink font-medium'
+                            : 'text-ink-2 hover:text-ink hover:bg-raised/60'
+                        }`}
+                      >
+                        <div className="w-full flex items-center justify-between gap-2">
+                          <span className="flex items-center gap-2.5 min-w-0">
+                            {renderPlatformLogo(src.platform)}
+                            <span className="truncate">{src.label}</span>
+                          </span>
+                          {!isAllItem && (
+                            <span className="inline-flex items-center gap-1 text-ink-3 shrink-0">
+                              <TagIcon
+                                className="w-3 h-3"
+                                strokeWidth={1.5}
+                              />
+                              {isTagPanelExpanded ? (
+                                <ChevronUp
+                                  className="w-3.5 h-3.5"
+                                  strokeWidth={1.5}
+                                />
+                              ) : (
+                                <ChevronDown
+                                  className="w-3.5 h-3.5"
+                                  strokeWidth={1.5}
+                                />
+                              )}
                             </span>
-                          ))}
+                          )}
+                        </div>
+
+                        {src.tags.length > 0 && (
+                          <div className="pl-6 flex flex-wrap gap-1">
+                            {src.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="px-1.5 py-0.5 rounded-sm bg-card border border-line font-mono text-[10px] leading-tight text-ink-3"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </button>
+
+                      {/* Expanded Tag Assignment Window for this specific source (NO Show/Hide All button) */}
+                      {isTagPanelExpanded && (
+                        <div className="ml-2 p-3 bg-raised/70 border border-line rounded-xl space-y-2.5">
+                          <div className="text-[11px] font-medium text-ink-2 truncate">
+                            {t('sourceTagsPanelTitle', { source: src.label })}
+                          </div>
+
+                          {/* 1. Top-most item: Create Tag input & button */}
+                          <div className="flex gap-1.5">
+                            <input
+                              type="text"
+                              placeholder={t('tagInputPlaceholder')}
+                              value={sourceNewTagInput}
+                              onChange={(e) =>
+                                setSourceNewTagInput(e.target.value)
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleCreateTagForSource(src.id);
+                                }
+                              }}
+                              className="flex-1 min-w-0 h-8 px-2.5 text-[12px] bg-card border border-line rounded-lg text-ink placeholder:text-ink-3 focus:outline-hidden focus:border-accent transition-colors"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleCreateTagForSource(src.id)}
+                              className="h-8 px-2.5 bg-accent hover:bg-accent-hover text-white text-[12px] font-medium rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
+                            >
+                              <Plus
+                                className="w-3.5 h-3.5"
+                                strokeWidth={1.75}
+                              />
+                              <span>{t('createTagButton')}</span>
+                            </button>
+                          </div>
+
+                          {/* 2. Existing Tags List (click to assign / un-assign to this source; NO Show/Hide All button) */}
+                          <div className="space-y-1 pt-1 border-t border-line max-h-48 overflow-y-auto">
+                            {allKnownTags.map((tag) => {
+                              const assigned = src.tags.some(
+                                (tItem) =>
+                                  tItem.toLowerCase() === tag.toLowerCase()
+                              );
+                              return (
+                                <button
+                                  key={tag}
+                                  type="button"
+                                  onClick={() =>
+                                    onToggleSubscriptionTag?.(src.id, tag)
+                                  }
+                                  aria-pressed={assigned}
+                                  className={`w-full h-8 px-2.5 rounded-lg text-left text-[12px] transition-colors flex items-center justify-between gap-2 border ${
+                                    assigned
+                                      ? 'bg-card text-ink border-line font-medium'
+                                      : 'bg-transparent text-ink-3 border-transparent hover:bg-card/60 hover:text-ink'
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2 min-w-0">
+                                    <span
+                                      className={`w-4 h-4 rounded-sm flex items-center justify-center border shrink-0 ${
+                                        assigned
+                                          ? 'bg-accent border-accent text-white'
+                                          : 'bg-card border-line text-transparent'
+                                      }`}
+                                    >
+                                      <Check
+                                        className="w-3 h-3"
+                                        strokeWidth={2.25}
+                                      />
+                                    </span>
+                                    <span className="font-mono truncate">
+                                      {tag}
+                                    </span>
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
-              </nav>
+              </div>
             ) : (
               <div className="px-2 pt-2 pb-1 space-y-2.5">
                 <p className="text-[12px] text-ink-3 leading-relaxed">
@@ -659,9 +904,9 @@ export function FeedView({
 
         {/* CENTER COLUMN: Main Social Feed */}
         <div className="min-w-0 space-y-5">
-          {/* Feed Header, Search, FR-4 Keyword Include/Exclude & Sorting Controls Card */}
+          {/* Feed Header, "+ เพิ่มแหล่งข้อมูล" button, Search, FR-4 Keyword Include/Exclude & Sorting Controls Card */}
           <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h1 className="font-display text-[24px] leading-tight font-semibold text-ink tracking-tight">
                   {t('feedTitle')}
@@ -669,15 +914,25 @@ export function FeedView({
                 <p className="text-[13px] text-ink-2 mt-1">{subtitle}</p>
               </div>
 
-              <div className="text-[12px] text-ink-3 font-mono tabular-nums">
-                {t('showingCount', {
-                  shown: formatNumber(filteredPosts.length),
-                  total: formatNumber(subscribedPosts.length),
-                })}
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="text-[12px] text-ink-3 font-mono tabular-nums">
+                  {t('showingCount', {
+                    shown: formatNumber(filteredPosts.length),
+                    total: formatNumber(subscribedPosts.length),
+                  })}
+                </span>
+                <button
+                  type="button"
+                  onClick={onOpenAddSubscription}
+                  className="h-9 px-3.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center gap-1.5"
+                >
+                  <Plus className="w-4 h-4" strokeWidth={1.75} />
+                  <span>{t('addSourceTooltip')}</span>
+                </button>
               </div>
             </div>
 
-            {/* Mobile/Tablet Platform, Tag & Account Switchers */}
+            {/* Mobile/Tablet Platform Switcher */}
             <div className="lg:hidden space-y-2">
               <div className="flex items-center gap-1 p-1 bg-raised border border-line rounded-xl overflow-x-auto">
                 {platforms.map((plat) => {
@@ -706,67 +961,6 @@ export function FeedView({
                   );
                 })}
               </div>
-
-              {allSubscribedTags.length > 0 && (
-                <div className="flex items-center gap-1 p-1 bg-raised border border-line rounded-xl overflow-x-auto">
-                  <button
-                    type="button"
-                    onClick={() => handleTagSelect('all')}
-                    className={`h-7 px-2.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap shrink-0 ${
-                      selectedTag === 'all'
-                        ? 'bg-card text-ink shadow-[var(--shadow-small)]'
-                        : 'text-ink-2 hover:text-ink'
-                    }`}
-                  >
-                    {t('tagAll')}
-                  </button>
-                  {allSubscribedTags.map((tag) => {
-                    const isActive =
-                      selectedTag.toLowerCase() === tag.toLowerCase();
-                    return (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => handleTagSelect(tag)}
-                        className={`h-7 px-2.5 rounded-lg font-mono text-[12px] transition-colors whitespace-nowrap shrink-0 ${
-                          isActive
-                            ? 'bg-card text-ink font-medium shadow-[var(--shadow-small)]'
-                            : 'text-ink-2 hover:text-ink'
-                        }`}
-                      >
-                        {tag}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {visibleAccounts.length > 0 && (
-                <div className="flex items-center gap-1 p-1 bg-raised border border-line rounded-xl overflow-x-auto">
-                  {visibleAccounts.map((src) => {
-                    const isActive =
-                      src.id === 'all'
-                        ? selectedPage === 'all'
-                        : selectedPage.toLowerCase() === src.id.toLowerCase() ||
-                          selectedPage.toLowerCase() === src.handle.toLowerCase();
-                    return (
-                      <button
-                        key={src.id}
-                        type="button"
-                        onClick={() => onPageChange(src.id)}
-                        className={`h-8 px-3 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap inline-flex items-center gap-1.5 shrink-0 ${
-                          isActive
-                            ? 'bg-card text-ink shadow-[var(--shadow-small)]'
-                            : 'text-ink-2 hover:text-ink'
-                        }`}
-                      >
-                        {renderPlatformLogo(src.platform)}
-                        <span>{src.shortLabel}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
             </div>
 
             {/* Row 1: Search, Sort Order (FR-4) & Display Limit Bar */}
