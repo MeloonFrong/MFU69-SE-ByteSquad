@@ -1,109 +1,107 @@
-# InfoCenter — Aggregated Social Updates in One Place
+# InfoCenter — Unified Multi-Platform Social Feed Aggregator
 
-InfoCenter brings announcements and updates from multiple social media platforms (Facebook, Instagram, and TikTok) together into one convenient feed. Users paste the link of a page they want to follow, then organize sources with tags and filter posts by keyword. It is built for new students and newcomers to an organization, who often miss important announcements because information is scattered across many platforms.
-
-> Developed by **Team 17 — ByteSquad** · Introduction to Software Engineering (15031001), Mae Fah Luang University
-
----
-
-## 📌 Features & Highlights
-
-- 🔗 **Add & Subscribe via Link** — Paste a Facebook / Instagram / TikTok page URL to add it as a source
-- 📰 **Aggregated Feed** — Posts from every subscribed source appear in one feed, with a link back to the original post
-- 🏷️ **Tagging & Filtering** — Create custom tags (e.g. `#MFU`, `#TechNews`), assign them to sources, and show or hide posts by tag or platform
-- 🔍 **Keyword Sorting** — Filter posts with *Must include* / *Exclude* keywords, plus full-text search
-- 🗂️ **Feed Tabs** — All / Important / Unread / Bookmarked, sortable by Newest / Oldest / Important
-- 🛠️ **Manage Sources & Tags** — Enable/disable, delete, and edit the tags of each source
-- 🌐 **Thai / English UI** and 🌙 **Dark / Light theme** (saved in `localStorage`)
-- 🔌 **Backend-ready** — Calls a REST API at `/api/*` and automatically falls back to mock data when no backend is running
-
-**Tech stack:** React 18 · TypeScript · Vite 5 · Tailwind CSS 3 · lucide-react
+**Group 17: ByteSquad**  
+**Course:** Introduction to Software Engineering (`15031001`) — Mae Fah Luang University  
+**SDLC Methodology:** Reuse-Oriented Software Engineering  
 
 ---
 
-## ⚙️ Installation & Run
+## 1. Project Overview
+
+**InfoCenter** is a centralized, distraction-free bilingual (**Thai / English**) web application that aggregates announcements and updates from user-subscribed **Facebook pages**, **Instagram profiles**, and **TikTok accounts** into a single chronological feed.
+
+Designed for university students, new hires, and digital professionals who suffer from scattered announcements across multiple apps, InfoCenter implements all four **Must-Have Functional Requirements** defined in our SRS:
+- **FR-1 — Add & Subscribe to External Sources via Link:** Subscribe to Facebook, Instagram, and TikTok sources using URLs, `@handles`, or 1-click sample presets, and manage per-account post limits (`1–50` posts) or unsubscribe at any time.
+- **FR-2 — View Aggregated Content Feed:** Read normalized posts across all 3 platforms in one unified feed with platform badges, author metadata, engagement counts (`Likes`, `Comments`, `Shares`), media lightbox preview, and a direct **View Original** link to the native post.
+- **FR-3 — Categorize & Filter Subscriptions (Custom Multi-Tagging):** Freely create and attach multiple custom tags (e.g., `#MFU`, `#Academic`, `#News`, `#Creator`, or any user-typed tag) to subscribed accounts and filter the entire feed by tag in one click.
+- **FR-4 — Information Sorting & Keyword Filtering System:** Filter posts in real time using comma-separated **Include Keywords** (`Must Contain`) and **Exclude Keywords** (`Hide Word`), and sort the feed by **Latest posts (Newest)** or **Most liked (Engagement)**.
+
+---
+
+## 2. Team Members (Group 17: ByteSquad)
+
+| Student ID | Full Name | GitHub Account |
+| :--- | :--- | :--- |
+| `6931503004` | **Htet Wai Yan** | [@htetwaiyan](https://github.com/htetwaiyan) |
+| `6931503026` | **Kunut Wongtidatorn** | [@6931503026-netizen](https://github.com/6931503026-netizen) |
+| `6931503084` | **Anansit Inta** | [@MeloonFrong](https://github.com/MeloonFrong) |
+| `6931503091` | **Aung Phone Pyae Oo** | [@APPOfrom2069](https://github.com/APPOfrom2069) |
+| `6931503096` | **Swan Naing Aung** | [@Arkash-Drayven](https://github.com/Arkash-Drayven) |
+
+---
+
+## 3. How to Open the Clickable Prototype
+
+👉 **[clickable prototype](http://10.2.4.20:3000/)**
+
+### 5-Step Happy-Path Walkthrough (Testing FR-1 to FR-4)
+1. **Verify Unified Feed & Original Link (FR-2):** Upon opening `prototype/index.html`, inspect the unified feed containing normalized Facebook, Instagram, and TikTok posts. Click an image to open the Lightbox, or click **`ดูโพสต์ต้นฉบับ / View Original`** on any card to open the native post URL.
+2. **Add a New Source with Custom Multi-Tags (FR-1 & FR-3):** Click **`+ เพิ่มรายการติดตาม / + Add Subscription`**, click one of the Quick-Add preset pills (e.g., `ISC MFU (FB)` or `Zenless Zone Zero (TikTok)`) or paste any URL, type a custom tag (e.g., `Urgent` or `Scholarship`) and press `Enter`, then click **`เพิ่มลงในฟีด / Add to Feed`**.
+3. **Filter Feed by Custom Tag (FR-3):** In the Left Sidebar under **`กรองตามแท็ก (FR-3) / Filter by Tag (FR-3)`**, click `#MFU`, `#Academic`, or `#Creator` to display only posts from accounts carrying that tag.
+4. **Filter by Include / Exclude Keywords & Sort (FR-4):** In the top filter bar, type a required keyword in **`ต้องมีคำว่า (Include)`**, type an unwanted word in **`ซ่อนคำว่า (Exclude)`**, and switch the Sort selector between **`โพสต์ล่าสุด / Latest posts`** and **`ยอดไลก์สูงสุด / Most liked`**.
+5. **Adjust Per-Account Post Limits & Bilingual/Theme UX (FR-1 & NFR):** Click **`แก้ไขการตั้งค่ารีเฟรช / Edit Refresh Config`** in the Left Sidebar to change per-page post limits (`1–50`) or edit account tags, and use the top Navbar buttons to toggle **Thai / English (`TH` / `EN`)** and **Light / Dark Mode**.
+
+---
+
+## 4. How to Run the Full-Stack Application (C# Backend + React Frontend)
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) 18 or later (includes npm) — or [Bun](https://bun.sh/)
-- *(Optional)* Python 3, if you want to run the backend
+- **[.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)** (for the C# ASP.NET Core Web API & SQLite storage)
+- **[Node.js 18+](https://nodejs.org/)** and `npm` (for the React 19 + TypeScript + Vite frontend)
 
-### Steps
+### Step 1: Start the C# .NET Backend (Port `5030`)
+From the root directory of the repository (`MFU69-SE-ByteSquad/`):
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/MeloonFrong/MFU69-SE-ByteSquad.git
-cd MFU69-SE-ByteSquad
-git checkout frontend-ui
-git pull
+dotnet restore
+dotnet run --urls "http://localhost:5030"
+```
 
-# 2. Install dependencies
-npm install          # or: bun install
+- The backend starts on **`http://localhost:5030`** (Swagger UI available at `http://localhost:5030/swagger`).
+- Available REST API endpoints in [`Program.cs`](./Program.cs):
+  - `POST /api/FacebookScraper/run` — Trigger Facebook page scrape & SQLite persistence
+  - `POST /api/InstagramScraper/run` — Trigger Instagram profile scrape & SQLite persistence
+  - `POST /api/TiktokScraper/run` — Trigger TikTok creator scrape & SQLite persistence
+  - `GET /api/Storage/recent-posts` — Query normalized posts stored in `facebook_posts.db`
+  - `GET /api/ApifyDataset/fetch` — Fetch dataset items from an Apify run
 
-# 3. Set up environment variables
-cp .env.example .env # on Windows PowerShell: Copy-Item .env.example .env
+### Step 2: Start the React + Vite Frontend
+Open a second terminal and run:
 
-# 4. Start the dev server
+```bash
+cd Frontend
+npm install
 npm run dev
 ```
 
-Then open **http://localhost:3000** in your browser.
+- Open the printed local URL (default **`http://localhost:3000`** or **`http://localhost:5173`**) in your browser.
+- By default, the frontend connects to the deployed Azure C# Backend (**`https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net`**), or you can switch to `http://localhost:5030` for local backend development (with automatic fallback to normalized offline datasets if unreachable).
 
-### Available scripts
+---
 
-| Command | Description |
+## 5. Repository Structure & Documentation Index
+
+| Path / Document | Description |
 | :--- | :--- |
-| `npm run dev` | Start the dev server on port 3000 |
-| `npm run build` | Type-check and build for production into `dist/` |
-| `npm run preview` | Preview the production build on port 3000 |
-| `npm run lint` | Type-check with `tsc --noEmit` |
-
-> [!NOTE]
-> When the dev server starts, [`vite.config.ts`](vite.config.ts) tries to launch `python3 backend/server.py` on port **5001** and proxies `/api` to it. The `backend/` folder is not in the repo yet, so the app uses mock data from [`src/data/mockData.ts`](src/data/mockData.ts) instead.
-
----
-
-## 📁 Project Structure
-
-```
-MFU69-SE-ByteSquad/
-├── Docs/                      # Project documents
-│   ├── CONTRIBUTING.md        # Git workflow & branching guidelines
-│   ├── SRS.md                 # Software Requirements Specification (Markdown)
-│   ├── Team17_M1_TeamCharter.pdf
-│   └── Team17_M2_SRS.pdf
-├── src/
-│   ├── components/            # UI components
-│   │   ├── Navbar.tsx
-│   │   ├── FeedTabs.tsx
-│   │   ├── FilterSidebar.tsx
-│   │   ├── PostCard.tsx
-│   │   ├── AddSourceModal.tsx
-│   │   ├── ManageSourcesModal.tsx
-│   │   ├── ManageTagsModal.tsx
-│   │   └── AboutModal.tsx
-│   ├── data/
-│   │   ├── mockData.ts        # Default sources, posts, and tags
-│   │   └── translations.ts    # TH / EN UI strings
-│   ├── api.ts                 # REST client for /api/* (with fallbacks)
-│   ├── types.ts               # Shared TypeScript types
-│   ├── App.tsx                # Root component & state management
-│   ├── main.tsx               # Entry point
-│   └── index.css / styles.css # Global styles & theme variables
-├── index.html
-├── vite.config.ts             # Vite config + /api proxy
-├── tailwind.config.js
-├── postcss.config.js
-├── tsconfig.json
-├── package.json
-└── .env.example
-```
-
----
-
-## 🧪 Testing & Code Quality
-
-- **Type checking:** `npm run lint` runs the TypeScript compiler (`tsc --noEmit`) to catch type errors without emitting output files
-- **Build check:** `npm run build` type-checks before building; the build fails if there are any errors
-- **Automated tests:** None yet *(planned: unit tests with Vitest + React Testing Library)*
-- **Manual / acceptance testing:** Based on the Non-Functional Requirements in the [SRS](Docs/SRS.md), including measuring page-load time and checking how easily a first-time user can add a source without assistance.
-- **Code review:** Every change must go through a Pull Request before being merged into `main` (see [CONTRIBUTING.md](Docs/CONTRIBUTING.md))
+| **Clickable Prototype** | |
+| [clickable prototype](http://10.2.4.20:3000/) | **Live Clickable Prototype** (`http://10.2.4.20:3000/`) |
+| **Milestone Reports & Core Docs (`docs/`)** | |
+| [`docs/final-report.md`](./docs/final-report.md) | **M3 Final Project Report & Complete Golden Thread Table** (`Problem → FR → Design → Prototype → Test`) |
+| [`docs/SRS.md`](./docs/SRS.md) | **Software Requirements Specification (Markdown)** with updated Section 7 Traceability Matrix |
+| [`docs/Team17_M2_SRS.pdf`](./docs/Team17_M2_SRS.pdf) | **M2 SRS Official PDF Submission** |
+| [`docs/Team17_M1_TeamCharter.pdf`](./docs/Team17_M1_TeamCharter.pdf) | **M1 Team Charter Official PDF Submission** |
+| [`docs/Testing.md`](./docs/Testing.md) | **QA & System Test Report (`TC-01` to `TC-11`, NFR Checks, and Bug Resolution Log)** |
+| [`docs/ai-use-statement.md`](./docs/ai-use-statement.md) | **M3 AI Use Statement & Reflection** (Where AI helped, What worked, AI mistakes caught, Verification) |
+| [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md) | Team Git workflow, branching conventions, and contribution guidelines |
+| [`docs/InfoCenter_Project_Documentation.pdf`](./docs/InfoCenter_Project_Documentation.pdf) | Supplementary compiled project documentation PDF |
+| **System Design & UML Diagrams (`docs/design/`)** | |
+| [`docs/design/Use Case Diagram.md`](./docs/design/Use%20Case%20Diagram.md) | **UML Use Case Diagram & Specifications** mapped to FR-1, FR-2, FR-3, FR-4 |
+| [`docs/design/Class diagram.md`](./docs/design/Class%20diagram.md) | **UML Class & Data Model Diagram** (React TypeScript + C# .NET Backend + SQLite) |
+| [`docs/design/Sequence and Component Diagram.md`](./docs/design/Sequence%20and%20Component%20Diagram.md) | **UML Sequence Diagrams (FR-1 to FR-4) & Component Architecture Diagram** |
+| [`docs/design/Deployment Diagram.md`](./docs/design/Deployment%20Diagram.md) | **UML Deployment Diagram** (Standalone Prototype Mode + Full-Stack Mode) |
+| **Presentation Slides (`slides/`)** | |
+| [`slides/demo-slides.pdf`](./slides/demo-slides.pdf) | **M3 Final Demo Presentation Slides (PDF)** |
+| [`slides/InfoCenter_M3_Demo_Slides_ByteSquad.pptx`](./slides/InfoCenter_M3_Demo_Slides_ByteSquad.pptx) | **M3 Final Demo Presentation Slides (PowerPoint `.pptx`)** |
+| **Source Code** | |
+| [`Program.cs`](./Program.cs) & [`FacebookScraperApi.csproj`](./FacebookScraperApi.csproj) | **C# ASP.NET Core (.NET 8) Backend** (`Port 5030`, Apify actors & SQLite persistence) |
+| [`Frontend/src/`](./Frontend/src/) | **React 19 + TypeScript + Tailwind CSS Frontend Source Code** |

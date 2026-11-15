@@ -1,0 +1,647 @@
+[
+  {
+    "facebookUrl": "https://www.facebook.com/MFU2Connect",
+    "postId": "122233358684348486",
+    "pageName": "MFU2Connect",
+    "url": "https://www.facebook.com/reel/2668944983539883/",
+    "time": "2026-11-09T09:05:13.000Z",
+    "timestamp": 1794215113,
+    "user": {
+      "id": "61560454606746",
+      "name": "ม.แม่ฟ้าหลวง Mae Fah Luang University",
+      "profileUrl": "https://www.facebook.com/61560454606746",
+      "profilePic": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/571242477_122192858018348486_6763774367166819581_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx710x710&ctp=s50x50&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=0iz32JkqPWUQ7kNvwEaRBco&_nc_oc=Adqt5h0XMU8-ccwFsLhxK9sO4_mTwi08SfmFgeO0Czt2UCl-j0kRrHV6Q0IgTYe9ctQ&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQT5KzfGRXi3_EuD1BQuD15bPuqXJHk0VepBhLHN4NWkLg&oe=6AFB3850"
+    },
+    "collaborators": [],
+    "text": "งานมหกรรมหนังสือ MFU Book Fair 2026\nพบกับบริษัทและร้านหนังสือชั้นนำเข้าร่วมจัดแสดงและจำหน่ายหนังสือ\nรวมทั้งสิ้น 33 ร้านค้า จำนวน 54 บูธ และกิจกรรมอีกมากมาย\nระหว่างวันที่ 9-13 พฤศจิกายน 2569 เวลา 09.00-19.30 น.\nณ อาคาร M-Square มฟล.\n.....\nMFU Book Fair 2026\n\nDiscover leading publishers and bookstores showcasing and selling a wide variety of books, featuring 33 retailers across 54 booths, along with numerous exciting activities.\n\nDate: November 9–13, 2026\n\nTime: 09:00–19:30 hrs.\n\nVenue: M-Square Building, Mae Fah Luang University",
+    "likes": 20,
+    "shares": 5,
+    "topReactionsCount": 2,
+    "isVideo": true,
+    "viewsCount": 23880,
+    "videoPostViewCount": 7295,
+    "liveViewerCount": 0,
+    "media": [
+      {
+        "thumbnail": "https://scontent-sjc6-1.xx.fbcdn.net/v/t15.5256-10/896926843_1672628981058102_1027838938032269781_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1920&ctp=s960x960&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=d2b52d&_nc_ohc=xM1kk-A5kHMQ7kNvwFDTO9I&_nc_oc=Adogeyp0Eotqd0Q31N9u96yvZ697HWEqRIkKdTBZzXiHRG8kvbJvA_yUgPQ3NvKleUk&_nc_zt=23&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQQfBGvy4Kh2WigCBFyKXVOI166oCiq2cYZjlwyST5NZpg&oe=6AFB3A14",
+        "__typename": "Video",
+        "thumbnailImage": {
+          "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t15.5256-10/896926843_1672628981058102_1027838938032269781_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1920&ctp=s960x960&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=d2b52d&_nc_ohc=xM1kk-A5kHMQ7kNvwFDTO9I&_nc_oc=Adogeyp0Eotqd0Q31N9u96yvZ697HWEqRIkKdTBZzXiHRG8kvbJvA_yUgPQ3NvKleUk&_nc_zt=23&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQQfBGvy4Kh2WigCBFyKXVOI166oCiq2cYZjlwyST5NZpg&oe=6AFB3A14"
+        },
+        "id": "2668944983539883",
+        "is_clipping_enabled": false,
+        "live_rewind_enabled": false,
+        "owner": {
+          "__typename": "User",
+          "id": "61560454606746",
+          "__isVideoOwner": "User",
+          "has_professional_features_for_watch": true
+        },
+        "playable_duration_in_ms": 78400,
+        "is_huddle": false,
+        "url": "https://www.facebook.com/reel/2668944983539883/",
+        "if_viewer_can_use_latency_menu": null,
+        "if_viewer_can_use_latency_menu_toggle": null,
+        "captions_url": null,
+        "video_available_captions_locales": [
+          {
+            "localized_creation_method": "สร้างขึ้นโดยอัตโนมัติแล้ว",
+            "captions_url": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.2093-6/897441119_2668946950206353_2433683966363164963_n.srt?_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=c211c2&_nc_ohc=ycAZorWdinEQ7kNvwG97IN5&_nc_oc=AdqbkKJEspspQJjfzQlmAGs5vzfMrQCRMiaSmA2d_eN0WOsWzHaNfKH4eRl7XNSYqsA&_nc_zt=14&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQQD3gCe4NNIEy2zJ16WFfCw2iF1MpZ3OvazG_rugU-6RA&oe=6AFB1B8D",
+            "locale": "th_TH",
+            "localized_language": "ไทย",
+            "localized_country": null
+          }
+        ],
+        "if_viewer_can_see_community_moderation_tools": null,
+        "if_viewer_can_use_live_rewind": null,
+        "if_viewer_can_use_clipping": null,
+        "if_viewer_can_see_costreaming_tools": null,
+        "video_player_scrubber_preview_renderer": {
+          "__typename": "XFBVideoPlayerScrubberDefaultPreviewRenderer",
+          "video": {
+            "scrubber_preview_thumbnail_information": {
+              "sprite_uris": [
+                "https://scontent-sjc6-1.xx.fbcdn.net/v/t15.5256-10/899696642_1497654025545172_2894475573745496865_n.jpg?stp=dst-jpg_tt6&cstp=mx1000x1760&ctp=s1000x1760&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=06012f&_nc_ohc=PGIOPzl-eVkQ7kNvwGKjibf&_nc_oc=Adq2IBryxb_TSw3jImmBESQrbgakrM0XC3AupD1VQLZBTx3eMhLqHAOFoCPNhDFE8yY&_nc_zt=23&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQRTjlobLNmJGFgvQo4tV7kFmlWvkjbxFjeVsh_iO_GRxw&oe=6AFB3337"
+              ],
+              "thumbnail_width": 100,
+              "thumbnail_height": 176,
+              "has_preview_thumbnails": true,
+              "num_images_per_row": 10,
+              "max_number_of_images_per_sprite": 100,
+              "time_interval_between_image": 1
+            },
+            "id": "2668944983539883"
+          },
+          "__module_operation_VideoPlayerScrubberPreview_video": {
+            "__dr": "VideoPlayerScrubberDefaultPreview_video$normalization.graphql"
+          },
+          "__module_component_VideoPlayerScrubberPreview_video": {
+            "__dr": "VideoPlayerScrubberDefaultPreview.react"
+          }
+        },
+        "video_player_scrubber_base_content_renderer": null,
+        "recipient_group": null,
+        "breakingStatus": false,
+        "videoId": "2668944983539883",
+        "isPremiere": false,
+        "liveViewerCount": 0,
+        "rehearsalInfo": null,
+        "is_gaming_video": false,
+        "publish_time": 1794214958,
+        "animated_image_caption": null,
+        "width": 1080,
+        "height": 1920,
+        "broadcaster_origin": null,
+        "broadcast_id": null,
+        "broadcast_status": null,
+        "is_live_streaming": false,
+        "is_live_trace_enabled": false,
+        "is_looping": false,
+        "is_video_broadcast": false,
+        "is_podcast_video": false,
+        "loop_count": 0,
+        "is_spherical": false,
+        "is_spherical_enabled": true,
+        "unsupported_browser_message": null,
+        "pmv_metadata": null,
+        "latency_sensitive_config": null,
+        "live_playback_instrumentation_configs": null,
+        "is_ncsr": false,
+        "permalink_url": "https://www.facebook.com/reel/2668944983539883/",
+        "seo_web_crawler_lookaside_url": null,
+        "dash_prefetch_experimental": [
+          "1457819512969999v",
+          "1457772032974747a"
+        ],
+        "video_status_type": "OK",
+        "can_use_oz": true,
+        "min_quality_preference": null,
+        "spherical_video_fallback_urls": null,
+        "comet_video_player_nextgendash_availability": "AVAILABLE",
+        "videoDeliveryLegacyFields": {
+          "dash_manifest_xml_string": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\" minBufferTime=\"PT2S\" type=\"static\" mediaPresentationDuration=\"PT78.400002S\" FBTagsetUsed=\"r2av1-r1gen2vp9\" FBManifestIdentifier=\"FgAYD3IyYXYxLXIxZ2VuMnZwORmWtv6Cg8D1lgX0+KXgofiWBZ7svOOh+JYFyN/T5qH4lgXy0urpofiWBZzGge2h+JYFxrmY8KH4lgXwrK/zofiWBZqgxvah+JYFIhgQYXVkaW9fYWFjX2xuX3ZiciI2BBQAElgOTk9UX0NMQVNTSUZJRUQA\"><Period id=\"0\" duration=\"PT78.400002S\"><AdaptationSet id=\"0\" contentType=\"video\" frameRate=\"15360/512\" subsegmentAlignment=\"true\" par=\"9:16\"><SupplementalProperty schemeIdUri=\"urn:mpeg:mpegB:cicp:MatrixCoefficients\" value=\"1\"/><Representation id=\"1457819512969999v\" bandwidth=\"286386\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q20\" FBPlaybackResolutionMos=\"0:100,360:76.6,480:73.6,720:69.5,1080:67\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:92.4,480:91.5,720:88.8,1080:83.7\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"240p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQP8XtTMBLnzOj-o9qk42SK-gCmWK743eA1YUUY3fNqpr94KK7yjhwvywUVhqKfWwvJTP0rShxuv0_-QaMLWgTMO8AakxFmzMuV2-eY.mp4?_nc_cat=110&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=2KEDtfjqiNQQ7kNvwErr-EP&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3EyMCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjoyODYzODYsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQSX1-Y-IaG2tHkIzTiEWt3Q20QwAoqH-b9ASU6SVpFHNw&amp;oe=6AFB3E1F</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-207703\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819532969997v\" bandwidth=\"420144\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q30\" FBPlaybackResolutionMos=\"0:100,360:81.7,480:78.1,720:74.4,1080:71.6\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:93.8,480:93.4,720:91.5,1080:87.4\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"270p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQPJCz3Bz4iW2BDu0hMyXIZWYAeR6XvwYiUO3ETVW-V0Rk4LtonSz2OF8CCTLKmL919OwZV546An4wgfwZJrhtxCztJ7n_L6aRtRhAI.mp4?_nc_cat=107&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=B5OagAeXtJYQ7kNvwEjpLPo&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3EzMCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjo0MjAxNDQsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQRyS-XCRKArrZB-MHehrfv2RCxbatOcQpREAO1_vXqN7w&amp;oe=6AFB1118</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-301518\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819522969998v\" bandwidth=\"515656\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q40\" FBPlaybackResolutionMos=\"0:100,360:84.4,480:81.3,720:76.8,1080:73.9\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:94.5,480:94.4,720:93,1080:89.5\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"360p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQPOMgIUrn785KPRYU1Hsb4zELnAnnLuKm9l3AnuHWyMI0eqNV87UR-ZFuIwNPmGQuHeVL5BoCItHps5HzyVZcxDju2I9T67FgngYlY.mp4?_nc_cat=106&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=zbawd42TZIYQ7kNvwGuQa_G&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3E0MCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjo1MTU2NTYsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQTd0ke1NqcuCiao69dO-BzylaIEzpF8XkdaNz8VkCzizQ&amp;oe=6AFB4347</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-369087\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819519636665v\" bandwidth=\"660536\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q50\" FBPlaybackResolutionMos=\"0:100,360:86.6,480:83.9,720:79.4,1080:75.9\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:94.8,480:95.1,720:94.1,1080:91.2\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"480p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQPMdyvQDDdudZjagfuL5ticBnsB0Vcnb3KfOVRS5I1OgUxHPfXqe3NWcCQKPQ4TlVXx4p-nWiS2HJd_9PSHwvj-Tk2raQs8I_L1ngM.mp4?_nc_cat=105&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=WacJC0xncr0Q7kNvwEWsULe&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3E1MCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjo2NjA1MzYsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQQAgAEUlvCkcLbrmSCDMbdn6xikLFqJd_5z8rpSLw2zUg&amp;oe=6AFB3A46</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-471498\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819529636664v\" bandwidth=\"817821\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q60\" FBPlaybackResolutionMos=\"0:100,360:88.3,480:85.9,720:81.7,1080:77.5\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:95.2,480:95.4,720:94.8,1080:92.1\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"540p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQPdlYAEA11tlcI10dZllHg-fI_rpKn1Fbn9hZaf0A_iYbSZGgQne-bwKgrAOtMkJta9CqCLVSagCNYKGynY9h4MCUZ8bchxzIw-93M.mp4?_nc_cat=109&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=ep4KpooiE6YQ7kNvwHUKiXa&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3E2MCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjo4MTc4MjEsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQStRIMc7epOAT024JMLvOQzoyMMVjVlOrHVy28rC8Y2Ow&amp;oe=6AFB2D22</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-580908\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819509636666v\" bandwidth=\"1086950\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q70\" FBPlaybackResolutionMos=\"0:100,360:89.9,480:87.8,720:84,1080:79.7\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:95.4,480:95.8,720:95.4,1080:93.3\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"640p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQPKHMiWN8gxA6O4Jx8vOoTDq6qVGcCJmd74D9MSnELfpk9TKWBp9FT-6_UU_j5_yhtsowi6Bp0SDqWKfanidqXVlBYAFTgQHJfrwmE.mp4?_nc_cat=107&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=6UPsD5uApA4Q7kNvwF0daQ1&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3E3MCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjoxMDg2OTUwLCJ1cmxnZW5fc291cmNlIjoid3d3In0%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQTXZSw5zyVdiNdU0mfbTigPLZqQoXtPztU5V_WjQlhTvw&amp;oe=6AFB3784</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-765954\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819526303331v\" bandwidth=\"1583719\" codecs=\"av01.0.05M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q80\" FBPlaybackResolutionMos=\"0:100,360:91.4,480:89.6,720:86.2,1080:82.1\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:95.5,480:96.2,720:96.1,1080:94.5\" width=\"720\" height=\"1280\" FBQualityClass=\"hd\" FBQualityLabel=\"720p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQOBYAOaVn7T8m9YTOB3YL9gm6rw18ysFkI87H-aOb99YvVEmdlhhQPvRPx_wpFWWm6_D-KUFU6B8p-OGz6_YRVtvB26vDNDabv5Yu8.mp4?_nc_cat=108&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=n4pxW3g6YGYQ7kNvwEPC-wZ&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3E4MCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjoxNTgzNzE5LCJ1cmxnZW5fc291cmNlIjoid3d3In0%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQRTU4Q_eAZQZ78w50BmNxGRXSwrRMt1xi20HX84jRiOug&amp;oe=6AFB2389</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-1105156\"><Initialization range=\"0-823\"/></SegmentBase></Representation><Representation id=\"1457819516303332v\" bandwidth=\"2197128\" codecs=\"av01.0.08M.08.0.111.00.00.01.0\" mimeType=\"video/mp4\" sar=\"1:1\" FBEncodingTag=\"dash_r2av1-r1gen2vp9_q90\" FBPlaybackResolutionMos=\"0:100,360:92.6,480:91.4,720:89.1,1080:86.6\" FBPlaybackResolutionMosConfidenceLevel=\"high\" FBPlaybackResolutionCsvqm=\"0:100,360:95.6,480:96.3,720:96.6,1080:96.4\" width=\"1080\" height=\"1920\" FBQualityClass=\"hd\" FBQualityLabel=\"1080p\"><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQNxJXySX2ZMZ8fN4O6Y57cBmOSc8AdbabIfpuhqENhuX0v75ApTxzuyM3CeEckbwL-El8in_SzIz0qTCBcc3dhQZqCD_vM6UG965lo.mp4?_nc_cat=108&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=MUlsw2mm4GEQ7kNvwHBd6Qg&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfcjJhdjEtcjFnZW4ydnA5X3E5MCIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjoyMTk3MTI4LCJ1cmxnZW5fc291cmNlIjoid3d3In0%3D&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQRLPlX8bkgaJIyEsjvbxEuDguKewsDo9jiESjhDrtd0ZQ&amp;oe=6AFB3E51</BaseURL><SegmentBase indexRange=\"824-1047\" timescale=\"15360\" FBFirstSegmentRange=\"1048-1488421\"><Initialization range=\"0-823\"/></SegmentBase></Representation></AdaptationSet><AdaptationSet id=\"1\" contentType=\"audio\" subsegmentStartsWithSAP=\"1\" subsegmentAlignment=\"true\"><Representation id=\"1457772032974747a\" bandwidth=\"86847\" codecs=\"mp4a.40.5\" mimeType=\"audio/mp4\" FBAvgBitrate=\"86847\" audioSamplingRate=\"48000\" FBEncodingTag=\"dash_ln_heaac_vbr3_audio\"><AudioChannelConfiguration schemeIdUri=\"urn:mpeg:dash:23003:3:audio_channel_configuration:2011\" value=\"2\"/><BaseURL>https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m412/AQN9WTxWncbPulaW2WCb1Nb7rJNU7glPpEh0TMuDH6nm020TEbqhXSigDQgrj3fTadqmnbKsB9vbzkRcSHURXB7rpixwJqxOJbXpRys.mp4?_nc_cat=107&amp;_nc_sid=9ca052&amp;_nc_ht=video-sjc6-1.xx.fbcdn.net&amp;_nc_ohc=DWOuONYVyogQ7kNvwGj-4iO&amp;efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfbG5faGVhYWNfdmJyM19hdWRpbyIsInZpZGVvX2lkIjoyNjY4OTQ0OTgzNTM5ODgzLCJvaWxfdXJsZ2VuX2FwcF9pZCI6MCwiY2xpZW50X25hbWUiOiJ1bmtub3duIiwieHB2X2Fzc2V0X2lkIjoxNDU3NzcxNzI5NjQxNDQ0LCJhc3NldF9hZ2VfZGF5cyI6MiwidmlfdXNlY2FzZV9pZCI6MTAxMjIsImR1cmF0aW9uX3MiOjc4LCJiaXRyYXRlIjo4Njk4MiwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&amp;ccb=17-1&amp;_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&amp;_nc_ss=70180&amp;_nc_map=urlgen_bucketless&amp;_nc_zt=28&amp;oh=00_AQSIUSONNIBTuNctcC5XfuMY-VbXA0fgpMtXN0rxLuWF2w&amp;oe=6AFB38BC</BaseURL><SegmentBase indexRange=\"824-1335\" timescale=\"48000\" FBFirstSegmentRange=\"1336-18718\"><Initialization range=\"0-823\"/></SegmentBase></Representation></AdaptationSet></Period></MPD>\n",
+          "dash_manifest_url": "https://www.facebook.com/dash_mpd_debug.mpd?v=2668944983539883&dummy=.mpd",
+          "browser_native_sd_url": "https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m412/AQNmtOYEoEMRG-tMwSQ_GRb9Zzxw3dnRPLK44V34uO7CvfBDMZswjCN5mwgJorG2DLLdIKaczbbYX4sbCLlvw-I_06HFOYmYG9E7nFSXXw.mp4?_nc_cat=110&_nc_sid=8bf8fe&_nc_ht=video-sjc6-1.xx.fbcdn.net&_nc_ohc=cmGDOPL1_I4Q7kNvwFgkKv7&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5GQUNFQk9PSy4uQzMuMzYwLnN2ZV9zZCIsInhwdl9hc3NldF9pZCI6MTQ1Nzc3MTcyOTY0MTQ0NCwiYXNzZXRfYWdlX2RheXMiOjIsInZpX3VzZWNhc2VfaWQiOjEwMTIyLCJkdXJhdGlvbl9zIjo3OCwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&_nc_map=urlgen_bucketless&_nc_zt=28&oh=00_AQSANT3vjwre2KnJ6I9Sjl28vpeLSVeviPDq0U-yMMcYVQ&oe=6AFB1254&bitrate=390365&tag=sve_sd",
+          "browser_native_hd_url": "https://video-sjc6-1.xx.fbcdn.net/o1/v/t2/f2/m366/AQMbmJZpYhUEdBgfCRxORaL9xJ86Kt6PDv8WWGcoLWYrzJsALhBxtwV7EnvefGTM6PvhQ0m9rxNA9aIzlbpSuLhNix8L7SLCB5_ePgBF9fQYpA.mp4?_nc_cat=105&_nc_sid=5e9851&_nc_ht=video-sjc6-1.xx.fbcdn.net&_nc_ohc=M_6R5OgbYSAQ7kNvwF585dB&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5GQUNFQk9PSy4uQzMuNzIwLmRhc2hfaDI2NC1iYXNpYy1nZW4yXzcyMHAiLCJ4cHZfYXNzZXRfaWQiOjE0NTc3NzE3Mjk2NDE0NDQsImFzc2V0X2FnZV9kYXlzIjoyLCJ2aV91c2VjYXNlX2lkIjoxMDEyMiwiZHVyYXRpb25fcyI6NzgsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=86b292a709cd830d&_nc_vs=HBksFQIYRWZiX2VwaGVtZXJhbC81Q0U5ODA3RjQ0MzA0MDFBQTlBQkE5NTY4NzZEMkZGRl9tdF8xX3ZpZGVvX2Rhc2hpbml0Lm1wNBUAAsgBEgAVAhhAZmJfcGVybWFuZW50L0RGRDc5RTg4RDI5MTRCRjU5Q0I2NTJDMzY0OUYwRDI2X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbI_97hvfWWBRUCKAJDMywXQFOZmZmZmZoYGWRhc2hfaDI2NC1iYXNpYy1nZW4yXzcyMHARAHUCZZSeAQA&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&_nc_map=urlgen_bucketless&_nc_zt=28&oh=00_AQS--9g3f7N4uKLWgVDF1ocarb4EX4p3vV2H1UUqYK4W3g&oe=6AFB114B&bitrate=1459673&tag=dash_h264-basic-gen2_720p",
+          "id": "2668944983539883"
+        },
+        "videoDeliveryResponseFragment": null,
+        "is_latency_menu_enabled": false,
+        "fbls_tier": null,
+        "is_latency_sensitive_broadcast": false,
+        "video_player_shaka_performance_logger_init": {
+          "__typename": "VideoPlayerShakaPerformanceLoggerInit",
+          "__module_operation_useVideoPlayerShakaPerformanceLoggerRelayImpl_video": {
+            "__dr": "useVideoPlayerShakaPerformanceLoggerRelayImpl_init$normalization.graphql"
+          },
+          "__module_component_useVideoPlayerShakaPerformanceLoggerRelayImpl_video": {
+            "__dr": "VideoPlayerShakaPerformanceLogger"
+          }
+        },
+        "video_player_shaka_performance_logger_should_sample": false,
+        "video_player_shaka_performance_logger_init2": {
+          "__typename": "VideoPlayerShakaPerformanceLoggerInit",
+          "__module_operation_useVideoPlayerShakaPerformanceLoggerBuilder_video": {
+            "__dr": "useVideoPlayerShakaPerformanceLoggerBuilder_init$normalization.graphql"
+          },
+          "__module_component_useVideoPlayerShakaPerformanceLoggerBuilder_video": {
+            "__dr": "VideoPlayerShakaPerformanceLoggerBuilder"
+          },
+          "per_session_sampling_rate": null
+        },
+        "autoplay_gating_result": "all_page_organic_allowed",
+        "viewer_autoplay_setting": "default_autoplay",
+        "can_autoplay": true,
+        "drm_info": "{\"fairplay_cert\":null,\"graph_api_video_license_uri\":null,\"video_license_uri_map\":{},\"widevine_cert\":\"CsECCAMSEBcFuRfMEgSGiwYzOi93KowYgrSCkgUijgIwggEKAoIBAQCZ7Vs7Mn2rXiTvw7YqlbWYUgrVvMs3UD4GRbgU2Ha430BRBEGtjOOtsRu4jE5yWl5KngeVKR1YWEAjp+GvDjipEnk5MAhhC28VjIeMfiG\\/+\\/7qd+EBnh5XgeikX0YmPRTmDoBYqGB63OBPrIRXsTeo1nzN6zNwXZg6IftO7L1KEMpHSQykfqpdQ4IY3brxyt4zkvE9b\\/tkQv0x4b9AsMYE0cS6TJUgpL+X7r1gkpr87vVbuvVk4tDnbNfFXHOggrmWEguDWe3OJHBwgmgNb2fG2CxKxfMTRJCnTuw3r0svAQxZ6ChD4lgvC2ufXbD8Xm7fZPvTCLRxG88SUAGcn1oJAgMBAAE6FGxpY2Vuc2Uud2lkZXZpbmUuY29tEoADrjRzFLWoNSl\\/JxOI+3u4y1J30kmCPN3R2jC5MzlRHrPMveoEuUS5J8EhNG79verJ1BORfm7BdqEEOEYKUDvBlSubpOTOD8S\\/wgqYCKqvS\\/zRnB3PzfV0zKwo0bQQQWz53ogEMBy9szTK\\/NDUCXhCOmQuVGE98K\\/PlspKkknYVeQrOnA+8XZ\\/apvTbWv4K+drvwy6T95Z0qvMdv62Qke4XEMfvKUiZrYZ\\/DaXlUP8qcu9u\\/r6DhpV51Wjx7zmVflkb1gquc9wqgi5efhn9joLK3\\/bNixbxOzVVdhbyqnFk8ODyFfUnaq3fkC3hR3f0kmYgI41sljnXXjqwMoW9wRzBMINk+3k6P8cbxfmJD4\\/Paj8FwmHDsRfuoI6Jj8M76H3CTsZCZKDJjM3BQQ6Kb2m+bQ0LMjfVDyxoRgvfF\\/\\/M\\/EEkPrKWyU2C3YBXpxaBquO4C8A0ujVmGEEqsxN1HX9lu6c5OMm8huDxwWFd7OHMs3avGpr7RP7DUnTikXrh6X0\"}",
+        "p2p_settings": null,
+        "audio_settings": null,
+        "captions_settings": null,
+        "broadcast_low_latency_config": null,
+        "audio_availability": "AVAILABLE",
+        "muted_segments": [],
+        "spherical_video_renderer": null,
+        "preferred_thumbnail": {
+          "image": {
+            "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t15.5256-10/896926843_1672628981058102_1027838938032269781_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1920&ctp=s960x960&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=be8305&_nc_ohc=xM1kk-A5kHMQ7kNvwFDTO9I&_nc_oc=Adogeyp0Eotqd0Q31N9u96yvZ697HWEqRIkKdTBZzXiHRG8kvbJvA_yUgPQ3NvKleUk&_nc_zt=23&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQQfBGvy4Kh2WigCBFyKXVOI166oCiq2cYZjlwyST5NZpg&oe=6AFB3A14"
+          },
+          "image_preview_payload": "ABgqxfOc04u2/b7kflmkWKQnoe2akaCRnJA7n071V35mdkuxFG5z83OeBz0oqRbZ1YbsDBHU0Va8zOWuxsR25Iwc565AHP505kAIxkbe/wAvNV5LqTGBu9OBjj8B39apPcSBeefTOc//AF6y5zW33l95FeVTnPB647c9gMUVjRSMGySeaKht3Jvy6FkS8YJ59c01m3cE/rUNIamx03Hsi46/rRUZFFUidOx//9k=",
+          "id": "1672628977724769"
+        },
+        "video_imf_data": null,
+        "playback_language_on_comet": null,
+        "original_width": 1080,
+        "original_height": 1920,
+        "original_rotation": "NO_ROTATE",
+        "accent_color": "FF174F68",
+        "video_container_type": "CONTAINED_POST_ATTACHMENT",
+        "is_soundbites_video": false,
+        "comet_video_player_audio_overlay_renderer": null,
+        "clip_fallback_cover": null,
+        "is_clip": false,
+        "matcha_related_keywords_links": [
+          ""
+        ],
+        "is_music_clip": false,
+        "can_open_tahoe_for_lva": false,
+        "video_collaborator_page_or_delegate_page": null,
+        "video_anchor_tag_info": null,
+        "image": {
+          "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t15.5256-10/896926843_1672628981058102_1027838938032269781_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1920&ctp=p296x100&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=d2b52d&_nc_ohc=xM1kk-A5kHMQ7kNvwFDTO9I&_nc_oc=Adogeyp0Eotqd0Q31N9u96yvZ697HWEqRIkKdTBZzXiHRG8kvbJvA_yUgPQ3NvKleUk&_nc_zt=23&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQQfBGvy4Kh2WigCBFyKXVOI166oCiq2cYZjlwyST5NZpg&oe=6AFB3A14"
+        },
+        "canonical_uri_with_fallback": "https://www.facebook.com/MFU2Connect/videos/%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A1%E0%B8%AB%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%AB%E0%B8%99%E0%B8%B1%E0%B8%87%E0%B8%AA%E0%B8%B7%E0%B8%AD-mfu-book-fair-2026%E0%B8%9E%E0%B8%9A%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%A9%E0%B8%B1%E0%B8%97%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%AB%E0%B8%99%E0%B8%B1%E0%B8%87%E0%B8%AA%E0%B8%B7%E0%B8%AD%E0%B8%8A%E0%B8%B1%E0%B9%89%E0%B8%99%E0%B8%99%E0%B8%B3%E0%B9%80%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B9%81%E0%B8%AA%E0%B8%94/2668944983539883/"
+      }
+    ],
+    "feedbackId": "ZmVlZGJhY2s6cGZiaWQwM1l5WldWZWI4Y3ZWdXV1S1A1SFdEMzVidXBVNERUSE1HVExhdFVxN3VGeU04ZkNKYkY1dHFaM1NnbnFCODRtY2w=",
+    "reactionLikeCount": 17,
+    "reactionLoveCount": 3,
+    "paidPartnership": false,
+    "topLevelUrl": "https://www.facebook.com/61560454606746/posts/122233358684348486",
+    "facebookId": "61560454606746",
+    "pageAdLibrary": {
+      "id": "350295584832849",
+      "pamv_comms_data": null
+    },
+    "inputUrl": "https://www.facebook.com/MFU2Connect"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/MFU2Connect",
+    "postId": "122233140842348486",
+    "pageName": "MFU2Connect",
+    "url": "https://www.facebook.com/MFU2Connect/posts/pfbid0dgdLB269r67QwCk6Qhm3pA7oPtia1QxKzKdtRKiX8HmodqE36Nw2A7mQp5Qopbd9l",
+    "time": "2026-11-07T06:58:17.000Z",
+    "timestamp": 1794034697,
+    "user": {
+      "id": "61560454606746",
+      "name": "ม.แม่ฟ้าหลวง Mae Fah Luang University",
+      "profileUrl": "https://www.facebook.com/61560454606746",
+      "profilePic": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/571242477_122192858018348486_6763774367166819581_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx710x710&ctp=s50x50&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=0iz32JkqPWUQ7kNvwEaRBco&_nc_oc=Adqt5h0XMU8-ccwFsLhxK9sO4_mTwi08SfmFgeO0Czt2UCl-j0kRrHV6Q0IgTYe9ctQ&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQT5KzfGRXi3_EuD1BQuD15bPuqXJHk0VepBhLHN4NWkLg&oe=6AFB3850"
+    },
+    "collaborators": [],
+    "text": "📚✨ MFU Book Fair 2026 เปิดโลกการอ่าน เติมเต็มประสบการณ์การเรียนรู้!\n\nชวนทุกคนมาร่วมสัมผัสบรรยากาศมหกรรมหนังสือ MFU Book Fair 2026 พบกับหนังสือหลากหลายประเภทจากร้านหนังสือและสำนักพิมพ์ชั้นนำ ทั้งหนังสือวิชาการ หนังสือทั่วไป และสื่อการเรียนรู้ พร้อมกิจกรรมพิเศษที่ชวนมาเรียนรู้ ทดลอง และสร้างสรรค์ประสบการณ์ใหม่ ๆ\n\nภายในงานยังมีกิจกรรมหลากหลาย อาทิ\n📖 เลือกชมและแนะนำหนังสือเข้าห้องสมุด\n🎤 พบกับกิจกรรมพิเศษและการพูดคุยแลกเปลี่ยนความรู้\n💻 เข้าร่วม Online Database Workshop\n🎨 สนุกกับกิจกรรมสร้างสรรค์และกิจกรรมรักษ์สิ่งแวดล้อม\n🎲 เปิดประสบการณ์การเรียนรู้ผ่านเกมและกิจกรรมต่าง ๆ\n\nมาร่วมเปิดหน้าหนังสือใหม่ ๆ ค้นหาแรงบันดาลใจ และเก็บเกี่ยวประสบการณ์ดี ๆ ไปด้วยกัน แล้วพบกันที่ MFU Book Fair 2026!\n\n++++++++++++\n\n☺ ติดตามข้อมูลเพิ่มเติมได้ที่ Facebook Page: MFU Library หรือ  Website Book Fair\n\n#MFUBookFair2026 #OnePageOneChange #MFULibrary #อย่าลืมพกถุงผ้า \n#DontForgetYourToteBag",
+    "textReferences": [
+      {
+        "url": "https://www.facebook.com/hashtag/mfubookfair2026?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/mfubookfair2026",
+        "id": "29509507265302636"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/onepageonechange?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/onepageonechange",
+        "id": "10086213588104434"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/mfulibrary?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/mfulibrary",
+        "id": "165391250300355"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%A5%E0%B8%B7%E0%B8%A1%E0%B8%9E%E0%B8%81%E0%B8%96%E0%B8%B8%E0%B8%87%E0%B8%9C%E0%B9%89%E0%B8%B2?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%A5%E0%B8%B7%E0%B8%A1%E0%B8%9E%E0%B8%81%E0%B8%96%E0%B8%B8%E0%B8%87%E0%B8%9C%E0%B9%89%E0%B8%B2",
+        "id": "449303365194806"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/dontforgetyourtotebag?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/dontforgetyourtotebag",
+        "id": "939847486061737"
+      }
+    ],
+    "link": "https://bookfair.mfu.ac.th/",
+    "previewTitle": "MFU Book Fair",
+    "previewDescription": "อาจารย์ นักศึกษา และบุคลากรของมหาวิทยาลัยแม่ฟ้าหลวงสามารถ ร่วมคัดเลือกและเสนอแนะหนังสือเข้าห้องสมุด จา.....",
+    "previewSource": "bookfair.mfu.ac.th",
+    "previewTarget": {
+      "__typename": "ExternalUrl",
+      "article_author": null,
+      "external_url": "https://bookfair.mfu.ac.th/",
+      "id": "226547524203272:1989277938958024"
+    },
+    "likes": 8,
+    "comments": 1,
+    "shares": 0,
+    "topReactionsCount": 1,
+    "feedbackId": "ZmVlZGJhY2s6cGZiaWQwZGdkTEIyNjlyNjdRd0NrNlFobTNwQTdvUHRpYTFReEt6S2R0UktpWDhIbW9kcUUzNk53MkE3bVFwNVFvcGJkOWw=",
+    "sharedPost": {
+      "pageName": {
+        "id": "100036275124711",
+        "name": "MFU Library",
+        "profileUrl": "https://www.facebook.com/MFULIBRARY",
+        "profilePic": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/855169769_1973277180558100_2941257183994519871_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1080x1080&ctp=s40x40&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=ZLpbbdYCM8UQ7kNvwEq8t_H&_nc_oc=AdqmdIckgeXUgFaUGIQomokdzmkboTsuscELmVVnUEstmg9CW_Q7mSZ-X2bjB7qQZrM&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQRQ4Mb0lCg4JU-XpdtVTkyA-KQLtvpm1WqSjiL5rXJ6cg&oe=6AFB20A5"
+      },
+      "url": "https://www.facebook.com/MFULIBRARY/posts/pfbid05uhwLzwKcT8FRcgcC8ZcHs9aJCRaduvm2HNbgF3jwrpexV9g7vidfLUvf7GDEsn4l",
+      "time": "2026-11-03T09:23:46.000Z",
+      "timestamp": 1793697826,
+      "user": {
+        "id": "100036275124711",
+        "name": "MFU Library",
+        "profileUrl": "https://www.facebook.com/MFULIBRARY",
+        "profilePic": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/855169769_1973277180558100_2941257183994519871_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1080x1080&ctp=s40x40&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=ZLpbbdYCM8UQ7kNvwEq8t_H&_nc_oc=AdqmdIckgeXUgFaUGIQomokdzmkboTsuscELmVVnUEstmg9CW_Q7mSZ-X2bjB7qQZrM&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQRQ4Mb0lCg4JU-XpdtVTkyA-KQLtvpm1WqSjiL5rXJ6cg&oe=6AFB20A5"
+      },
+      "text": "📚✨ MFU Book Fair 2026 เปิดโลกการอ่าน เติมเต็มประสบการณ์การเรียนรู้!\n\nชวนทุกคนมาร่วมสัมผัสบรรยากาศมหกรรมหนังสือ MFU Book Fair 2026 พบกับหนังสือหลากหลายประเภทจากร้านหนังสือและสำนักพิมพ์ชั้นนำ ทั้งหนังสือวิชาการ หนังสือทั่วไป และสื่อการเรียนรู้ พร้อมกิจกรรมพิเศษที่ชวนมาเรียนรู้ ทดลอง และสร้างสรรค์ประสบการณ์ใหม่ ๆ\n\nภายในงานยังมีกิจกรรมหลากหลาย อาทิ\n📖 เลือกชมและแนะนำหนังสือเข้าห้องสมุด\n🎤 พบกับกิจกรรมพิเศษและการพูดคุยแลกเปลี่ยนความรู้\n💻 เข้าร่วม Online Database Workshop\n🎨 สนุกกับกิจกรรมสร้างสรรค์และกิจกรรมรักษ์สิ่งแวดล้อม\n🎲 เปิดประสบการณ์การเรียนรู้ผ่านเกมและกิจกรรมต่าง ๆ\n\nมาร่วมเปิดหน้าหนังสือใหม่ ๆ ค้นหาแรงบันดาลใจ และเก็บเกี่ยวประสบการณ์ดี ๆ ไปด้วยกัน แล้วพบกันที่ MFU Book Fair 2026!\n\n++++++++++++\n\n☺ ติดตามข้อมูลเพิ่มเติมได้ที่ Facebook Page: MFU Library หรือ  Website Book Fair\n\n#MFUBookFair2026 #OnePageOneChange #MFULibrary #อย่าลืมพกถุงผ้า #DontForgetYourToteBag",
+      "textReferences": [
+        {
+          "url": "https://www.facebook.com/hashtag/mfubookfair2026?__eep__=6",
+          "mobileUrl": "https://m.facebook.com/hashtag/mfubookfair2026",
+          "id": "29509507265302636"
+        },
+        {
+          "url": "https://www.facebook.com/hashtag/onepageonechange?__eep__=6",
+          "mobileUrl": "https://m.facebook.com/hashtag/onepageonechange",
+          "id": "10086213588104434"
+        },
+        {
+          "url": "https://www.facebook.com/hashtag/mfulibrary?__eep__=6",
+          "mobileUrl": "https://m.facebook.com/hashtag/mfulibrary",
+          "id": "165391250300355"
+        },
+        {
+          "url": "https://www.facebook.com/hashtag/%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%A5%E0%B8%B7%E0%B8%A1%E0%B8%9E%E0%B8%81%E0%B8%96%E0%B8%B8%E0%B8%87%E0%B8%9C%E0%B9%89%E0%B8%B2?__eep__=6",
+          "mobileUrl": "https://m.facebook.com/hashtag/%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%A5%E0%B8%B7%E0%B8%A1%E0%B8%9E%E0%B8%81%E0%B8%96%E0%B8%B8%E0%B8%87%E0%B8%9C%E0%B9%89%E0%B8%B2",
+          "id": "449303365194806"
+        },
+        {
+          "url": "https://www.facebook.com/hashtag/dontforgetyourtotebag?__eep__=6",
+          "mobileUrl": "https://m.facebook.com/hashtag/dontforgetyourtotebag",
+          "id": "939847486061737"
+        }
+      ],
+      "link": "https://bookfair.mfu.ac.th/",
+      "previewTitle": "MFU Book Fair",
+      "previewDescription": "อาจารย์ นักศึกษา และบุคลากรของมหาวิทยาลัยแม่ฟ้าหลวงสามารถ ร่วมคัดเลือกและเสนอแนะหนังสือเข้าห้องสมุด จา.....",
+      "previewSource": "bookfair.mfu.ac.th",
+      "previewTarget": {
+        "__typename": "ExternalUrl",
+        "article_author": null,
+        "external_url": "https://bookfair.mfu.ac.th/",
+        "id": "226547524203272:1989277938958024"
+      },
+      "media": [
+        {
+          "thumbnail": "https://scontent-sjc6-1.xx.fbcdn.net/v/t45.1600-4/877220301_1989277882291363_8215547304872911623_n.jpg?stp=cp0_dst-jpg_fr_q75_spS444_tt6&cstp=mx1080x1350&ctp=s640x640&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f0a831&_nc_ohc=C1K6ZtiYAQcQ7kNvwEDfpSb&_nc_oc=AdruVpq-68m9s7bMcWM6KyeLd0d-b6Jx-7D03VnlYoWcdryJd2OOZK351THhXHwEsyA&_nc_zt=1&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQTqUXFBijQQYRtYO3hRkKgp27v8RxbIKYY8AabgeGpgBQ&oe=6AFB2976",
+          "__typename": "GenericAttachmentMedia",
+          "__isMedia": "GenericAttachmentMedia",
+          "flexible_height_share_image": {
+            "height": 640,
+            "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t45.1600-4/877220301_1989277882291363_8215547304872911623_n.jpg?stp=cp0_dst-jpg_fr_q75_spS444_tt6&cstp=mx1080x1350&ctp=s640x640&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f0a831&_nc_ohc=C1K6ZtiYAQcQ7kNvwEDfpSb&_nc_oc=AdruVpq-68m9s7bMcWM6KyeLd0d-b6Jx-7D03VnlYoWcdryJd2OOZK351THhXHwEsyA&_nc_zt=1&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQTqUXFBijQQYRtYO3hRkKgp27v8RxbIKYY8AabgeGpgBQ&oe=6AFB2976",
+            "width": 512
+          },
+          "large_share_image": {
+            "height": 275,
+            "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t45.1600-4/877220301_1989277882291363_8215547304872911623_n.jpg?stp=c0.393.1080.564a_cp0_dst-jpg_q75_spS444_tt6&cstp=mx1080x564&ctp=s526x296&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f0a831&_nc_ohc=C1K6ZtiYAQcQ7kNvwEDfpSb&_nc_oc=AdruVpq-68m9s7bMcWM6KyeLd0d-b6Jx-7D03VnlYoWcdryJd2OOZK351THhXHwEsyA&_nc_zt=1&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQTAd3COW1I4HTCdp-VhemxUg0nCk1Zmqgyr254REsl06w&oe=6AFB2976",
+            "width": 526
+          },
+          "id": "1989277938958024"
+        }
+      ],
+      "paidPartnership": false
+    },
+    "reactionLikeCount": 8,
+    "paidPartnership": false,
+    "topComments": [
+      {
+        "commentUrl": "https://www.facebook.com/MFU2Connect/posts/pfbid0dgdLB269r67QwCk6Qhm3pA7oPtia1QxKzKdtRKiX8HmodqE36Nw2A7mQp5Qopbd9l?comment_id=1841679367020598",
+        "commentId": "1841679367020598",
+        "id": "Y29tbWVudDoxMjIyMzMxNDA4NDIzNDg0ODZfMTg0MTY3OTM2NzAyMDU5OA==",
+        "feedbackId": "ZmVlZGJhY2s6cGZiaWQwWkVXTVBkempTZXNYdHNtV0NHUHB4MWVDY1NTeVBnYnVFVjlxc2R6dkV0NUFnTnpBTUtlcjF5QlZtVWFXcmdSN0g4dDJRdmhtVXF2TnNDcmZ2YTJmdEVYakhvNHR5dFZBb2VpcWZs",
+        "date": "2026-11-08T09:36:28.000Z",
+        "text": "❤️",
+        "author": {
+          "__typename": "User",
+          "id": "pfbid0B1mv8S2LRNEwMhe26Hk2Lu4RAnhnLcFiCknBiSSEruqtx9irEyXb2wKVEg7PBopXl",
+          "name": "Camsai Kajang",
+          "__isActor": "User",
+          "profile_picture_depth_0": {
+            "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/713704353_2496549834194917_1843148143167117102_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1080x1080&ctp=s32x32&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=e99d92&_nc_ohc=1Zj5tmH0-yMQ7kNvwGQmxQ9&_nc_oc=AdqkDpD5rGJ5ymaNEV-_hPrSOfTJ3WKsdLlXV4WsghJgVif7VGjgtxFm2BMzkjZk3dE&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQSZrKk8wAa5vcl9lfemTPLvc99Iu-nXGVo92i9oPKQ8sg&oe=6AFB2623"
+          },
+          "profile_picture_depth_1": {
+            "uri": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/713704353_2496549834194917_1843148143167117102_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1080x1080&ctp=s24x24&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=e99d92&_nc_ohc=1Zj5tmH0-yMQ7kNvwGQmxQ9&_nc_oc=AdqkDpD5rGJ5ymaNEV-_hPrSOfTJ3WKsdLlXV4WsghJgVif7VGjgtxFm2BMzkjZk3dE&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQSZrKk8wAa5vcl9lfemTPLvc99Iu-nXGVo92i9oPKQ8sg&oe=6AFB2623"
+          },
+          "gender": "FEMALE",
+          "__isEntity": "User",
+          "url": "https://www.facebook.com/camsai.kajang",
+          "work_info": null,
+          "is_verified": false,
+          "short_name": "Camsai",
+          "subscribe_status": "CANNOT_SUBSCRIBE"
+        },
+        "profileUrl": "https://www.facebook.com/camsai.kajang",
+        "profilePicture": "https://scontent-sjc6-1.xx.fbcdn.net/v/t39.30808-1/713704353_2496549834194917_1843148143167117102_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1080x1080&ctp=s32x32&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=e99d92&_nc_ohc=1Zj5tmH0-yMQ7kNvwGQmxQ9&_nc_oc=AdqkDpD5rGJ5ymaNEV-_hPrSOfTJ3WKsdLlXV4WsghJgVif7VGjgtxFm2BMzkjZk3dE&_nc_zt=24&_nc_ht=scontent-sjc6-1.xx&_nc_gid=M0QQQcVD_jfxwIOXiZTe6Q&_nc_ss=70180&oh=00_AQSZrKk8wAa5vcl9lfemTPLvc99Iu-nXGVo92i9oPKQ8sg&oe=6AFB2623",
+        "profileId": "pfbid0B1mv8S2LRNEwMhe26Hk2Lu4RAnhnLcFiCknBiSSEruqtx9irEyXb2wKVEg7PBopXl",
+        "profileName": "Camsai Kajang",
+        "likesCount": "0",
+        "threadingDepth": 0
+      }
+    ],
+    "topLevelUrl": "https://www.facebook.com/61560454606746/posts/122233140842348486",
+    "facebookId": "61560454606746",
+    "pageAdLibrary": {
+      "id": "350295584832849",
+      "pamv_comms_data": null
+    },
+    "inputUrl": "https://www.facebook.com/MFU2Connect"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/profile.php?id=61563364138740",
+    "postId": "122231741786445471",
+    "pageName": "International-Student-Club-MFU",
+    "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid02TTwff9tBzfhtQDJ9thro5DhhsnsPEbvG522norMtAWkHfmsEwuMKzS3ddjGd1VXql&id=61563364138740",
+    "time": "2026-11-09T12:58:12.000Z",
+    "timestamp": 1794229092,
+    "user": {
+      "id": "61563364138740",
+      "name": "International Student Club MFU",
+      "profileUrl": "https://www.facebook.com/61563364138740",
+      "profilePic": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-1/503590430_122167758026445471_2376698894579383747_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1000x1000&ctp=s50x50&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=jF07YJ8S79cQ7kNvwHs7i_S&_nc_oc=AdrdNFHuHXOsUC99xpUUJDdzZXMUjEHECAZflVDeHXeXBKddjMzmTZoceUGqgRWeEkFkEbaKb9A0sgamRwk0Mhzx&_nc_zt=24&_nc_ht=scontent-ord5-1.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQSsEYRTMaGQq9zD4IytCjBfe-HhU8ZL0nw-Tj0HgUqsVQ&oe=6AFB3ADC"
+    },
+    "collaborators": [],
+    "text": "🪷 A throwback to yesterday’s Grand Collective Kathina Offering Ceremony!\n\nTake a look back at how everyone came together to be part of this ceremony while creating unforgettable memories along the way 🙇🏻‍♀️🤍\n\nWe are truly grateful and appreciative of the opportunity to work alongside GRD, MSA, and  the Chiang Rai Social Welfare Association, Shwe Alin Yaung Charity Association, and Metta and Karuna Charity Association in making this meaningful ceremony possible.🤍\n\nAnother day with a collection of moments worth cherishing! 🤍💛\n\n#MFU #ISC #KathinaOffering #InterStudentClub",
+    "textReferences": [
+      {
+        "url": "https://www.facebook.com/hashtag/mfu?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/mfu",
+        "id": "351049205013290"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/isc?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/isc",
+        "id": "436805903061390"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/kathinaoffering?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/kathinaoffering",
+        "id": "2461062297295996"
+      },
+      {
+        "url": "https://www.facebook.com/hashtag/interstudentclub?__eep__=6",
+        "mobileUrl": "https://m.facebook.com/hashtag/interstudentclub",
+        "id": "1620263524682422"
+      }
+    ],
+    "likes": 55,
+    "shares": 0,
+    "topReactionsCount": 3,
+    "media": [
+      {
+        "mediaset_token": "pcb.122231741786445471",
+        "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid02TTwff9tBzfhtQDJ9thro5DhhsnsPEbvG522norMtAWkHfmsEwuMKzS3ddjGd1VXql&id=61563364138740",
+        "comet_product_tag_feed_overlay_renderer": null
+      },
+      {
+        "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/899822817_122231741048445471_8750334300105919279_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x907&ctp=s590x590&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=AdcsntWTgjoQ7kNvwEjvMMl&_nc_oc=AdpUQAZtjdZPHPQuZLGPZ_V8VcTJP8s6Yza3IEgS8YilcMSXJ0eTv_A8ohs_0dFEMeVvaouO1cv7sXGTo-g07huM&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQQO0EzM6aqseqntsgyWTbISFM_ApbUP_exqxtbadHRMUA&oe=6AFB377E",
+        "__typename": "Photo",
+        "is_playable": false,
+        "image": {
+          "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/899822817_122231741048445471_8750334300105919279_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x907&ctp=s590x590&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=AdcsntWTgjoQ7kNvwEjvMMl&_nc_oc=AdpUQAZtjdZPHPQuZLGPZ_V8VcTJP8s6Yza3IEgS8YilcMSXJ0eTv_A8ohs_0dFEMeVvaouO1cv7sXGTo-g07huM&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQQO0EzM6aqseqntsgyWTbISFM_ApbUP_exqxtbadHRMUA&oe=6AFB377E",
+          "height": 431,
+          "width": 590
+        },
+        "id": "122231741042445471",
+        "__isMedia": "Photo",
+        "photo_cix_screen": null,
+        "copyright_banner_info": null,
+        "owner": {
+          "__typename": "User",
+          "id": "61563364138740"
+        },
+        "ocrText": "May be an image of one or more people"
+      },
+      {
+        "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/899772380_122231741108445471_7318170276365955963_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x915&ctp=s590x590&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=F2xRGxL4JAsQ7kNvwHB4PkN&_nc_oc=AdqGVY1HBLYoH74-ZLvE_DrKPXmSfLL-mJotFD8w-3R7fR2xaW_HK2TEhsiI6X-4V9ZR1nqm3-YoVfdcSu2H-23g&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQQ2dT92nWuak3zBJLSCHP0sQEgjuVcG4C_MFgBTwXA2bA&oe=6AFB34B4",
+        "__typename": "Photo",
+        "is_playable": false,
+        "image": {
+          "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/899772380_122231741108445471_7318170276365955963_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x915&ctp=s590x590&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=F2xRGxL4JAsQ7kNvwHB4PkN&_nc_oc=AdqGVY1HBLYoH74-ZLvE_DrKPXmSfLL-mJotFD8w-3R7fR2xaW_HK2TEhsiI6X-4V9ZR1nqm3-YoVfdcSu2H-23g&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQQ2dT92nWuak3zBJLSCHP0sQEgjuVcG4C_MFgBTwXA2bA&oe=6AFB34B4",
+          "height": 435,
+          "width": 590
+        },
+        "id": "122231741096445471",
+        "__isMedia": "Photo",
+        "photo_cix_screen": null,
+        "copyright_banner_info": null,
+        "owner": {
+          "__typename": "User",
+          "id": "61563364138740"
+        },
+        "ocrText": "May be an image of temple and text"
+      },
+      {
+        "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/897087670_122231741480445471_2001166112978183834_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x823&ctp=s590x590&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=MCog6DY0WjIQ7kNvwGdPPK7&_nc_oc=AdoU5cnGvmT1LQr04_3FmhQ4UOL8XHApW3AeUb_5sXd0yKE0QVWBSGXzmsFhdZMjplmj5fhN73A9G-z1atRV8MCM&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQSSF-Ot00oyEwExq4yR4l_0RucJZYCSkQapo-jT_7b_Eg&oe=6AFB2F0E",
+        "__typename": "Photo",
+        "is_playable": false,
+        "image": {
+          "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/897087670_122231741480445471_2001166112978183834_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x823&ctp=s590x590&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=MCog6DY0WjIQ7kNvwGdPPK7&_nc_oc=AdoU5cnGvmT1LQr04_3FmhQ4UOL8XHApW3AeUb_5sXd0yKE0QVWBSGXzmsFhdZMjplmj5fhN73A9G-z1atRV8MCM&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQSSF-Ot00oyEwExq4yR4l_0RucJZYCSkQapo-jT_7b_Eg&oe=6AFB2F0E",
+          "height": 391,
+          "width": 590
+        },
+        "id": "122231741378445471",
+        "__isMedia": "Photo",
+        "photo_cix_screen": null,
+        "copyright_banner_info": null,
+        "owner": {
+          "__typename": "User",
+          "id": "61563364138740"
+        },
+        "ocrText": "May be an image of one or more people, temple and text"
+      },
+      {
+        "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/897438322_122231741156445471_9055843704410088094_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1129x843&ctp=s590x590&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=omyZXbQd540Q7kNvwHOSaMR&_nc_oc=AdogKpX6OMyf9aAAarXPqPCVTIwCILbVrH3aLF5vMiSBTdlZzZ3fgcZMxQX6xduCDyCEfMZ5DFBMn6WA5myiRAX-&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQTOimO9g-n8Lemu8j6om9OfXmeKUEGP5Wbu2YL9IINHIw&oe=6AFB13E0",
+        "__typename": "Photo",
+        "is_playable": false,
+        "image": {
+          "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/897438322_122231741156445471_9055843704410088094_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1129x843&ctp=s590x590&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=omyZXbQd540Q7kNvwHOSaMR&_nc_oc=AdogKpX6OMyf9aAAarXPqPCVTIwCILbVrH3aLF5vMiSBTdlZzZ3fgcZMxQX6xduCDyCEfMZ5DFBMn6WA5myiRAX-&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQTOimO9g-n8Lemu8j6om9OfXmeKUEGP5Wbu2YL9IINHIw&oe=6AFB13E0",
+          "height": 441,
+          "width": 590
+        },
+        "id": "122231741138445471",
+        "__isMedia": "Photo",
+        "photo_cix_screen": null,
+        "copyright_banner_info": null,
+        "owner": {
+          "__typename": "User",
+          "id": "61563364138740"
+        },
+        "ocrText": "May be an image of one or more people and text"
+      },
+      {
+        "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/897438399_122231741552445471_6320996488579573179_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x919&ctp=s590x590&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=we_3ZwUcudMQ7kNvwGyzo_G&_nc_oc=AdqsZoMPPsfDTFpbTUA3KaS1-xaeroJTjwO7QNqlBl_lRx3rekqRjFY9d57UM1YKPRJJD6MunhYbPTACWHD9F7Ks&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQSLa9FNFBZ5pZgIVpHsyc801ZvyWHo2FKGmd3Zr2Tel5A&oe=6AFB20DA",
+        "__typename": "Photo",
+        "is_playable": false,
+        "image": {
+          "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/897438399_122231741552445471_6320996488579573179_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1242x919&ctp=s590x590&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=we_3ZwUcudMQ7kNvwGyzo_G&_nc_oc=AdqsZoMPPsfDTFpbTUA3KaS1-xaeroJTjwO7QNqlBl_lRx3rekqRjFY9d57UM1YKPRJJD6MunhYbPTACWHD9F7Ks&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQSLa9FNFBZ5pZgIVpHsyc801ZvyWHo2FKGmd3Zr2Tel5A&oe=6AFB20DA",
+          "height": 437,
+          "width": 590
+        },
+        "id": "122231741474445471",
+        "__isMedia": "Photo",
+        "photo_cix_screen": null,
+        "copyright_banner_info": null,
+        "owner": {
+          "__typename": "User",
+          "id": "61563364138740"
+        },
+        "ocrText": "May be an image of one or more people, temple and text"
+      }
+    ],
+    "feedbackId": "ZmVlZGJhY2s6cGZiaWQwMlRUd2ZmOXRCemZodFFESjl0aHJvNURoaHNuc1BFYnZHNTIybm9yTXRBV2tIZm1zRXd1TUt6UzNkZGpHZDFWWHFs",
+    "reactionLoveCount": 39,
+    "reactionLikeCount": 15,
+    "reactionCareCount": 1,
+    "paidPartnership": false,
+    "topLevelUrl": "https://www.facebook.com/61563364138740/posts/122231741786445471",
+    "facebookId": "61563364138740",
+    "pageAdLibrary": {
+      "id": "370687072797919",
+      "pamv_comms_data": null
+    },
+    "inputUrl": "https://www.facebook.com/profile.php?id=61563364138740"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/profile.php?id=61563364138740",
+    "postId": "122231149196445471",
+    "pageName": "International-Student-Club-MFU",
+    "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0kyGf4aZ4UhnzQKSYat6AMxxeKo33W3dANLdzZxoikjeL68vmi1PbRivMzNHDH7PPl&id=61563364138740",
+    "time": "2026-11-05T06:17:31.000Z",
+    "timestamp": 1793859451,
+    "user": {
+      "id": "61563364138740",
+      "name": "International Student Club MFU",
+      "profileUrl": "https://www.facebook.com/61563364138740",
+      "profilePic": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-1/503590430_122167758026445471_2376698894579383747_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1000x1000&ctp=s50x50&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=jF07YJ8S79cQ7kNvwHs7i_S&_nc_oc=AdrdNFHuHXOsUC99xpUUJDdzZXMUjEHECAZflVDeHXeXBKddjMzmTZoceUGqgRWeEkFkEbaKb9A0sgamRwk0Mhzx&_nc_zt=24&_nc_ht=scontent-ord5-1.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQSsEYRTMaGQq9zD4IytCjBfe-HhU8ZL0nw-Tj0HgUqsVQ&oe=6AFB3ADC"
+    },
+    "collaborators": [],
+    "text": "Let’s connect across cultures and learn to thrive together 🌍",
+    "link": "https://scholarship-mfu.vercel.app/#register",
+    "likes": 2,
+    "shares": 1,
+    "topReactionsCount": 2,
+    "feedbackId": "ZmVlZGJhY2s6cGZiaWQwa3lHZjRhWjRVaG56UUtTWWF0NkFNeHhlS28zM1czZEFOTGR6WnhvaWtqZUw2OHZtaTFQYlJpdk16TkhESDdQUGw=",
+    "sharedPost": {
+      "pageName": {
+        "id": "100063644457394",
+        "name": "M4U MFU",
+        "profileUrl": "https://www.facebook.com/m4u.mfu",
+        "profilePic": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-1/290047745_441123738019104_6589748662728209599_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx750x750&ctp=s40x40&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=3dtKbRzFbncQ7kNvwH6URLm&_nc_oc=AdqvxPYdbTs6bvRxUBlvShYM1pKigxjy81CL-0aHCMi1pZOz6ILcM3_Jxghl4RG2J2BXuDSdWDYkol6L2WX9iUB6&_nc_zt=24&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQRykqvSSG5FZKzhFjEc6uRcuGjTehrgT53Ji9fH7InQ7Q&oe=6AFB1D3C"
+      },
+      "url": "https://www.facebook.com/m4u.mfu/posts/pfbid02pk8HJGW9f6xwDAjqzAhri1kjirKAwjQpWW9oLyWSD5QgvrroMCH5oBPzHA6jS65tl",
+      "time": "2026-11-05T04:47:24.000Z",
+      "timestamp": 1793854044,
+      "user": {
+        "id": "100063644457394",
+        "name": "M4U MFU",
+        "profileUrl": "https://www.facebook.com/m4u.mfu",
+        "profilePic": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-1/290047745_441123738019104_6589748662728209599_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx750x750&ctp=s40x40&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=3dtKbRzFbncQ7kNvwH6URLm&_nc_oc=AdqvxPYdbTs6bvRxUBlvShYM1pKigxjy81CL-0aHCMi1pZOz6ILcM3_Jxghl4RG2J2BXuDSdWDYkol6L2WX9iUB6&_nc_zt=24&_nc_ht=scontent-ord5-2.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQRykqvSSG5FZKzhFjEc6uRcuGjTehrgT53Ji9fH7InQ7Q&oe=6AFB1D3C"
+      },
+      "text": "ไม่ต้องบินไปไหน ก็เปิดมุมมองข้ามวัฒนธรรมได้!\n\n(English Below)\n\nชวนชาว มฟล. มาคุย แลกเปลี่ยน และทำความรู้จักเพื่อนใหม่\nในกิจกรรม Global Dialogues: CO-EXISTING\n\nส่วนพัฒนาความสัมพันธ์ระหว่างประเทศ ร่วมกับทีมนักศึกษาต่างชาติ \nขอชวนนักศึกษาไทยและนักศึกษาต่างชาติ มาร่วมเรียนรู้การอยู่ร่วมกัน\nท่ามกลางความหลากหลาย ผ่านวงคุยและกิจกรรมสนุก ๆ \nในบรรยากาศเป็นกันเอง ภายใต้กิจกรรม Global Dialogues: CO-EXISTING \nรายละเอียดการจัดกิจกรรมด้านล่างนี้เลย\n\n📅 วันที่จัดกิจกรรม: 15 พฤศจิกายน 2026\n⏰ เวลา: 08:30 – 15:00 น.\n📍 สถานที่จัดกิจกรรม: Networking Space (M for U Centre) ชั้น 2 อาคาร E-Park (M-Square)\n\nกิจกรรมนี้เหมาะกับใคร\n✅ อยากลองสัมผัสบรรยากาศการเรียนรู้ร่วมกับเพื่อนจากหลากหลายประเทศ\n✅ อยากเปิดมุมมองใหม่ ๆ และก้าวออกจาก Comfort Zone\n✅ อยากฝึกภาษาอังกฤษ และเรียนรู้ภาษาของเพื่อน\n✅ อยากเข้าใจเพื่อนต่างชาติและเพื่อนคนไทยให้มากขึ้น\n \nกิจกรรมไฮไลท์ \n📌 Panel Discussion: วงคุยสบาย ๆ ที่ชวนแลกเปลี่ยนประสบการณ์\n     และมุมมองเรื่องการอยู่ร่วมกัน\n📌 Interactive Cross-Cultural Workshop: เวิร์กช็อปที่เปิดโอกาสให้ทุกคน\n     ได้พูดคุยและเรียนรู้ข้ามวัฒนธรรม\n📌 Scenario-Based Activities: พื้นที่ให้ลองคิดและแก้ไขสถานการณ์จำลอง\n     จากเรื่องราวที่เกิดขึ้นจริงไปด้วยกัน\n\nเปิดรับทั้งนักศึกษาไทย และนักศึกษาต่างชาติ รับรองว่าจะได้รู้อะไรใหม่ๆ \nมุมมองใหม่ๆ และสนุกไปกับเพื่อนใหม่แน่นอน\n\n▶️ งานนี้มีข้าวกลางวันเลี้ยงและแถมยังได้ MFU 333 ด้วยนะจ๊ะ \n▶️ ใครสนใจรีบลงทะเบียนเลย ก่อนหมดเขต 9 พ.ย.69 นี้ \n▶️ รับจำนวนจำกัดเพียง 70 คนเท่านั้น\nลิ้งค์ลงทะเบียน https://scholarship-mfu.vercel.app/#register \n\nดูข้อมูลเพิ่มเติมเกี่ยวกับกิจกรรมได้ที่: https://scholarship-mfu.vercel.app/ \nหรือสอบถามข้อมูลเพิ่มเติมได้ที่: อีเมล์ m4u.global@mfu.ac.th  \nหรือ โทร. 0-5391-6983\n-----------------------------------------------------------------------\n\nExplore new cultures without catching a flight!\nCalling all MFU students! Come and share your perspectives, exchange ideas, and make new friends at Global Dialogues: CO-EXISTING\n\nThe Global Relations Division, together with a team of international students, invites Thai and international students to explore what it means to live together in a diverse community through friendly conversations and fun, interactive activities.\n📅 Date: 15 November 2026\n⏰ Time: 08:30–15:00\n📍 Venue: Networking Space (M for U Centre), 2nd Floor, E-Park Building (M-Square)\n\nWho is this event for?\nAnyone who wants to:\n✅ Experience learning alongside friends from different countries\n✅ Discover new perspectives and step outside their comfort zone\n✅ Practise English and learn a little of their friends’ languages\n✅ Better understand both Thai and international friends\n\nEvent Highlights\n📌 Panel Discussion: A relaxed conversation where speakers share experiences and perspectives on living together in a diverse community.\n📌 Interactive Cross-Cultural Workshop: An opportunity for everyone to connect, exchange ideas, and learn across cultures.\n📌 Scenario-Based Activities: Work together to explore and respond to simulated situations inspired by real-life experiences.\n\nWhether you are a Thai or international student, join us to discover something new, broaden your perspectives, and have fun with new friends!\n\n▶️ Lunch and MFU 333 provided\n▶️ Limited to 70 participants\n▶️ Register by 9 November 2026\nRegister and find out more:\nhttps://scholarship-mfu.vercel.app/\n\nFor enquiries:\nEmail: m4u.global@mfu.ac.th\nTel: 053-916-983",
+      "textReferences": [
+        {
+          "url": "https://l.facebook.com/l.php?u=https%3A%2F%2Fscholarship-mfu.vercel.app%2F%23register&h=AUCwHFw8wlGqqaC0DgdyVu3_tivYFTXv7bHwwMnqknImvpgxmfV5_ZOWh06FIPEskM_N2nN6X4vxNvShEyPIuPIEQmZ6C1435LjHcChyh6hf5c41YfF2VMAD4ts3vFc-wmVPosTs3D7Xu7fuMFYtOuLe8s8FUH73txL9OHk0rCDAHcwt&s=1",
+          "external_url": "https://scholarship-mfu.vercel.app/#register",
+          "web_link": {
+            "__typename": "ExternalWebLink",
+            "url": "https://scholarship-mfu.vercel.app/#register",
+            "fbclid": null,
+            "lynx_mode": "ASYNCLAZY"
+          },
+          "mobileUrl": "https://lm.facebook.com/l.php?u=https%3A%2F%2Fscholarship-mfu.vercel.app%2F%23register&h=AUCh-4xDnoEFg7rxGA-3UJTNqCdk5FUIxY3UYdmQZDK08ag0K8tmOGt5ftQTpvFBpLssZBEqcoeY1WlTgSvfVLIR8Lch3usGc7urg0z91PY-wWa2H1ibt95RylVZAS8U7LZm0EExSIuMxM8NE0sjOchym3paHrN8crCNMSBiuXO5YtCK&s=1",
+          "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBzXGEvL3NjaG9sYXJzaGlwLW1mdS52ZXJjZWwuYXBwLyNyZWdpc3Rlcjo6RGVmYXVsdDo6OjE3NTkwMzkzNDYyMjc1MzA6"
+        },
+        {
+          "url": "https://l.facebook.com/l.php?u=https%3A%2F%2Fscholarship-mfu.vercel.app%2F&h=AUDtMOmuWxfjc3qBNH2DmrQL6ekPYhz2rnqp4jxZ2cN20qHTxFC8xwLX_FLSi27aovptvFpR_vXxQTgSvmJV5j78rtE3ODy0snr-szJKc29Qi45VcU6nVKA_GrAW3cQAT51TTuR7sioMi9eby8G0PgnnRWjbcD6NlF-eVYJ-7BxMeJrc&s=1",
+          "external_url": "https://scholarship-mfu.vercel.app/",
+          "web_link": {
+            "__typename": "ExternalWebLink",
+            "url": "https://scholarship-mfu.vercel.app/",
+            "fbclid": null,
+            "lynx_mode": "ASYNCLAZY"
+          },
+          "mobileUrl": "https://lm.facebook.com/l.php?u=https%3A%2F%2Fscholarship-mfu.vercel.app%2F&h=AUBSWqILYOv83wfI4B7Mfi4gkEmoeQ627h0aV-uy2MFsv5lK9Q7c9y2bezwjama1Vg1MntaaFzd9OuoTiVYqNKxYuI2vT1XD5thqZxJKdVAk8vw1osfepX8FY7wrB_AwxGaFKD3mQCg4zftldY6yiQ5lij2rbnCrHUy6zO_vpzw8ENTm&s=1",
+          "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBzXGEvL3NjaG9sYXJzaGlwLW1mdS52ZXJjZWwuYXBwLzo6RGVmYXVsdDo6OjE3NTkwMzkzNDYyMjc1MzA6"
+        },
+        {
+          "url": "https://l.facebook.com/l.php?u=https%3A%2F%2Fscholarship-mfu.vercel.app%2F&h=AUDtMOmuWxfjc3qBNH2DmrQL6ekPYhz2rnqp4jxZ2cN20qHTxFC8xwLX_FLSi27aovptvFpR_vXxQTgSvmJV5j78rtE3ODy0snr-szJKc29Qi45VcU6nVKA_GrAW3cQAT51TTuR7sioMi9eby8G0PgnnRWjbcD6NlF-eVYJ-7BxMeJrc&s=1",
+          "external_url": "https://scholarship-mfu.vercel.app/",
+          "web_link": {
+            "__typename": "ExternalWebLink",
+            "url": "https://scholarship-mfu.vercel.app/",
+            "fbclid": null,
+            "lynx_mode": "ASYNCLAZY"
+          },
+          "mobileUrl": "https://lm.facebook.com/l.php?u=https%3A%2F%2Fscholarship-mfu.vercel.app%2F&h=AUBSWqILYOv83wfI4B7Mfi4gkEmoeQ627h0aV-uy2MFsv5lK9Q7c9y2bezwjama1Vg1MntaaFzd9OuoTiVYqNKxYuI2vT1XD5thqZxJKdVAk8vw1osfepX8FY7wrB_AwxGaFKD3mQCg4zftldY6yiQ5lij2rbnCrHUy6zO_vpzw8ENTm&s=1",
+          "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBzXGEvL3NjaG9sYXJzaGlwLW1mdS52ZXJjZWwuYXBwLzo6RGVmYXVsdDo6OjE3NTkwMzkzNDYyMjc1MzA6"
+        }
+      ],
+      "link": "https://scholarship-mfu.vercel.app/#register",
+      "media": [
+        {
+          "thumbnail": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-6/886811518_1759032682894863_8567957600443370199_n.jpg?stp=dst-jpg_tt6&cstp=mx1076x1522&ctp=s720x720&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_ohc=YWf9XPT5KCMQ7kNvwFNwIyF&_nc_oc=Adq-qzxngJ8lDxwrQvK-EdHSOww2rq2nkrOh4x_bB79LxMWaXqC3-oMaDIIBfoCzDNemzf76pgt-R1DYqn5mSsIZ&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQT_Vv21tmTRM-gTwt1DbqHDFowD1Vej7-v6TmgYQa4aPw&oe=6AFB11BB",
+          "__typename": "Photo",
+          "__isMedia": "Photo",
+          "accent_color": "FF821818",
+          "photo_product_tags": [],
+          "photo_image": {
+            "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-6/886811518_1759032682894863_8567957600443370199_n.jpg?stp=dst-jpg_tt6&cstp=mx1076x1522&ctp=s720x720&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_ohc=YWf9XPT5KCMQ7kNvwFNwIyF&_nc_oc=Adq-qzxngJ8lDxwrQvK-EdHSOww2rq2nkrOh4x_bB79LxMWaXqC3-oMaDIIBfoCzDNemzf76pgt-R1DYqn5mSsIZ&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=lFaZ9trCWTL4Dlxq6xOBoA&_nc_ss=70180&oh=00_AQT_Vv21tmTRM-gTwt1DbqHDFowD1Vej7-v6TmgYQa4aPw&oe=6AFB11BB",
+            "height": 720,
+            "width": 509
+          },
+          "url": "https://www.facebook.com/photo/?fbid=1759032679561530&set=a.387081963423282",
+          "id": "1759032679561530",
+          "feedback": {
+            "can_viewer_comment": false,
+            "id": "ZmVlZGJhY2s6cGZiaWQwMnBrOEhKR1c5ZjZ4d0RBanF6QWhyaTFramlyS0F3alFwV1c5b0x5V1NENVFndnJyb01DSDVvQlB6SEE2alM2NXRs"
+          },
+          "ocrText": "May be a doodle of text"
+        }
+      ],
+      "paidPartnership": false
+    },
+    "reactionLikeCount": 1,
+    "reactionLoveCount": 1,
+    "paidPartnership": false,
+    "topLevelUrl": "https://www.facebook.com/61563364138740/posts/122231149196445471",
+    "facebookId": "61563364138740",
+    "pageAdLibrary": {
+      "id": "370687072797919",
+      "pamv_comms_data": null
+    },
+    "inputUrl": "https://www.facebook.com/profile.php?id=61563364138740"
+  }
+]

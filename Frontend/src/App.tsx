@@ -1,186 +1,308 @@
-import { useState, useEffect, useCallback } from 'react';
-import { FacebookPost } from './types/facebook';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { FacebookPost, SubscriptionItem } from './types/facebook';
 import { FacebookApiClient } from './services/api';
-import { Navbar } from './components/Navbar';
+import { DEMO_MOCK_POSTS } from './services/mockData';
+import {
+  DEFAULT_POSTS_PER_PAGE,
+  DEFAULT_SUGGESTED_TAGS,
+  DEFAULT_VIEW_POSTS_PER_PAGE,
+  filterPostsBySubscriptions,
+  normalizeTag,
+  normalizeTagList,
+  parseSubscriptionInput,
+} from './services/subscriptionUtils';
+import { Navbar, ActiveSection } from './components/Navbar';
 import { FeedView } from './components/FeedView';
 import { ScraperModal } from './components/ScraperModal';
-import { DatasetViewer } from './components/DatasetViewer';
-import { ApiInspectorModal } from './components/ApiInspectorModal';
-import { BackendSettingsModal } from './components/BackendSettingsModal';
+import { RefreshConfigModal } from './components/RefreshConfigModal';
 import { MediaGalleryModal } from './components/MediaGalleryModal';
+import { LanguageProvider, useI18n } from './i18n/LanguageContext';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'feed' | 'scraper' | 'datasets' | 'api-docs'>('feed');
-  const [posts, setPosts] = useState<FacebookPost[]>([]);
-  const [totalScanned, setTotalScanned] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+function getInitialPrototypeSubscriptions(): SubscriptionItem[] {
+  const isStandalonePrototype =
+    typeof window !== 'undefined' &&
+    Boolean(
+      (window as unknown as { __INFOCENTER_STANDALONE_PROTOTYPE__?: boolean })
+        .__INFOCENTER_STANDALONE_PROTOTYPE__
+    );
+
+  if (!isStandalonePrototype) {
+    return [];
+  }
+
+  const seeds: Array<{ url: string; tags: string[]; limit: number }> = [
+    {
+      url: 'https://www.facebook.com/MFU2Connect',
+      tags: ['MFU', 'Academic'],
+      limit: 2,
+    },
+    {
+      url: 'https://www.instagram.com/humansofny',
+      tags: ['News', 'Creator'],
+      limit: 2,
+    },
+    {
+      url: 'https://www.tiktok.com/@khaby.lame',
+      tags: ['Creator'],
+      limit: 2,
+    },
+  ];
+
+  return seeds
+    .map((seed) => {
+      return parseSubscriptionInput(seed.url, undefined, seed.limit, seed.tags);
+    })
+    .filter((item): item is SubscriptionItem => item !== null);
+}
+
+function AppShell() {
+  const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState<ActiveSection>('feed');
+  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>(() =>
+    getInitialPrototypeSubscriptions()
+  );
+  const [posts, setPosts] = useState<FacebookPost[]>(() => {
+    const initialSubs = getInitialPrototypeSubscriptions();
+    if (initialSubs.length === 0) return [];
+    return filterPostsBySubscriptions(
+      DEMO_MOCK_POSTS,
+      initialSubs,
+      true,
+      (p) => FacebookApiClient.getPostTimestamp(p)
+    );
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedPage, setSelectedPage] = useState('MFU2Connect');
-  const [limit, setLimit] = useState(10);
-  const [isConnected, setIsConnected] = useState(false);
+  const [selectedPage, setSelectedPage] = useState('all');
+  const [limit, setLimit] = useState(20);
   const [isSimulated, setIsSimulated] = useState(false);
-  const [errorNotice, setErrorNotice] = useState<string | undefined>(undefined);
 
   // Modals
-  const [isScraperModalOpen, setIsScraperModalOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAddSourceOpen, setIsAddSourceOpen] = useState(false);
+  const [isRefreshConfigOpen, setIsRefreshConfigOpen] = useState(false);
   const [galleryImage, setGalleryImage] = useState<string | null>(null);
+  const [customTags, setCustomTags] = useState<string[]>([]);
 
-  // Load posts from API
-  const loadPosts = useCallback(
-    async (pageToLoad: string = selectedPage, limitToLoad: number = limit) => {
-      setIsLoading(true);
-      try {
-        const result = await FacebookApiClient.getRecentPosts(pageToLoad, limitToLoad);
-        setPosts(result.data.posts);
-        setTotalScanned(result.data.totalScanned);
-        setIsSimulated(result.isSimulated);
-        setErrorNotice(result.errorNotice);
-      } catch (err: any) {
-        console.error('Failed to load posts', err);
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
+  const existingTags = useMemo(() => {
+    return normalizeTagList([
+      ...DEFAULT_SUGGESTED_TAGS,
+      ...customTags,
+      ...subscriptions.flatMap((sub) => sub.tags || []),
+    ]);
+  }, [customTags, subscriptions]);
+
+  const handleCreateTag = useCallback((rawTag: string) => {
+    const norm = normalizeTag(rawTag);
+    if (!norm) return;
+    setCustomTags((prev) => normalizeTagList([...prev, norm]));
+  }, []);
+
+  const handleToggleSubscriptionTag = useCallback(
+    (subscriptionId: string, rawTag: string) => {
+      const norm = normalizeTag(rawTag);
+      if (!norm) return;
+      setCustomTags((prev) => normalizeTagList([...prev, norm]));
+      setSubscriptions((prev) =>
+        prev.map((sub) => {
+          if (sub.id !== subscriptionId) return sub;
+          const current = sub.tags || [];
+          const hasTag = current.some(
+            (tItem) => tItem.toLowerCase() === norm.toLowerCase()
+          );
+          return {
+            ...sub,
+            tags: hasTag
+              ? current.filter(
+                  (tItem) => tItem.toLowerCase() !== norm.toLowerCase()
+                )
+              : normalizeTagList([...current, norm]),
+          };
+        })
+      );
     },
-    [selectedPage, limit]
+    []
   );
 
-  // Check connection status
   const checkStatus = useCallback(async () => {
     try {
       const res = await FacebookApiClient.checkConnection();
-      setIsConnected(res.ok);
+      setIsSimulated(!res.ok);
+      return res.ok;
     } catch {
-      setIsConnected(false);
+      setIsSimulated(true);
+      return false;
     }
   }, []);
 
   useEffect(() => {
     checkStatus();
-    loadPosts(selectedPage, limit);
-  }, [checkStatus, loadPosts, selectedPage, limit]);
+  }, [checkStatus]);
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    checkStatus();
-    loadPosts(selectedPage, limit);
+  // Trigger Scraper (default 1) & Storage Reader (default 10) strictly for subscribed accounts
+  const handleRefresh = useCallback(
+    async (subsOverride?: SubscriptionItem[]) => {
+      const targetSubs = subsOverride ?? subscriptions;
+      setIsRefreshing(true);
+      try {
+        const ok = await checkStatus();
+        if (targetSubs.length === 0) {
+          setPosts([]);
+          setIsSimulated(!ok);
+          return;
+        }
+
+        setIsLoading(true);
+        const result = await FacebookApiClient.scrapeSubscribedAccounts(
+          targetSubs,
+          (storagePosts, storageSimulated) => {
+            const initialFiltered = filterPostsBySubscriptions(
+              storagePosts,
+              targetSubs,
+              true,
+              (p) => FacebookApiClient.getPostTimestamp(p)
+            );
+            setPosts(initialFiltered);
+            setIsLoading(false);
+            if (!storageSimulated) {
+              setIsSimulated(false);
+            }
+          }
+        );
+        const strictlyFiltered = filterPostsBySubscriptions(
+          result.posts,
+          targetSubs,
+          true,
+          (p) => FacebookApiClient.getPostTimestamp(p)
+        );
+        setPosts(strictlyFiltered);
+        setIsSimulated(result.isSimulated && !ok);
+      } catch (err) {
+        console.error('Failed to refresh subscribed accounts:', err);
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [subscriptions, checkStatus]
+  );
+
+  // Add new page(s)/account(s) to Subscription list (default scrape 1, view 10)
+  const handleAddSubscriptions = async (newItems: SubscriptionItem[]) => {
+    if (!newItems || newItems.length === 0) return;
+
+    const mergedMap = new Map<string, SubscriptionItem>();
+    subscriptions.forEach((sub) => mergedMap.set(sub.id, sub));
+    newItems.forEach((item) => {
+      const existing = mergedMap.get(item.id);
+      if (!existing) {
+        mergedMap.set(item.id, {
+          ...item,
+          postsLimit: item.postsLimit || DEFAULT_POSTS_PER_PAGE,
+          viewLimit: item.viewLimit || DEFAULT_VIEW_POSTS_PER_PAGE,
+          tags: normalizeTagList(item.tags),
+        });
+      } else {
+        mergedMap.set(item.id, {
+          ...existing,
+          viewLimit: existing.viewLimit || DEFAULT_VIEW_POSTS_PER_PAGE,
+          tags: normalizeTagList([
+            ...(existing.tags || []),
+            ...(item.tags || []),
+          ]),
+        });
+      }
+    });
+
+    const nextSubscriptions = Array.from(mergedMap.values());
+    setSubscriptions(nextSubscriptions);
+    await handleRefresh(nextSubscriptions);
   };
 
-  const handlePageChange = (newPage: string) => {
-    setSelectedPage(newPage);
-  };
+  // Save updated per-page limits or unsubscribed accounts from Edit Refresh Config
+  const handleSaveRefreshConfig = (
+    updatedSubscriptions: SubscriptionItem[],
+    triggerRefresh: boolean = false
+  ) => {
+    setSubscriptions(updatedSubscriptions);
 
-  const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
-  };
+    // Immediately enforce strict subscription filter on existing posts
+    setPosts((prev) =>
+      filterPostsBySubscriptions(
+        prev,
+        updatedSubscriptions,
+        true,
+        (p) => FacebookApiClient.getPostTimestamp(p)
+      )
+    );
 
-  const handleScrapeComplete = (newPostsCount: number) => {
-    // Reload posts to include fresh scrapes
-    loadPosts(selectedPage, limit);
-  };
+    if (
+      selectedPage !== 'all' &&
+      !updatedSubscriptions.some(
+        (s) =>
+          s.id.toLowerCase() === selectedPage.toLowerCase() ||
+          s.handle.toLowerCase() === selectedPage.toLowerCase()
+      )
+    ) {
+      setSelectedPage('all');
+    }
 
-  const handleLoadDatasetItemsToFeed = (items: any[]) => {
-    const normalized = items.map((item) => FacebookApiClient.normalizePost(item));
-    setPosts((prev) => FacebookApiClient.deduplicatePosts([...normalized, ...prev]));
-    setActiveTab('feed');
+    if (triggerRefresh) {
+      handleRefresh(updatedSubscriptions);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 selection:bg-blue-100 selection:text-blue-900">
-      {/* Strict 3-zone Header */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isConnected={isConnected}
-        isSimulated={isSimulated}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onRefreshFeed={handleRefresh}
-        isRefreshing={isRefreshing}
-      />
+    <div className="min-h-screen bg-page flex flex-col text-ink">
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main Content Area */}
       <main className="flex-1">
-        {activeTab === 'feed' && (
-          <FeedView
-            posts={posts}
-            totalScanned={totalScanned}
-            isLoading={isLoading}
-            selectedPage={selectedPage}
-            onPageChange={handlePageChange}
-            limit={limit}
-            onLimitChange={handleLimitChange}
-            onRefresh={handleRefresh}
-            onOpenScraper={() => setIsScraperModalOpen(true)}
-            onImageClick={(url) => setGalleryImage(url)}
-            isSimulated={isSimulated}
-            errorNotice={errorNotice}
-          />
-        )}
-
-        {activeTab === 'scraper' && (
-          <div className="py-6">
-            <div className="max-w-2xl mx-auto px-4">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs text-center">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  ส่งคำสั่ง Scrape ไปยัง Apify Actor ผ่าน C# Backend
-                </h2>
-                <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                  สั่งงาน Facebook Posts Scraper ดึงโพสต์ล่าสุดจากโปรไฟล์ที่ระบุ (เช่น MFU2Connect หรือ profile.php?id=61563364138740) และบันทึกลงฐานข้อมูลแบบทันที
-                </p>
-                <div className="pt-2">
-                  <button
-                    onClick={() => setIsScraperModalOpen(true)}
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors inline-flex items-center gap-2"
-                  >
-                    <span>เปิดหน้าต่างส่งคำสั่ง Scrape (POST /run)</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'datasets' && (
-          <DatasetViewer onLoadItemsToFeed={handleLoadDatasetItemsToFeed} />
-        )}
-
-        {activeTab === 'api-docs' && <ApiInspectorModal />}
+        <FeedView
+          posts={posts}
+          subscriptions={subscriptions}
+          availableTags={existingTags}
+          isLoading={isLoading}
+          isRefreshing={isRefreshing}
+          selectedPage={selectedPage}
+          onPageChange={setSelectedPage}
+          limit={limit}
+          onLimitChange={setLimit}
+          onRefresh={() => handleRefresh()}
+          onOpenAddSubscription={() => setIsAddSourceOpen(true)}
+          onOpenRefreshConfig={() => setIsRefreshConfigOpen(true)}
+          onCreateTag={handleCreateTag}
+          onToggleSubscriptionTag={handleToggleSubscriptionTag}
+          onImageClick={(url) => setGalleryImage(url)}
+          isSimulated={isSimulated}
+        />
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-line bg-card py-5 mt-12 text-[12px] text-ink-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-700">Facebook Feed & Apify Scraper Hub</span>
+            <span className="font-display font-semibold text-ink">
+              {t('appName')}
+            </span>
             <span aria-hidden="true">·</span>
-            <span>ASP.NET Core C# Backend Integration</span>
+            <span>{t('appTagline')}</span>
           </div>
-          <div className="text-[11px] font-mono text-slate-400">
-            Deduplication Algorithm: postId → url → content hash
-          </div>
+          <div>{t('footerNote')}</div>
         </div>
       </footer>
 
-      {/* Modals */}
       <ScraperModal
-        isOpen={isScraperModalOpen}
-        onClose={() => setIsScraperModalOpen(false)}
-        onScrapeComplete={handleScrapeComplete}
+        isOpen={isAddSourceOpen}
+        onClose={() => setIsAddSourceOpen(false)}
+        onAddSubscriptions={handleAddSubscriptions}
+        existingTags={existingTags}
+        onCreateTag={handleCreateTag}
       />
 
-      <BackendSettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onStatusChange={() => {
-          checkStatus();
-          loadPosts(selectedPage, limit);
-        }}
+      <RefreshConfigModal
+        isOpen={isRefreshConfigOpen}
+        subscriptions={subscriptions}
+        onClose={() => setIsRefreshConfigOpen(false)}
+        onSaveConfig={handleSaveRefreshConfig}
+        onOpenAddSubscription={() => setIsAddSourceOpen(true)}
       />
 
       <MediaGalleryModal
@@ -188,5 +310,13 @@ export default function App() {
         onClose={() => setGalleryImage(null)}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppShell />
+    </LanguageProvider>
   );
 }

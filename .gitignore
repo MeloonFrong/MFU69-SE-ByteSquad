@@ -1,11 +1,29 @@
-node_modules
-dist
-.env
-
-# .NET build output
+# .NET / C# Build Artifacts & Visual Studio
 **/bin/
 **/obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
-# Local secrets and environment settings
+# Node.js / Vite Frontend Build Artifacts
+**/node_modules/
+Frontend/dist/
+Frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Secrets
+.env
 .env.*
 !.env.example
+
+# SQLite Temporary Journals
+*.db-shm
+*.db-wal
+
+# OS Metadata
+.DS_Store
+Thumbs.db

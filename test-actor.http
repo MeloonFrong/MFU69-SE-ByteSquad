@@ -1,6 +1,6 @@
 @baseUrl = https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net
 
-### Facebook Scraper, replace MFU2Connect and the profile.php?id=61563364138740 with the profile names you want to scrape posts from
+### Facebook Scraper
 POST {{baseUrl}}/api/actors/facebook-posts-scraper/run
 Content-Type: application/json
 Accept: application/json
@@ -18,7 +18,7 @@ Accept: application/json
     ]
 }
 
-### Instagram Scraper, replace humansofny with the profile name you want to scrape posts from
+### Instagram Scraper
 POST {{baseUrl}}/api/actors/instagram-scraper/run
 Content-Type: application/json
 Accept: application/json
@@ -28,7 +28,7 @@ Accept: application/json
     "directUrls": [
         "https://www.instagram.com/humansofny/"
     ],
-    "resultsLimit": 1,
+    "resultsLimit": 10,
     "addParentData": false
 }
 
@@ -38,7 +38,7 @@ Accept: application/json
 
 ###
 
-### Run TikTok Posts Scraper, replace khaby.lame and zenlesszonezero with the profile names you want to scrape posts from
+### Run TikTok Posts Scraper
 
 POST {{baseUrl}}/api/actors/tiktok-posts-scraper/run
 Content-Type: application/json
@@ -67,16 +67,16 @@ Accept: application/json
   "topLevelCommentsPerPost": 0
 }
 
-### Test: Get 10 recent unique posts, replace MFU2Connect with the profile name you want to get posts from
+### Test: Get 10 recent unique posts
 GET {{baseUrl}}/api/posts/recent?page=MFU2Connect&limit=10
 Accept: application/json
 
-### Test: Get 10 recent unique posts from Instagram, replace humansofny with the profile name you want to get posts from
+### Test: Get 10 recent unique posts from Instagram
 
 GET {{baseUrl}}/api/posts/recent/instagram?profile=humansofny&limit=10
 Accept: application/json
 
-### Get recent TikTok posts, replace zenlesszonezero with the profile name you want to get posts from
+### Get recent TikTok posts
 
 GET {{baseUrl}}/api/posts/recent/tiktok?profile=zenlesszonezero&limit=10
 Accept: application/json
