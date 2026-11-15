@@ -34,7 +34,7 @@ Designed for university students, new hires, and digital professionals who suffe
 
 Click the link below to open the live web application directly in your browser (no local setup required):
 
-👉 **[clickable prototype](http://10.2.4.20:3000/)**
+👉 **[clickable prototype](https://proud-mud-0b9904600.5.azurestaticapps.net/)**
 
 ### 5-Step Happy-Path Walkthrough (Testing FR-1 to FR-4)
 1. **Add a Subscribed Source & Custom Tags (FR-1 & FR-3):** Click **`+ เพิ่มแหล่งข้อมูล / + Add source`** in the Left Sidebar (or on the initial onboarding card). Paste a Facebook page, Instagram profile, or TikTok account URL (e.g., `https://www.facebook.com/MFU2Connect`, `https://www.instagram.com/humansofny`, or `https://www.tiktok.com/@khaby.lame`) and click **`เพิ่ม URL / Add URL`**. Optionally type a new custom tag (e.g., `#MFU`) and click **`+ สร้างแท็ก / + Create tag`** (you can also delete any tag using the **`X`** button on the tag chip), then click **`เพิ่มแหล่งข้อมูล / Subscribe & fetch posts`**.
