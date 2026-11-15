@@ -32,9 +32,12 @@ Designed for university students, new hires, and digital professionals who suffe
 
 ## 3. How to Open the Clickable Prototype (No Server Required)
 
-For rapid M3 evaluation without installing `.NET` or `Node.js`, a **100% self-contained single-file clickable prototype** is pre-built at:
+For rapid M3 evaluation without installing `.NET` or `Node.js`, a **100% self-contained single-file clickable prototype** is pre-built at [`prototype/index.html`](./prototype/index.html).
 
-👉 **[`prototype/index.html`](./prototype/index.html)**
+- 🌐 **Open Live Clickable Prototype in Browser (1-Click via GitHub Preview):**  
+  👉 **[Launch Clickable Prototype (`prototype/index.html`)](https://htmlpreview.github.io/?https://github.com/MeloonFrong/MFU69-SE-ByteSquad/blob/frontend-polish/prototype/index.html)**
+- 💻 **Or Open Locally Offline (`file://`):**  
+  👉 **[`prototype/index.html`](./prototype/index.html)** (download/clone and double-click to open in any browser)
 
 ### Opening Instructions
 1. Clone or download this repository.
@@ -91,7 +94,8 @@ npm run dev
 | Path / Document | Description |
 | :--- | :--- |
 | **Clickable Prototype** | |
-| [`prototype/index.html`](./prototype/index.html) | **Standalone Clickable Prototype** (opens directly via double-click / `file://` with zero server) |
+| [Launch Live Clickable Prototype](https://htmlpreview.github.io/?https://github.com/MeloonFrong/MFU69-SE-ByteSquad/blob/frontend-polish/prototype/index.html) | **1-Click Online Clickable Prototype** (renders `prototype/index.html` directly in browser) |
+| [`prototype/index.html`](./prototype/index.html) | **Standalone Clickable Prototype Source** (opens locally via double-click / `file://` with zero server) |
 | **Milestone Reports & Core Docs (`docs/`)** | |
 | [`docs/final-report.md`](./docs/final-report.md) | **M3 Final Project Report & Complete Golden Thread Table** (`Problem → FR → Design → Prototype → Test`) |
 | [`docs/SRS.md`](./docs/SRS.md) | **Software Requirements Specification (Markdown)** with updated Section 7 Traceability Matrix |

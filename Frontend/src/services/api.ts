@@ -70,7 +70,7 @@ export class FacebookApiClient {
   public static async checkConnection(): Promise<{ ok: boolean; message: string }> {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       // Check root endpoint or debug datasets
       const response = await fetch(`${this.baseUrl}/`, {
@@ -92,7 +92,7 @@ export class FacebookApiClient {
       };
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        return { ok: false, message: 'Request timed out after 12s' };
+        return { ok: false, message: 'Request timed out after 30s' };
       }
       return {
         ok: false,
@@ -113,7 +113,7 @@ export class FacebookApiClient {
       try {
         const url = `${this.baseUrl}/api/posts/recent?page=${encodeURIComponent(page)}&limit=${limit}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         const response = await fetch(url, {
           method: 'GET',
@@ -478,7 +478,7 @@ export class FacebookApiClient {
     try {
       const url = `${this.baseUrl}/api/posts/recent/instagram?profile=${encodeURIComponent(profile)}&limit=${limit}`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch(url, {
         method: 'GET',
         headers: { Accept: 'application/json' },
@@ -524,7 +524,7 @@ export class FacebookApiClient {
     try {
       const url = `${this.baseUrl}/api/posts/recent/tiktok?profile=${encodeURIComponent(profile)}&limit=${limit}`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch(url, {
         method: 'GET',
         headers: { Accept: 'application/json' },
