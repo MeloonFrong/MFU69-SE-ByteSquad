@@ -3,7 +3,7 @@ import { INITIAL_MOCK_POSTS, DEMO_MOCK_POSTS, MOCK_APIFY_DATASETS, normalizeSoci
 import { doesPostMatchSubscription, filterPostsBySubscriptions, parseSubscriptionInput } from './subscriptionUtils';
 
 const BASE_URL_STORAGE_KEY = 'fb_scraper_backend_base_url';
-const DEFAULT_BASE_URL = 'http://localhost:5030';
+const DEFAULT_BASE_URL = 'https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net';
 
 // In-memory posts cache for simulation and merging new scrapes
 let localStoredPosts: FacebookPost[] = [...INITIAL_MOCK_POSTS];

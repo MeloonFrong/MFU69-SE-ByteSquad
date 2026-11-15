@@ -121,7 +121,7 @@ app.UseCors(); ${t('backendCorsLine')}`;
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleTestConnection()}
-                placeholder="http://localhost:5030"
+                placeholder="https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net"
                 className="flex-1 h-10 px-3 text-[13px] bg-card border border-line rounded-lg font-mono text-ink focus:outline-hidden focus:border-accent transition-colors"
               />
               <button
@@ -140,22 +140,26 @@ app.UseCors(); ${t('backendCorsLine')}`;
               </button>
             </div>
 
-            <div className="flex items-center gap-2 pt-1 text-[12px] text-ink-3">
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-[12px] text-ink-3">
               <span>{t('backendPresets')}:</span>
+              <button
+                type="button"
+                onClick={() =>
+                  setUrlInput(
+                    'https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net'
+                  )
+                }
+                className="font-mono text-ink-2 hover:text-ink underline"
+              >
+                Azure (Production)
+              </button>
+              <span aria-hidden="true">·</span>
               <button
                 type="button"
                 onClick={() => setUrlInput('http://localhost:5030')}
                 className="font-mono text-ink-2 hover:text-ink underline"
               >
                 http://localhost:5030
-              </button>
-              <span aria-hidden="true">·</span>
-              <button
-                type="button"
-                onClick={() => setUrlInput('http://127.0.0.1:5030')}
-                className="font-mono text-ink-2 hover:text-ink underline"
-              >
-                http://127.0.0.1:5030
               </button>
             </div>
           </div>

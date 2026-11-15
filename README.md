@@ -82,7 +82,7 @@ npm run dev
 ```
 
 - Open the printed local URL (default **`http://localhost:3000`** or **`http://localhost:5173`**) in your browser.
-- In full-stack development mode, the app starts with a **Clean Start (0 subscriptions, 0 posts)** and automatically connects to `http://localhost:5030` (falling back gracefully to normalized offline datasets if the backend is stopped).
+- By default, the frontend connects to the deployed Azure C# Backend (**`https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net`**), or you can switch to `http://localhost:5030` for local backend development (with automatic fallback to normalized offline datasets if unreachable).
 
 ---
 
