@@ -11,10 +11,10 @@
 **InfoCenter** is a centralized, distraction-free bilingual (**Thai / English**) web application that aggregates announcements and updates from user-subscribed **Facebook pages**, **Instagram profiles**, and **TikTok accounts** into a single chronological feed.
 
 Designed for university students, new hires, and digital professionals who suffer from scattered announcements across multiple apps, InfoCenter implements all four **Must-Have Functional Requirements** defined in our SRS:
-- **FR-1 — Add & Subscribe to External Sources via Link:** Subscribe to Facebook, Instagram, and TikTok sources using URLs, `@handles`, or 1-click sample presets, and manage per-account post limits (`1–50` posts) or unsubscribe at any time.
-- **FR-2 — View Aggregated Content Feed:** Read normalized posts across all 3 platforms in one unified feed with platform badges, author metadata, engagement counts (`Likes`, `Comments`, `Shares`), media lightbox preview, and a direct **View Original** link to the native post.
-- **FR-3 — Categorize & Filter Subscriptions (Custom Multi-Tagging):** Freely create and attach multiple custom tags (e.g., `#MFU`, `#Academic`, `#News`, `#Creator`, or any user-typed tag) to subscribed accounts and filter the entire feed by tag in one click.
-- **FR-4 — Information Sorting & Keyword Filtering System:** Filter posts in real time using comma-separated **Include Keywords** (`Must Contain`) and **Exclude Keywords** (`Hide Word`), and sort the feed by **Latest posts (Newest)** or **Most liked (Engagement)**.
+- **FR-1 — Add & Subscribe to External Sources via Link:** Subscribe to Facebook pages, Instagram profiles, and TikTok accounts by pasting their URLs, and configure per-account **Scrape limits** (default `1` new post) and **View limits** (default `10` stored posts) or unsubscribe at any time.
+- **FR-2 — View Aggregated Content Feed:** Read normalized posts across all 3 platforms in one unified feed with platform badges, author metadata, engagement counts (`Likes`, `Comments`, `Shares`, `Views`), media lightbox preview, and a direct **View original** link to the native post.
+- **FR-3 — Categorize & Filter Subscriptions (Custom Multi-Tagging):** Freely create custom `#tags`, attach or detach multiple tags per subscribed source, filter the feed via the **Show tags (`แสดงแท็ก`)** panel, and delete tags (`X`) at any time.
+- **FR-4 — Search & Keyword Filtering System:** Search captions and account names in real time, and filter posts using comma-separated **Include Keywords (`ต้องมีคำว่า`)** and **Exclude Keywords (`ยกเว้นคำว่า`)**.
 
 ---
 
@@ -32,14 +32,16 @@ Designed for university students, new hires, and digital professionals who suffe
 
 ## 3. How to Open the Clickable Prototype
 
+Click the link below to open the live web application directly in your browser (no local setup required):
+
 👉 **[clickable prototype](http://10.2.4.20:3000/)**
 
 ### 5-Step Happy-Path Walkthrough (Testing FR-1 to FR-4)
-1. **Verify Unified Feed & Original Link (FR-2):** Upon opening `prototype/index.html`, inspect the unified feed containing normalized Facebook, Instagram, and TikTok posts. Click an image to open the Lightbox, or click **`ดูโพสต์ต้นฉบับ / View Original`** on any card to open the native post URL.
-2. **Add a New Source with Custom Multi-Tags (FR-1 & FR-3):** Click **`+ เพิ่มรายการติดตาม / + Add Subscription`**, click one of the Quick-Add preset pills (e.g., `ISC MFU (FB)` or `Zenless Zone Zero (TikTok)`) or paste any URL, type a custom tag (e.g., `Urgent` or `Scholarship`) and press `Enter`, then click **`เพิ่มลงในฟีด / Add to Feed`**.
-3. **Filter Feed by Custom Tag (FR-3):** In the Left Sidebar under **`กรองตามแท็ก (FR-3) / Filter by Tag (FR-3)`**, click `#MFU`, `#Academic`, or `#Creator` to display only posts from accounts carrying that tag.
-4. **Filter by Include / Exclude Keywords & Sort (FR-4):** In the top filter bar, type a required keyword in **`ต้องมีคำว่า (Include)`**, type an unwanted word in **`ซ่อนคำว่า (Exclude)`**, and switch the Sort selector between **`โพสต์ล่าสุด / Latest posts`** and **`ยอดไลก์สูงสุด / Most liked`**.
-5. **Adjust Per-Account Post Limits & Bilingual/Theme UX (FR-1 & NFR):** Click **`แก้ไขการตั้งค่ารีเฟรช / Edit Refresh Config`** in the Left Sidebar to change per-page post limits (`1–50`) or edit account tags, and use the top Navbar buttons to toggle **Thai / English (`TH` / `EN`)** and **Light / Dark Mode**.
+1. **Add a Subscribed Source & Custom Tags (FR-1 & FR-3):** Click **`+ เพิ่มแหล่งข้อมูล / + Add source`** in the Left Sidebar (or on the initial onboarding card). Paste a Facebook page, Instagram profile, or TikTok account URL (e.g., `https://www.facebook.com/MFU2Connect`, `https://www.instagram.com/humansofny`, or `https://www.tiktok.com/@khaby.lame`) and click **`เพิ่ม URL / Add URL`**. Optionally type a new custom tag (e.g., `#MFU`) and click **`+ สร้างแท็ก / + Create tag`** (you can also delete any tag using the **`X`** button on the tag chip), then click **`เพิ่มแหล่งข้อมูล / Subscribe & fetch posts`**.
+2. **Verify Unified Feed & Original Link (FR-2):** Inspect the unified feed containing normalized Facebook, Instagram, and TikTok posts from your subscribed sources. Click any post image to open the full-screen Lightbox preview, or click **`ดูต้นฉบับบน... / View original on...`** on any card to open the native post URL.
+3. **Manage & Filter by Custom Tags (FR-3):** In the Left Sidebar under *Platforms*, click **`แสดงแท็ก / Show tags`** to create new tags, check/uncheck tags (or use **`แสดงทั้งหมด / Show all`** and **`ซ่อนทั้งหมด / Hide all`**) to filter the feed by tag, or click **`X`** to remove a tag. You can also click any account under **`เพจและแอคเคาท์ที่ติดตาม / Followed accounts`** to expand its tag panel and assign or unassign tags for that specific source.
+4. **Search & Filter by Include / Exclude Keywords (FR-4):** In the center **`ค้นหาและกรองโพสต์ / Search & filter posts`** card, use the full-width search bar to search captions or account names, type required words in **`ต้องมีคำว่า (Include)`**, and type unwanted words in **`ยกเว้นคำว่า (Exclude)`** (comma-separated) to filter posts in real time.
+5. **Refresh Feed & Configure Scrape/View Limits (FR-1 & NFR):** In the Right Sidebar, click **`Edit Refresh Config`** to configure each subscribed source's **Scrape limit (`ขอดึง`, default `1` new post)** and **View limit (`ขอดู`, default `10` existing posts)** or unsubscribe an account. Click **`Refresh`** to both scrape new posts and fetch stored posts from the C# Backend, and use the top Navbar buttons to toggle **Thai / English (`TH` / `EN`)** and **Light / Dark Mode**.
 
 ---
 
