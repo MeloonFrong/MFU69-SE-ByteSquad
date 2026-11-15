@@ -4,93 +4,96 @@ import {
   Facebook,
   Instagram,
   Layers,
-  MessageSquare,
   Music2,
-  Play,
   Plus,
   RefreshCw,
   Search,
-  Share2,
-  ThumbsUp,
+  SlidersHorizontal,
   X,
 } from 'lucide-react';
-import { FacebookPost } from '../types/facebook';
+import { FacebookPost, SubscriptionItem } from '../types/facebook';
 import { FacebookApiClient } from '../services/api';
+import {
+  doesPostMatchSubscription,
+  filterPostsBySubscriptions,
+} from '../services/subscriptionUtils';
 import { PostCard, detectPostPlatform, SocialPlatform } from './PostCard';
 import { useI18n } from '../i18n/LanguageContext';
 import { PlatformFilter } from '../i18n/strings';
 
 interface FeedViewProps {
   posts: FacebookPost[];
-  totalScanned: number;
+  subscriptions: SubscriptionItem[];
   isLoading: boolean;
+  isRefreshing?: boolean;
   selectedPage: string;
   onPageChange: (page: string) => void;
   limit: number;
   onLimitChange: (limit: number) => void;
   onRefresh: () => void;
-  onOpenScraper: () => void;
+  onOpenAddSubscription: () => void;
+  onOpenRefreshConfig: () => void;
   onImageClick: (url: string) => void;
   isSimulated: boolean;
-  isDemoMode?: boolean;
-  onClearData?: () => void;
-  activeDatasetId?: string | null;
-  onClearDatasetFilter?: () => void;
 }
 
 interface FollowedAccountItem {
   id: string;
+  handle: string;
   label: string;
   shortLabel: string;
   platform: SocialPlatform | 'all';
+  postsLimit?: number;
+  subscription?: SubscriptionItem;
 }
 
 export function FeedView({
   posts,
-  totalScanned,
+  subscriptions,
   isLoading,
+  isRefreshing = false,
   selectedPage,
   onPageChange,
   limit,
   onLimitChange,
   onRefresh,
-  onOpenScraper,
+  onOpenAddSubscription,
+  onOpenRefreshConfig,
   onImageClick,
   isSimulated,
-  isDemoMode = false,
-  onClearData,
-  activeDatasetId,
-  onClearDatasetFilter,
 }: FeedViewProps) {
   const { t, formatNumber } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatform, setSelectedPlatform] =
     useState<PlatformFilter>('all');
 
-  // Count posts per platform before platform filtering
-  const platformCounts = posts.reduce(
-    (acc, post) => {
-      const p = detectPostPlatform(post);
-      acc[p] = (acc[p] || 0) + 1;
-      return acc;
-    },
-    { facebook: 0, instagram: 0, tiktok: 0 }
-  );
+  // Requirement 3: Strict Subscription-Only filtering on every post in the feed
+  const subscribedPosts = useMemo(() => {
+    return filterPostsBySubscriptions(
+      posts,
+      subscriptions,
+      true,
+      (p) => FacebookApiClient.getPostTimestamp(p)
+    );
+  }, [posts, subscriptions]);
 
-  // Build Followed Accounts list STRICTLY from active posts (0 accounts when posts is empty)
+  // Count strictly subscribed posts per platform
+  const platformCounts = useMemo(() => {
+    return subscribedPosts.reduce(
+      (acc, post) => {
+        const p = detectPostPlatform(post);
+        acc[p] = (acc[p] || 0) + 1;
+        return acc;
+      },
+      { facebook: 0, instagram: 0, tiktok: 0 }
+    );
+  }, [subscribedPosts]);
+
+  // Build Followed Accounts list STRICTLY from user's Subscriptions
   const allAccounts: FollowedAccountItem[] = useMemo(() => {
-    const accounts: FollowedAccountItem[] = [];
-    const seenIds = new Set<string>();
-
-    posts.forEach((p) => {
-      const handle = (p.pageName || p.user?.id || '').trim();
-      if (!handle) return;
-      const lower = handle.toLowerCase();
-      if (seenIds.has(lower)) return;
-      seenIds.add(lower);
-
-      const plat = detectPostPlatform(p);
-      let label = p.user?.name || handle;
+    return subscriptions.map((sub) => {
+      const lower = sub.handle.toLowerCase();
+      let label = sub.displayName || sub.handle;
       let shortLabel = label;
 
       if (lower === 'mfu2connect') {
@@ -113,16 +116,17 @@ export function FeedView({
         shortLabel = t('sourceKhabyShort');
       }
 
-      accounts.push({
-        id: handle,
+      return {
+        id: sub.id,
+        handle: sub.handle,
         label,
         shortLabel,
-        platform: plat,
-      });
+        platform: sub.platform,
+        postsLimit: sub.postsLimit,
+        subscription: sub,
+      };
     });
-
-    return accounts;
-  }, [posts, t]);
+  }, [subscriptions, t]);
 
   // Filter Followed Accounts by selectedPlatform
   const visibleAccounts: FollowedAccountItem[] = useMemo(() => {
@@ -138,6 +142,7 @@ export function FeedView({
     return [
       {
         id: 'all',
+        handle: 'all',
         label: t('sourceAll'),
         shortLabel: t('sourceAll'),
         platform: 'all',
@@ -150,7 +155,9 @@ export function FeedView({
     setSelectedPlatform(plat);
     if (plat !== 'all' && selectedPage !== 'all') {
       const currentAcc = allAccounts.find(
-        (a) => a.id.toLowerCase() === selectedPage.toLowerCase()
+        (a) =>
+          a.id.toLowerCase() === selectedPage.toLowerCase() ||
+          a.handle.toLowerCase() === selectedPage.toLowerCase()
       );
       if (currentAcc && currentAcc.platform !== plat) {
         onPageChange('all');
@@ -158,51 +165,45 @@ export function FeedView({
     }
   };
 
-  // Filter posts by selectedPage, selectedPlatform, and searchQuery
-  const filteredPosts = posts.filter((post) => {
-    if (selectedPage !== 'all') {
-      const qPage = selectedPage.toLowerCase();
-      const postPage = (post.pageName || '').toLowerCase();
-      const postUserId = (post.user?.id || '').toLowerCase();
-      const postUserName = (post.user?.name || '').toLowerCase();
-      if (
-        !postPage.includes(qPage) &&
-        !postUserId.includes(qPage) &&
-        !postUserName.includes(qPage)
-      ) {
-        return false;
+  // Filter subscribedPosts by selectedPage, selectedPlatform, searchQuery, and display limit
+  const filteredPosts = useMemo(() => {
+    const matching = subscribedPosts.filter((post) => {
+      if (selectedPage !== 'all') {
+        const selectedAcc = allAccounts.find(
+          (a) =>
+            a.id.toLowerCase() === selectedPage.toLowerCase() ||
+            a.handle.toLowerCase() === selectedPage.toLowerCase()
+        );
+        if (selectedAcc?.subscription) {
+          if (!doesPostMatchSubscription(post, selectedAcc.subscription)) {
+            return false;
+          }
+        } else {
+          return false;
+        }
       }
-    }
-    if (selectedPlatform !== 'all') {
-      if (detectPostPlatform(post) !== selectedPlatform) return false;
-    }
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.toLowerCase();
-    const caption = (
-      post.caption ||
-      post.text ||
-      post.message ||
-      ''
-    ).toLowerCase();
-    const author = (post.user?.name || post.pageName || '').toLowerCase();
-    return caption.includes(query) || author.includes(query);
-  });
+      if (selectedPlatform !== 'all') {
+        if (detectPostPlatform(post) !== selectedPlatform) return false;
+      }
+      if (!searchQuery.trim()) return true;
+      const query = searchQuery.toLowerCase();
+      const caption = (
+        post.caption ||
+        post.text ||
+        post.message ||
+        ''
+      ).toLowerCase();
+      const author = (post.user?.name || post.pageName || '').toLowerCase();
+      return caption.includes(query) || author.includes(query);
+    });
 
-  const duplicatesFiltered = Math.max(0, totalScanned - posts.length);
-
-  // Engagement totals for visible posts
-  const engagementTotals = filteredPosts.reduce(
-    (acc, post) => {
-      acc.likes += post.likesCount ?? 0;
-      acc.comments += post.commentsCount ?? 0;
-      acc.shares += post.sharesCount ?? 0;
-      return acc;
-    },
-    { likes: 0, comments: 0, shares: 0 }
-  );
+    return matching.slice(0, limit);
+  }, [subscribedPosts, selectedPage, allAccounts, selectedPlatform, searchQuery, limit]);
 
   const selectedAccountObj = allAccounts.find(
-    (a) => a.id.toLowerCase() === selectedPage.toLowerCase()
+    (a) =>
+      a.id.toLowerCase() === selectedPage.toLowerCase() ||
+      a.handle.toLowerCase() === selectedPage.toLowerCase()
   );
   const activeSourceLabel =
     selectedPage === 'all'
@@ -218,15 +219,13 @@ export function FeedView({
     id: PlatformFilter;
     label: string;
     count: number;
-    dotClass: string | null;
     iconColorClass: string;
     Icon: typeof Layers;
   }> = [
     {
       id: 'all',
       label: t('platformAll'),
-      count: posts.length,
-      dotClass: null,
+      count: subscribedPosts.length,
       iconColorClass: 'text-ink-3',
       Icon: Layers,
     },
@@ -234,7 +233,6 @@ export function FeedView({
       id: 'facebook',
       label: t('platformFacebook'),
       count: platformCounts.facebook,
-      dotClass: 'bg-platform-fb',
       iconColorClass: 'text-platform-fb',
       Icon: Facebook,
     },
@@ -242,7 +240,6 @@ export function FeedView({
       id: 'instagram',
       label: t('platformInstagram'),
       count: platformCounts.instagram,
-      dotClass: 'bg-platform-ig',
       iconColorClass: 'text-platform-ig',
       Icon: Instagram,
     },
@@ -250,7 +247,6 @@ export function FeedView({
       id: 'tiktok',
       label: t('platformTiktok'),
       count: platformCounts.tiktok,
-      dotClass: 'bg-platform-tt',
       iconColorClass: 'text-platform-tt',
       Icon: Music2,
     },
@@ -289,7 +285,8 @@ export function FeedView({
   const selectedPlatformLabel =
     platforms.find((p) => p.id === selectedPlatform)?.label || '';
 
-  const hasAnyPosts = posts.length > 0;
+  const hasSubscriptions = subscriptions.length > 0;
+  const hasAnyPosts = subscribedPosts.length > 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -327,45 +324,9 @@ export function FeedView({
         </div>
       )}
 
-      {/* Demo mode banner when sample data was manually loaded from Developer Tools */}
-      {isDemoMode && hasAnyPosts && (
-        <div className="mb-6 bg-card border border-line rounded-xl px-4 py-3 flex items-center justify-between gap-4 text-[13px]">
-          <span className="text-ink-2">
-            {t('demoModeBanner', { n: formatNumber(posts.length) })}
-          </span>
-          {onClearData && (
-            <button
-              type="button"
-              onClick={onClearData}
-              className="text-accent hover:text-accent-hover font-medium transition-colors shrink-0"
-            >
-              {t('toolClearData')}
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Dataset items active banner */}
-      {activeDatasetId && (
-        <div className="mb-6 bg-card border border-line rounded-xl px-4 py-3 flex items-center justify-between gap-4 text-[13px]">
-          <span className="text-ink-2">
-            {t('datasetBanner', { n: posts.length, id: activeDatasetId })}
-          </span>
-          {onClearDatasetFilter && (
-            <button
-              type="button"
-              onClick={onClearDatasetFilter}
-              className="text-accent hover:text-accent-hover font-medium transition-colors"
-            >
-              {t('backToLatest')}
-            </button>
-          )}
-        </div>
-      )}
-
       {/* 3-Column Social Feed Hub Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_300px] gap-6 items-start">
-        {/* LEFT COLUMN: Platform Filter & Followed Accounts */}
+        {/* LEFT COLUMN: Platform Filter & Subscribed Accounts */}
         <aside className="hidden lg:block sticky top-22 space-y-4">
           {/* Platform Filter Card */}
           <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
@@ -403,7 +364,7 @@ export function FeedView({
             </nav>
           </div>
 
-          {/* Followed Accounts Card */}
+          {/* Followed / Subscribed Accounts Card */}
           <div className="bg-card border border-line rounded-2xl p-4 shadow-[var(--shadow-small)]">
             <div className="px-2 pb-2 flex items-center justify-between gap-2">
               <span className="text-[12px] font-medium text-ink-3 truncate">
@@ -411,7 +372,7 @@ export function FeedView({
               </span>
               <button
                 type="button"
-                onClick={onOpenScraper}
+                onClick={onOpenAddSubscription}
                 title={t('addSourceTooltip')}
                 aria-label={t('addSourceTooltip')}
                 className="w-6 h-6 rounded-md bg-raised hover:bg-line border border-line text-ink-2 hover:text-ink transition-colors inline-flex items-center justify-center shrink-0"
@@ -426,20 +387,28 @@ export function FeedView({
                   const isActive =
                     src.id === 'all'
                       ? selectedPage === 'all'
-                      : selectedPage.toLowerCase() === src.id.toLowerCase();
+                      : selectedPage.toLowerCase() === src.id.toLowerCase() ||
+                        selectedPage.toLowerCase() === src.handle.toLowerCase();
                   return (
                     <button
                       key={src.id}
                       type="button"
                       onClick={() => onPageChange(src.id)}
-                      className={`w-full h-9 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center gap-2.5 ${
+                      className={`w-full h-9 px-2.5 rounded-lg text-left text-[13px] transition-colors flex items-center justify-between gap-2 ${
                         isActive
                           ? 'bg-raised text-ink font-medium'
                           : 'text-ink-2 hover:text-ink hover:bg-raised/60'
                       }`}
                     >
-                      {renderPlatformLogo(src.platform)}
-                      <span className="truncate">{src.label}</span>
+                      <span className="flex items-center gap-2.5 min-w-0">
+                        {renderPlatformLogo(src.platform)}
+                        <span className="truncate">{src.label}</span>
+                      </span>
+                      {src.postsLimit !== undefined && (
+                        <span className="font-mono text-[11px] text-ink-3 tabular-nums shrink-0">
+                          {formatNumber(src.postsLimit)}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -451,7 +420,7 @@ export function FeedView({
                 </p>
                 <button
                   type="button"
-                  onClick={onOpenScraper}
+                  onClick={onOpenAddSubscription}
                   className="w-full h-8 px-2.5 rounded-lg bg-raised hover:bg-line border border-line text-[12px] font-medium text-ink transition-colors inline-flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5 text-ink-3" strokeWidth={1.75} />
@@ -477,7 +446,7 @@ export function FeedView({
               <div className="text-[12px] text-ink-3 font-mono tabular-nums">
                 {t('showingCount', {
                   shown: formatNumber(filteredPosts.length),
-                  total: formatNumber(totalScanned),
+                  total: formatNumber(subscribedPosts.length),
                 })}
               </div>
             </div>
@@ -518,7 +487,8 @@ export function FeedView({
                     const isActive =
                       src.id === 'all'
                         ? selectedPage === 'all'
-                        : selectedPage.toLowerCase() === src.id.toLowerCase();
+                        : selectedPage.toLowerCase() === src.id.toLowerCase() ||
+                          selectedPage.toLowerCase() === src.handle.toLowerCase();
                     return (
                       <button
                         key={src.id}
@@ -612,7 +582,7 @@ export function FeedView({
                 </div>
               ))}
             </div>
-          ) : !hasAnyPosts ? (
+          ) : !hasSubscriptions || !hasAnyPosts ? (
             /* Clean Start / Zero Initial Data Onboarding Empty State */
             <div className="bg-card border border-line rounded-2xl p-10 sm:p-12 text-center shadow-[var(--shadow-small)] space-y-5">
               <div className="inline-flex items-center justify-center gap-2 p-3 rounded-2xl bg-raised border border-line mx-auto">
@@ -645,10 +615,10 @@ export function FeedView({
                 </p>
               </div>
 
-              <div className="pt-1 flex items-center justify-center">
+              <div className="pt-1 flex items-center justify-center gap-2">
                 <button
                   type="button"
-                  onClick={onOpenScraper}
+                  onClick={onOpenAddSubscription}
                   className="h-10 px-5 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2"
                 >
                   <span>{t('addSourceButton')}</span>
@@ -705,357 +675,58 @@ export function FeedView({
           )}
         </div>
 
-        {/* RIGHT COLUMN: Quick Controls, Engagement Pulse Chart & Feed Insights */}
+        {/* RIGHT COLUMN: Refresh & Edit Refresh Config Controls ONLY */}
         <aside className="space-y-4 lg:sticky lg:top-22">
-          {/* Quick Controls Card */}
           <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-3">
-            <h2 className="text-[13px] font-medium text-ink">
-              {t('quickControlsTitle')}
-            </h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-[13px] font-medium text-ink">
+                {t('quickControlsTitle')}
+              </h2>
+              <span className="font-mono text-[11px] text-ink-3 tabular-nums">
+                {t('subscribedSummary', {
+                  n: formatNumber(subscriptions.length),
+                })}
+              </span>
+            </div>
+
             <p className="text-[12px] text-ink-3 leading-relaxed">
               {t('syncNowDesc')}
             </p>
+
             <div className="space-y-2 pt-1">
               <button
                 type="button"
-                onClick={onOpenScraper}
-                className="w-full h-10 px-4 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2"
-              >
-                <Play className="w-4 h-4" strokeWidth={1.5} />
-                <span>{t('syncNowButton')}</span>
-              </button>
-              <button
-                type="button"
                 onClick={onRefresh}
-                disabled={isLoading}
-                className="w-full h-9 px-4 rounded-lg bg-raised hover:bg-line border border-line text-ink text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50"
+                disabled={isLoading || isRefreshing || !hasSubscriptions}
+                className="w-full h-10 px-4 rounded-lg bg-accent hover:bg-accent-hover text-white text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <RefreshCw
-                  className={`w-4 h-4 text-ink-3 ${
-                    isLoading ? 'animate-spin' : ''
+                  className={`w-4 h-4 ${
+                    isLoading || isRefreshing ? 'animate-spin' : ''
                   }`}
                   strokeWidth={1.5}
                 />
-                <span>{t('refresh')}</span>
+                <span>{t('refreshButton')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onOpenRefreshConfig}
+                className="w-full h-9 px-4 rounded-lg bg-raised hover:bg-line border border-line text-ink text-[13px] font-medium transition-colors inline-flex items-center justify-center gap-2"
+              >
+                <SlidersHorizontal
+                  className="w-4 h-4 text-ink-3"
+                  strokeWidth={1.5}
+                />
+                <span>{t('editRefreshConfigButton')}</span>
               </button>
             </div>
-          </div>
 
-          {/* Engagement Pulse Multi-Series SVG Chart Card */}
-          <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <h2 className="text-[13px] font-medium text-ink">
-                  {t('pulseTitle')}
-                </h2>
-                <p className="text-[11px] text-ink-3 mt-0.5">
-                  {t('pulseSubtitle')}
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-1">
-              <svg
-                viewBox="0 0 260 110"
-                className="w-full h-28 overflow-visible"
-                role="img"
-                aria-label={t('pulseTitle')}
-              >
-                <defs>
-                  <linearGradient id="fbFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="0%"
-                      stopColor="var(--color-platform-fb)"
-                      stopOpacity="0.18"
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor="var(--color-platform-fb)"
-                      stopOpacity="0.0"
-                    />
-                  </linearGradient>
-                  <linearGradient id="igFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="0%"
-                      stopColor="var(--color-platform-ig)"
-                      stopOpacity="0.16"
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor="var(--color-platform-ig)"
-                      stopOpacity="0.0"
-                    />
-                  </linearGradient>
-                </defs>
-
-                {/* Horizontal dashed grid lines */}
-                <line
-                  x1="0"
-                  y1="20"
-                  x2="260"
-                  y2="20"
-                  stroke="var(--color-line)"
-                  strokeDasharray="3 3"
-                  strokeWidth="1"
-                />
-                <line
-                  x1="0"
-                  y1="52"
-                  x2="260"
-                  y2="52"
-                  stroke="var(--color-line)"
-                  strokeDasharray="3 3"
-                  strokeWidth="1"
-                />
-                <line
-                  x1="0"
-                  y1="84"
-                  x2="260"
-                  y2="84"
-                  stroke="var(--color-line)"
-                  strokeDasharray="3 3"
-                  strokeWidth="1"
-                />
-
-                {hasAnyPosts ? (
-                  <>
-                    {/* Instagram Series Area + Line */}
-                    <path
-                      d="M0,76 C40,68 75,38 115,44 C155,50 190,22 230,18 L260,14 L260,92 L0,92 Z"
-                      fill="url(#igFill)"
-                    />
-                    <path
-                      d="M0,76 C40,68 75,38 115,44 C155,50 190,22 230,18 L260,14"
-                      fill="none"
-                      stroke="var(--color-platform-ig)"
-                      strokeWidth="1.75"
-                      strokeLinecap="round"
-                    />
-
-                    {/* TikTok Series Line */}
-                    <path
-                      d="M0,82 C45,74 80,62 120,34 C160,18 200,32 235,24 L260,20"
-                      fill="none"
-                      stroke="var(--color-platform-tt)"
-                      strokeWidth="1.75"
-                      strokeLinecap="round"
-                    />
-
-                    {/* Facebook Series Area + Line */}
-                    <path
-                      d="M0,68 C40,62 85,58 130,50 C175,42 210,48 260,38 L260,92 L0,92 Z"
-                      fill="url(#fbFill)"
-                    />
-                    <path
-                      d="M0,68 C40,62 85,58 130,50 C175,42 210,48 260,38"
-                      fill="none"
-                      stroke="var(--color-platform-fb)"
-                      strokeWidth="1.75"
-                      strokeLinecap="round"
-                    />
-
-                    {/* Endpoint markers */}
-                    <circle
-                      cx="260"
-                      cy="14"
-                      r="3"
-                      fill="var(--color-platform-ig)"
-                    />
-                    <circle
-                      cx="260"
-                      cy="20"
-                      r="3"
-                      fill="var(--color-platform-tt)"
-                    />
-                    <circle
-                      cx="260"
-                      cy="38"
-                      r="3"
-                      fill="var(--color-platform-fb)"
-                    />
-                  </>
-                ) : (
-                  <>
-                    {/* Flat zero baseline when feed is empty */}
-                    <line
-                      x1="0"
-                      y1="84"
-                      x2="260"
-                      y2="84"
-                      stroke="var(--color-ink-3)"
-                      strokeWidth="1.5"
-                      strokeOpacity="0.4"
-                    />
-                    <circle
-                      cx="260"
-                      cy="84"
-                      r="2.5"
-                      fill="var(--color-ink-3)"
-                    />
-                  </>
-                )}
-
-                {/* Axis labels */}
-                <text
-                  x="0"
-                  y="106"
-                  fill="var(--color-ink-3)"
-                  fontSize="10"
-                  fontFamily="var(--font-mono)"
-                >
-                  Sep
-                </text>
-                <text
-                  x="115"
-                  y="106"
-                  fill="var(--color-ink-3)"
-                  fontSize="10"
-                  fontFamily="var(--font-mono)"
-                >
-                  Oct
-                </text>
-                <text
-                  x="235"
-                  y="106"
-                  fill="var(--color-ink-3)"
-                  fontSize="10"
-                  fontFamily="var(--font-mono)"
-                >
-                  Nov
-                </text>
-              </svg>
-
-              {/* Inline Legend */}
-              <div className="flex items-center justify-between pt-2 border-t border-line text-[11px] font-mono text-ink-2 tabular-nums">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-platform-fb" />
-                  <span>FB ({platformCounts.facebook})</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-platform-ig" />
-                  <span>IG ({platformCounts.instagram})</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-platform-tt" />
-                  <span>TT ({platformCounts.tiktok})</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Feed Insights Card */}
-          <div className="bg-card border border-line rounded-2xl p-5 shadow-[var(--shadow-small)] space-y-4">
-            <h2 className="text-[13px] font-medium text-ink">
-              {t('insightsTitle')}
-            </h2>
-
-            {/* Breakdown by platform */}
-            <div className="space-y-2.5">
-              <div className="text-[12px] text-ink-3">
-                {t('insightsByPlatform')}
-              </div>
-
-              {platforms
-                .filter((p) => p.id !== 'all')
-                .map((plat) => {
-                  const Icon = plat.Icon;
-                  const pct =
-                    posts.length > 0
-                      ? Math.round((plat.count / posts.length) * 100)
-                      : 0;
-                  return (
-                    <div key={plat.id} className="space-y-1">
-                      <div className="flex items-center justify-between text-[13px]">
-                        <span className="flex items-center gap-2 text-ink-2">
-                          <Icon
-                            className={`w-3.5 h-3.5 ${plat.iconColorClass}`}
-                            strokeWidth={1.75}
-                          />
-                          <span>{plat.label}</span>
-                        </span>
-                        <span className="font-mono text-[12px] text-ink tabular-nums">
-                          {formatNumber(plat.count)}
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full rounded-full bg-raised overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            plat.dotClass || 'bg-accent'
-                          }`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-
-            {/* Deduplication & scan metrics */}
-            <div className="pt-3 border-t border-line space-y-2 text-[12px]">
-              <div className="flex items-center justify-between text-ink-2">
-                <span>{t('insightsUniqueShown')}</span>
-                <span className="font-mono text-ink font-medium tabular-nums">
-                  {formatNumber(filteredPosts.length)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-ink-2">
-                <span>{t('insightsTotalScanned')}</span>
-                <span className="font-mono text-ink tabular-nums">
-                  {formatNumber(totalScanned)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-ink-2">
-                <span>{t('insightsDuplicates')}</span>
-                <span className="font-mono text-ink tabular-nums">
-                  {formatNumber(duplicatesFiltered)}
-                </span>
-              </div>
-            </div>
-
-            {/* Engagement totals */}
-            <div className="pt-3 border-t border-line space-y-2">
-              <div className="text-[12px] text-ink-3">
-                {t('insightsEngagement')}
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="p-2.5 rounded-xl bg-raised border border-line text-center">
-                  <ThumbsUp
-                    className="w-3.5 h-3.5 text-ink-3 mx-auto mb-1"
-                    strokeWidth={1.5}
-                  />
-                  <div className="font-mono text-[13px] font-medium text-ink tabular-nums">
-                    {formatNumber(engagementTotals.likes)}
-                  </div>
-                  <div className="text-[11px] text-ink-3 truncate">
-                    {t('likes')}
-                  </div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-raised border border-line text-center">
-                  <MessageSquare
-                    className="w-3.5 h-3.5 text-ink-3 mx-auto mb-1"
-                    strokeWidth={1.5}
-                  />
-                  <div className="font-mono text-[13px] font-medium text-ink tabular-nums">
-                    {formatNumber(engagementTotals.comments)}
-                  </div>
-                  <div className="text-[11px] text-ink-3 truncate">
-                    {t('comments')}
-                  </div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-raised border border-line text-center">
-                  <Share2
-                    className="w-3.5 h-3.5 text-ink-3 mx-auto mb-1"
-                    strokeWidth={1.5}
-                  />
-                  <div className="font-mono text-[13px] font-medium text-ink tabular-nums">
-                    {formatNumber(engagementTotals.shares)}
-                  </div>
-                  <div className="text-[11px] text-ink-3 truncate">
-                    {t('shares')}
-                  </div>
-                </div>
-              </div>
-            </div>
+            {!hasSubscriptions && (
+              <p className="text-[11px] text-ink-3 leading-relaxed pt-1">
+                {t('noSubscriptionsHint')}
+              </p>
+            )}
           </div>
         </aside>
       </div>

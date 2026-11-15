@@ -1,104 +1,115 @@
 import { useState } from 'react';
 import {
   AlertCircle,
-  CheckCircle2,
-  ExternalLink,
-  Play,
+  Facebook,
+  Instagram,
+  Music2,
   Plus,
   Trash2,
   X,
 } from 'lucide-react';
-import { FacebookPost, ScraperRunInput } from '../types/facebook';
-import { FacebookApiClient } from '../services/api';
+import { SubscriptionItem } from '../types/facebook';
+import {
+  DEFAULT_POSTS_PER_PAGE,
+  parseSubscriptionInput,
+} from '../services/subscriptionUtils';
 import { useI18n } from '../i18n/LanguageContext';
 
 interface ScraperModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onScrapeComplete: (newPostsCount: number, newPosts?: FacebookPost[]) => void;
+  onAddSubscriptions: (newItems: SubscriptionItem[]) => Promise<void> | void;
 }
 
 export function ScraperModal({
   isOpen,
   onClose,
-  onScrapeComplete,
+  onAddSubscriptions,
 }: ScraperModalProps) {
   const { t, formatNumber } = useI18n();
-  const [urls, setUrls] = useState<string[]>([]);
+  const [queuedItems, setQueuedItems] = useState<SubscriptionItem[]>([]);
   const [newUrlInput, setNewUrlInput] = useState('');
-  const [resultsLimit, setResultsLimit] = useState<number>(3);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resultData, setResultData] = useState<any>(null);
 
   if (!isOpen) return null;
 
-  const normalizeInputUrl = (raw: string): string => {
-    let url = raw.trim();
-    if (!url.startsWith('http')) {
-      url = 'https://www.facebook.com/' + url;
+  const renderPlatformIcon = (platform: SubscriptionItem['platform']) => {
+    if (platform === 'instagram') {
+      return (
+        <Instagram
+          className="w-4 h-4 text-platform-ig shrink-0"
+          strokeWidth={1.75}
+        />
+      );
     }
-    return url;
+    if (platform === 'tiktok') {
+      return (
+        <Music2
+          className="w-4 h-4 text-platform-tt shrink-0"
+          strokeWidth={1.75}
+        />
+      );
+    }
+    return (
+      <Facebook
+        className="w-4 h-4 text-platform-fb shrink-0"
+        strokeWidth={1.75}
+      />
+    );
   };
 
-  const handleAddUrl = () => {
+  const handleAddUrlToQueue = () => {
     if (!newUrlInput.trim()) return;
-    const url = normalizeInputUrl(newUrlInput);
-    if (!urls.includes(url)) {
-      setUrls([...urls, url]);
+    const parsed = parseSubscriptionInput(
+      newUrlInput,
+      'facebook',
+      DEFAULT_POSTS_PER_PAGE
+    );
+    if (!parsed) {
+      setError(t('scraperNeedUrl'));
+      return;
+    }
+    if (!queuedItems.some((item) => item.id === parsed.id)) {
+      setQueuedItems((prev) => [...prev, parsed]);
     }
     setNewUrlInput('');
     setError(null);
   };
 
-  const handleRemoveUrl = (index: number) => {
-    setUrls(urls.filter((_, i) => i !== index));
+  const handleRemoveQueued = (id: string) => {
+    setQueuedItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleExecuteScrape = async () => {
-    let activeUrls = [...urls];
+  const handleConfirmSubscribe = async () => {
+    const finalItems = [...queuedItems];
     if (newUrlInput.trim()) {
-      const pendingUrl = normalizeInputUrl(newUrlInput);
-      if (!activeUrls.includes(pendingUrl)) {
-        activeUrls.push(pendingUrl);
+      const pending = parseSubscriptionInput(
+        newUrlInput,
+        'facebook',
+        DEFAULT_POSTS_PER_PAGE
+      );
+      if (pending && !finalItems.some((item) => item.id === pending.id)) {
+        finalItems.push(pending);
       }
-      setUrls(activeUrls);
       setNewUrlInput('');
     }
 
-    if (activeUrls.length === 0) {
+    if (finalItems.length === 0) {
       setError(t('scraperNeedUrl'));
       return;
     }
 
-    const payload: ScraperRunInput = {
-      captionText: false,
-      resultsLimit,
-      startUrls: activeUrls.map((url) => ({ url })),
-    };
-
-    setIsRunning(true);
+    setIsSubmitting(true);
     setError(null);
-    setResultData(null);
-
     try {
-      const response = await FacebookApiClient.runFacebookScraper(payload);
-      if (response.success) {
-        setResultData(response);
-        const rawItems = Array.isArray(response.data)
-          ? response.data
-          : response.data?.items || [response.data];
-        const normalizedItems = rawItems
-          .filter(Boolean)
-          .map((item: any) => FacebookApiClient.normalizePost(item));
-        onScrapeComplete(response.postsAdded, normalizedItems);
-      } else {
-        setError(t('scraperFailedTitle'));
-      }
+      await onAddSubscriptions(finalItems);
+      setQueuedItems([]);
+      onClose();
     } catch (err: any) {
       setError(err.message || t('scraperFailedTitle'));
     } finally {
-      setIsRunning(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -108,7 +119,7 @@ export function ScraperModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-line flex items-center justify-between gap-4">
           <h2 className="font-display text-[17px] font-semibold text-ink">
-            {t('toolScraper')}
+            {t('addSubscriptionTitle')}
           </h2>
           <button
             type="button"
@@ -121,8 +132,10 @@ export function ScraperModal({
         </div>
 
         {/* Body */}
-        <div className="p-6 max-h-[68vh] overflow-y-auto space-y-6">
-          <p className="text-[13px] text-ink-2">{t('scraperDesc')}</p>
+        <div className="p-6 max-h-[68vh] overflow-y-auto space-y-5">
+          <p className="text-[13px] text-ink-2 leading-relaxed">
+            {t('addSubscriptionDesc')}
+          </p>
 
           {error && (
             <div
@@ -137,179 +150,87 @@ export function ScraperModal({
             </div>
           )}
 
-          {/* Target URLs */}
+          {/* URL Input */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label
-                htmlFor="scraper-url-input"
+                htmlFor="subscription-url-input"
                 className="text-[13px] font-medium text-ink"
               >
-                {t('scraperUrls')}
+                {t('addSubscriptionUrlLabel')}
               </label>
               <span className="text-[12px] font-mono text-ink-3 tabular-nums">
-                {t('scraperUrlsCount', { n: formatNumber(urls.length) })}
+                {t('scraperUrlsCount', { n: formatNumber(queuedItems.length) })}
               </span>
             </div>
 
-            {urls.length > 0 && (
-              <div className="space-y-2">
-                {urls.map((url, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between gap-2 h-10 px-3 bg-raised border border-line rounded-lg text-[13px]"
-                  >
-                    <span className="font-mono text-ink-2 truncate">{url}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveUrl(idx)}
-                      title={t('scraperRemove')}
-                      aria-label={t('scraperRemove')}
-                      className="h-7 w-7 text-ink-3 hover:text-negative rounded-md transition-colors inline-flex items-center justify-center shrink-0"
-                    >
-                      <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Add URL */}
             <div className="flex gap-2">
               <input
-                id="scraper-url-input"
+                id="subscription-url-input"
                 type="url"
-                placeholder={t('scraperAddPlaceholder')}
+                placeholder={t('addSubscriptionPlaceholder')}
                 value={newUrlInput}
                 onChange={(e) => setNewUrlInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddUrlToQueue()}
                 className="flex-1 h-10 px-3 text-[13px] bg-card border border-line rounded-lg text-ink placeholder:text-ink-3 focus:outline-hidden focus:border-accent transition-colors"
               />
               <button
                 type="button"
-                onClick={handleAddUrl}
-                className="h-10 px-3.5 bg-raised hover:bg-line text-ink text-[13px] font-medium rounded-lg transition-colors inline-flex items-center gap-1.5 shrink-0"
+                onClick={handleAddUrlToQueue}
+                className="h-10 px-3.5 bg-raised hover:bg-line border border-line text-ink text-[13px] font-medium rounded-lg transition-colors inline-flex items-center gap-1.5 shrink-0"
               >
                 <Plus className="w-4 h-4 text-ink-3" strokeWidth={1.5} />
                 <span>{t('scraperAdd')}</span>
               </button>
             </div>
-          </div>
 
-          {/* resultsLimit */}
-          <div className="space-y-2 pt-2 border-t border-line">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="scraper-limit-range"
-                className="text-[13px] font-medium text-ink"
-              >
-                {t('scraperLimit')}
-              </label>
-              <span className="text-[13px] font-mono font-medium text-ink tabular-nums">
-                {t('scraperLimitValue', { n: formatNumber(resultsLimit) })}
-              </span>
-            </div>
-            <input
-              id="scraper-limit-range"
-              type="range"
-              min={1}
-              max={20}
-              value={resultsLimit}
-              onChange={(e) => setResultsLimit(Number(e.target.value))}
-              className="w-full accent-accent cursor-pointer"
-            />
-            <div className="flex justify-between text-[12px] text-ink-3 font-mono tabular-nums">
-              <span>1</span>
-              <span>10</span>
-              <span>20</span>
-            </div>
-          </div>
-
-          {/* Scrape results preview when completed */}
-          {resultData && (
-            <div className="space-y-4 pt-4 border-t border-line">
-              {resultData.isSimulated ? (
-                <div
-                  role="alert"
-                  className="p-4 bg-negative-soft border border-negative-line rounded-xl text-[13px] text-negative-ink flex items-start gap-3"
-                >
-                  <AlertCircle
-                    className="w-5 h-5 text-negative shrink-0 mt-0.5"
-                    strokeWidth={1.5}
-                  />
-                  <div className="space-y-1">
-                    <div className="font-semibold">{t('scraperFailedTitle')}</div>
-                    <div className="text-ink-2">
-                      {t('scraperFailedBody', {
-                        url: FacebookApiClient.getBaseUrl(),
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 bg-raised border border-line rounded-xl text-[13px] text-ink flex items-start gap-3">
-                  <CheckCircle2
-                    className="w-5 h-5 text-positive shrink-0 mt-0.5"
-                    strokeWidth={1.5}
-                  />
-                  <div className="space-y-1">
-                    <div className="font-medium">
-                      {t('scraperDoneTitle', {
-                        n: formatNumber(resultData.postsAdded),
-                      })}
-                    </div>
-                    <div className="text-ink-2">{t('scraperDoneBody')}</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <h4 className="text-[13px] font-medium text-ink">
-                  {t('scraperResults')} ({formatNumber(resultData.postsAdded)})
-                </h4>
-                <div className="space-y-2">
-                  {(Array.isArray(resultData.data)
-                    ? resultData.data
-                    : [resultData.data]
-                  ).map((p: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className="p-3.5 bg-raised border border-line rounded-xl text-[13px] space-y-1"
-                    >
-                      <div className="font-medium text-ink">
-                        {p.user?.name || p.pageName || t('untitledPost')}
+            {queuedItems.length > 0 && (
+              <div className="space-y-2 pt-1">
+                {queuedItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-3 h-11 px-3.5 bg-raised border border-line rounded-xl text-[13px]"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {renderPlatformIcon(item.platform)}
+                      <div className="min-w-0">
+                        <div className="font-medium text-ink truncate leading-tight">
+                          {item.displayName}
+                        </div>
+                        <div className="font-mono text-[11px] text-ink-3 truncate leading-tight">
+                          {item.url}
+                        </div>
                       </div>
-                      <p className="text-ink-2 line-clamp-2">
-                        {p.caption || p.text || t('noCaption')}
-                      </p>
-                      {(p.facebookUrl || p.url) && (
-                        <a
-                          href={p.facebookUrl || p.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[12px] text-accent hover:text-accent-hover pt-1"
-                        >
-                          <span className="truncate max-w-md">
-                            {p.facebookUrl || p.url}
-                          </span>
-                          <ExternalLink
-                            className="w-3.5 h-3.5 shrink-0"
-                            strokeWidth={1.5}
-                          />
-                        </a>
-                      )}
                     </div>
-                  ))}
-                </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="font-mono text-[11px] text-ink-3 tabular-nums">
+                        {t('scraperLimitValue', { n: item.postsLimit })}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveQueued(item.id)}
+                        title={t('scraperRemove')}
+                        aria-label={t('scraperRemove')}
+                        className="h-7 w-7 text-ink-3 hover:text-negative rounded-md transition-colors inline-flex items-center justify-center shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-raised/60 border-t border-line flex items-center justify-between gap-4">
-          <span className="text-[12px] text-ink-3">{t('scraperRunHint')}</span>
+        <div className="px-6 py-4 bg-raised/60 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <span className="text-[12px] text-ink-3">
+            {t('addSubscriptionDefaultNote')}
+          </span>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
@@ -320,13 +241,15 @@ export function ScraperModal({
 
             <button
               type="button"
-              onClick={handleExecuteScrape}
-              disabled={isRunning}
-              className="h-9 px-4 bg-accent hover:bg-accent-hover text-white text-[13px] font-medium rounded-lg transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+              onClick={handleConfirmSubscribe}
+              disabled={isSubmitting}
+              className="h-9 px-4 bg-accent hover:bg-accent-hover text-white text-[13px] font-medium rounded-lg transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
             >
-              <Play className="w-4 h-4" strokeWidth={1.5} />
+              <Plus className="w-4 h-4" strokeWidth={1.75} />
               <span>
-                {isRunning ? t('scraperRunning') : t('scraperRun')}
+                {isSubmitting
+                  ? t('addSubscriptionSubmitting')
+                  : t('addSubscriptionSubmit')}
               </span>
             </button>
           </div>

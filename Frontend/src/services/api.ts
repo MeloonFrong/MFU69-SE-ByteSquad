@@ -1,5 +1,6 @@
-import { FacebookPost, RecentPostsResponse, ScraperRunInput, ApifyDataset } from '../types/facebook';
-import { INITIAL_MOCK_POSTS, MOCK_APIFY_DATASETS, normalizeSocialPost } from './mockData';
+import { FacebookPost, RecentPostsResponse, ScraperRunInput, ApifyDataset, SubscriptionItem } from '../types/facebook';
+import { INITIAL_MOCK_POSTS, DEMO_MOCK_POSTS, MOCK_APIFY_DATASETS, normalizeSocialPost } from './mockData';
+import { doesPostMatchSubscription, filterPostsBySubscriptions, parseSubscriptionInput } from './subscriptionUtils';
 
 const BASE_URL_STORAGE_KEY = 'fb_scraper_backend_base_url';
 const DEFAULT_BASE_URL = 'http://localhost:5030';
@@ -223,60 +224,47 @@ export class FacebookApiClient {
       }
     }
 
-    // Simulation of Apify Run
-    await new Promise((res) => setTimeout(res, 900));
+    // Simulation of Apify Run (strictly for requested URLs only)
+    await new Promise((res) => setTimeout(res, 600));
 
-    const simulatedNewPosts: FacebookPost[] = input.startUrls.map((startUrl, idx) => {
-      const rawUrl = startUrl.url.trim();
-      const lowerUrl = rawUrl.toLowerCase();
-      const isIg = lowerUrl.includes('instagram.com');
-      const isTt = lowerUrl.includes('tiktok.com');
-      const platform: 'facebook' | 'instagram' | 'tiktok' = isIg
-        ? 'instagram'
-        : isTt
-        ? 'tiktok'
-        : 'facebook';
+    const limitPerUrl = Math.max(1, input.resultsLimit || 1);
+    const simulatedNewPosts: FacebookPost[] = [];
 
-      // Extract handle or page name from URL
-      let targetPage = 'MFU2Connect';
-      let displayName = 'ม.แม่ฟ้าหลวง Mae Fah Luang University';
-      if (isIg) {
-        const match = rawUrl.match(/instagram\.com\/([^/?#]+)/i);
-        targetPage = match?.[1] || 'humansofny';
-        displayName = targetPage === 'humansofny' ? 'Humans of New York' : targetPage;
-      } else if (isTt) {
-        const match = rawUrl.match(/tiktok\.com\/@?([^/?#]+)/i);
-        targetPage = match?.[1]?.replace(/^@/, '') || 'zenlesszonezero';
-        displayName =
-          targetPage === 'zenlesszonezero'
-            ? 'Zenless Zone Zero'
-            : targetPage === 'khaby.lame'
-            ? 'Khabane lame'
-            : targetPage;
-      } else if (rawUrl.includes('61563364138740') || lowerUrl.includes('international')) {
-        targetPage = 'International-Student-Club-MFU';
-        displayName = 'International Student Club MFU';
+    input.startUrls.forEach((startUrl, idx) => {
+      const sub = parseSubscriptionInput(startUrl.url, 'facebook', limitPerUrl);
+      if (!sub) return;
+      const matchedFromDemo = this.deduplicatePosts(
+        DEMO_MOCK_POSTS.filter((p) => doesPostMatchSubscription(p, sub))
+      )
+        .sort((a, b) => this.getPostTimestamp(b) - this.getPostTimestamp(a))
+        .slice(0, limitPerUrl);
+
+      if (matchedFromDemo.length > 0) {
+        simulatedNewPosts.push(
+          ...matchedFromDemo.map((p) => ({ ...p, isScrapedNew: true }))
+        );
+      } else {
+        const timestamp = Date.now() - idx * 1800000;
+        simulatedNewPosts.push(
+          this.normalizePost({
+            postId: `sim_${sub.platform}_${sub.handle}_${Date.now()}_${idx}`,
+            platform: sub.platform,
+            pageName: sub.handle,
+            user: {
+              name: sub.displayName,
+              id: sub.handle,
+            },
+            caption: `[Synced ${new Date().toLocaleTimeString('th-TH')}] อัปเดตข้อมูลโพสต์ล่าสุดจาก ${sub.displayName} (${sub.url})`,
+            url: sub.url,
+            facebookUrl: sub.url,
+            timestamp,
+            likesCount: 120,
+            commentsCount: 14,
+            sharesCount: 9,
+            isScrapedNew: true,
+          })
+        );
       }
-
-      const timestamp = Date.now() - idx * 1800000;
-
-      return this.normalizePost({
-        postId: `sim_${Date.now()}_${idx}`,
-        platform,
-        pageName: targetPage,
-        user: {
-          name: displayName,
-          id: targetPage,
-        },
-        caption: `[Synced ${new Date().toLocaleTimeString('th-TH')}] อัปเดตข้อมูลโพสต์ล่าสุดจาก ${displayName} (${rawUrl})`,
-        url: rawUrl,
-        facebookUrl: rawUrl,
-        timestamp,
-        likesCount: Math.floor(Math.random() * 400) + 80,
-        commentsCount: Math.floor(Math.random() * 40) + 6,
-        sharesCount: Math.floor(Math.random() * 60) + 12,
-        isScrapedNew: true,
-      });
     });
 
     localStoredPosts = this.deduplicatePosts([...simulatedNewPosts, ...localStoredPosts]);
@@ -287,6 +275,397 @@ export class FacebookApiClient {
       postsAdded: simulatedNewPosts.length,
       isSimulated: true,
       rawText: JSON.stringify(simulatedNewPosts, null, 2),
+    };
+  }
+
+  /**
+   * POST /api/actors/instagram-scraper/run
+   */
+  public static async runInstagramScraper(
+    directUrls: string[],
+    resultsLimit: number = 1,
+    forceSimulation: boolean = false
+  ): Promise<{
+    success: boolean;
+    data: FacebookPost[];
+    postsAdded: number;
+    isSimulated: boolean;
+  }> {
+    if (!forceSimulation && directUrls.length > 0) {
+      try {
+        const url = `${this.baseUrl}/api/actors/instagram-scraper/run`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            resultsType: 'posts',
+            directUrls,
+            resultsLimit,
+            addParentData: false,
+          }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const json = await response.json();
+          const items = Array.isArray(json) ? json : json.items || [json];
+          const normalized = items
+            .filter(Boolean)
+            .map((item: any) => ({
+              ...this.normalizePost(item),
+              isScrapedNew: true,
+            }));
+          localStoredPosts = this.deduplicatePosts([
+            ...normalized,
+            ...localStoredPosts,
+          ]);
+          return {
+            success: true,
+            data: normalized,
+            postsAdded: normalized.length,
+            isSimulated: false,
+          };
+        }
+      } catch (err: any) {
+        console.warn(`Instagram Scraper POST failed: ${err.message}. Simulating run.`);
+      }
+    }
+
+    const fbSim = await this.runFacebookScraper(
+      {
+        captionText: false,
+        resultsLimit,
+        startUrls: directUrls.map((u) => ({ url: u })),
+      },
+      true
+    );
+    return {
+      success: fbSim.success,
+      data: Array.isArray(fbSim.data) ? fbSim.data : [],
+      postsAdded: fbSim.postsAdded,
+      isSimulated: true,
+    };
+  }
+
+  /**
+   * POST /api/actors/tiktok-posts-scraper/run
+   */
+  public static async runTikTokScraper(
+    profiles: string[],
+    resultsPerPage: number = 1,
+    forceSimulation: boolean = false
+  ): Promise<{
+    success: boolean;
+    data: FacebookPost[];
+    postsAdded: number;
+    isSimulated: boolean;
+  }> {
+    if (!forceSimulation && profiles.length > 0) {
+      try {
+        const url = `${this.baseUrl}/api/actors/tiktok-posts-scraper/run`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            aiVideoDescription: false,
+            aiVideoSummary: false,
+            commentsPerPost: 0,
+            excludePinnedPosts: false,
+            maxFollowersPerProfile: 0,
+            maxFollowingPerProfile: 0,
+            maxRepliesPerComment: 0,
+            profileScrapeSections: ['videos'],
+            profiles,
+            proxyCountryCode: 'None',
+            resultsPerPage,
+            scrapeAdditionalAuthorMeta: false,
+            scrapeRelatedSearchWords: false,
+            scrapeRelatedVideos: false,
+            shouldDownloadAvatars: false,
+            shouldDownloadCovers: false,
+            shouldDownloadMusicCovers: false,
+            shouldDownloadSlideshowImages: false,
+            shouldDownloadVideos: false,
+            topLevelCommentsPerPost: 0,
+          }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const json = await response.json();
+          const items = Array.isArray(json) ? json : json.items || [json];
+          const normalized = items
+            .filter(Boolean)
+            .map((item: any) => ({
+              ...this.normalizePost(item),
+              isScrapedNew: true,
+            }));
+          localStoredPosts = this.deduplicatePosts([
+            ...normalized,
+            ...localStoredPosts,
+          ]);
+          return {
+            success: true,
+            data: normalized,
+            postsAdded: normalized.length,
+            isSimulated: false,
+          };
+        }
+      } catch (err: any) {
+        console.warn(`TikTok Scraper POST failed: ${err.message}. Simulating run.`);
+      }
+    }
+
+    const fbSim = await this.runFacebookScraper(
+      {
+        captionText: false,
+        resultsLimit: resultsPerPage,
+        startUrls: profiles.map((handle) => ({
+          url: `https://www.tiktok.com/@${handle.replace(/^@/, '')}`,
+        })),
+      },
+      true
+    );
+    return {
+      success: fbSim.success,
+      data: Array.isArray(fbSim.data) ? fbSim.data : [],
+      postsAdded: fbSim.postsAdded,
+      isSimulated: true,
+    };
+  }
+
+  /**
+   * GET /api/posts/recent/instagram?profile={profile}&limit={limit}
+   */
+  public static async getRecentInstagramPosts(
+    profile: string,
+    limit: number = 1
+  ): Promise<{ posts: FacebookPost[]; totalScanned: number; isSimulated: boolean }> {
+    try {
+      const url = `${this.baseUrl}/api/posts/recent/instagram?profile=${encodeURIComponent(profile)}&limit=${limit}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const json = await response.json();
+        const rawList = Array.isArray(json) ? json : json.posts || json.items || [];
+        const normalized = rawList.map((p: any) => this.normalizePost(p));
+        return {
+          posts: this.deduplicatePosts(normalized),
+          totalScanned: json.totalScanned || normalized.length,
+          isSimulated: false,
+        };
+      }
+    } catch {
+      // Fallback below
+    }
+
+    const sub = parseSubscriptionInput(profile, 'instagram', limit);
+    const filtered = sub
+      ? localStoredPosts.filter((p) => doesPostMatchSubscription(p, sub))
+      : [];
+    const sorted = this.deduplicatePosts(filtered).sort(
+      (a, b) => this.getPostTimestamp(b) - this.getPostTimestamp(a)
+    );
+    return {
+      posts: sorted.slice(0, limit),
+      totalScanned: localStoredPosts.length,
+      isSimulated: true,
+    };
+  }
+
+  /**
+   * GET /api/posts/recent/tiktok?profile={profile}&limit={limit}
+   */
+  public static async getRecentTikTokPosts(
+    profile: string,
+    limit: number = 1
+  ): Promise<{ posts: FacebookPost[]; totalScanned: number; isSimulated: boolean }> {
+    try {
+      const url = `${this.baseUrl}/api/posts/recent/tiktok?profile=${encodeURIComponent(profile)}&limit=${limit}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const json = await response.json();
+        const rawList = Array.isArray(json) ? json : json.posts || json.items || [];
+        const normalized = rawList.map((p: any) => this.normalizePost(p));
+        return {
+          posts: this.deduplicatePosts(normalized),
+          totalScanned: json.totalScanned || normalized.length,
+          isSimulated: false,
+        };
+      }
+    } catch {
+      // Fallback below
+    }
+
+    const sub = parseSubscriptionInput(profile, 'tiktok', limit);
+    const filtered = sub
+      ? localStoredPosts.filter((p) => doesPostMatchSubscription(p, sub))
+      : [];
+    const sorted = this.deduplicatePosts(filtered).sort(
+      (a, b) => this.getPostTimestamp(b) - this.getPostTimestamp(a)
+    );
+    return {
+      posts: sorted.slice(0, limit),
+      totalScanned: localStoredPosts.length,
+      isSimulated: true,
+    };
+  }
+
+  /**
+   * Strict Subscription-Only Storage Reader:
+   * Fetches stored posts ONLY for subscribed accounts and filters out any non-subscribed account.
+   */
+  public static async fetchSubscribedPostsFromStorage(
+    subscriptions: SubscriptionItem[]
+  ): Promise<{
+    posts: FacebookPost[];
+    totalScanned: number;
+    isSimulated: boolean;
+  }> {
+    if (!subscriptions || subscriptions.length === 0) {
+      return { posts: [], totalScanned: 0, isSimulated: false };
+    }
+
+    let anyLiveSuccess = false;
+    let maxTotalScanned = 0;
+    const collected: FacebookPost[] = [];
+
+    for (const sub of subscriptions) {
+      const limit = Math.max(1, sub.postsLimit || 1);
+      if (sub.platform === 'instagram') {
+        const res = await this.getRecentInstagramPosts(sub.handle, limit);
+        if (!res.isSimulated) anyLiveSuccess = true;
+        maxTotalScanned = Math.max(maxTotalScanned, res.totalScanned);
+        collected.push(...res.posts);
+      } else if (sub.platform === 'tiktok') {
+        const res = await this.getRecentTikTokPosts(sub.handle, limit);
+        if (!res.isSimulated) anyLiveSuccess = true;
+        maxTotalScanned = Math.max(maxTotalScanned, res.totalScanned);
+        collected.push(...res.posts);
+      } else {
+        const pageParam =
+          sub.handle === '61563364138740'
+            ? 'International-Student-Club-MFU'
+            : sub.handle;
+        const res = await this.getRecentPosts(pageParam, limit);
+        if (!res.isSimulated) anyLiveSuccess = true;
+        maxTotalScanned = Math.max(maxTotalScanned, res.data.totalScanned);
+        collected.push(...res.data.posts);
+      }
+    }
+
+    const deduped = this.deduplicatePosts(collected);
+    const strictlyFiltered = filterPostsBySubscriptions(
+      deduped,
+      subscriptions,
+      true,
+      (p) => this.getPostTimestamp(p)
+    );
+
+    return {
+      posts: strictlyFiltered,
+      totalScanned: maxTotalScanned || strictlyFiltered.length,
+      isSimulated: !anyLiveSuccess,
+    };
+  }
+
+  /**
+   * Strict Subscription-Only Scraper Runner:
+   * Sends scraper requests ONLY for the user's subscribed accounts using each account's configured postsLimit,
+   * then strictly filters all results against `subscriptions`.
+   */
+  public static async scrapeSubscribedAccounts(
+    subscriptions: SubscriptionItem[]
+  ): Promise<{
+    posts: FacebookPost[];
+    postsAdded: number;
+    isSimulated: boolean;
+  }> {
+    if (!subscriptions || subscriptions.length === 0) {
+      return { posts: [], postsAdded: 0, isSimulated: false };
+    }
+
+    let anyLiveSuccess = false;
+    const newlyScraped: FacebookPost[] = [];
+
+    for (const sub of subscriptions) {
+      const limit = Math.max(1, sub.postsLimit || 1);
+      if (sub.platform === 'instagram') {
+        const res = await this.runInstagramScraper([sub.url], limit);
+        if (!res.isSimulated) anyLiveSuccess = true;
+        newlyScraped.push(...res.data);
+      } else if (sub.platform === 'tiktok') {
+        const res = await this.runTikTokScraper([sub.handle], limit);
+        if (!res.isSimulated) anyLiveSuccess = true;
+        newlyScraped.push(...res.data);
+      } else {
+        const res = await this.runFacebookScraper({
+          captionText: false,
+          resultsLimit: limit,
+          startUrls: [{ url: sub.url }],
+        });
+        if (!res.isSimulated) anyLiveSuccess = true;
+        const rawItems = Array.isArray(res.data)
+          ? res.data
+          : res.data?.items || [res.data];
+        newlyScraped.push(
+          ...rawItems.filter(Boolean).map((item: any) => this.normalizePost(item))
+        );
+      }
+    }
+
+    // Merge with any stored posts for these subscriptions and apply strict subscription + per-page limit filter
+    const storageRes = await this.fetchSubscribedPostsFromStorage(subscriptions);
+    if (!storageRes.isSimulated) anyLiveSuccess = true;
+
+    const combined = this.deduplicatePosts([
+      ...newlyScraped,
+      ...storageRes.posts,
+      ...localStoredPosts,
+    ]);
+
+    const strictlyFiltered = filterPostsBySubscriptions(
+      combined,
+      subscriptions,
+      true,
+      (p) => this.getPostTimestamp(p)
+    );
+
+    return {
+      posts: strictlyFiltered,
+      postsAdded: strictlyFiltered.length,
+      isSimulated: !anyLiveSuccess,
     };
   }
 

@@ -81,3 +81,14 @@ export interface BackendConfig {
   isCustomUrl: boolean;
   mode: 'auto' | 'live' | 'simulator';
 }
+
+export type SubscriptionPlatform = 'facebook' | 'instagram' | 'tiktok';
+
+export interface SubscriptionItem {
+  id: string;
+  platform: SubscriptionPlatform;
+  handle: string;
+  displayName: string;
+  url: string;
+  postsLimit: number;
+}
