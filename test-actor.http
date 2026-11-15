@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5030
+@baseUrl = https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net
 
 ### Facebook Scraper
 POST {{baseUrl}}/api/actors/facebook-posts-scraper/run

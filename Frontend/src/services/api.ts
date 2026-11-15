@@ -3,7 +3,12 @@ import { INITIAL_MOCK_POSTS, DEMO_MOCK_POSTS, MOCK_APIFY_DATASETS, normalizeSoci
 import { doesPostMatchSubscription, filterPostsBySubscriptions, parseSubscriptionInput } from './subscriptionUtils';
 
 const BASE_URL_STORAGE_KEY = 'fb_scraper_backend_base_url';
+const AZURE_MIGRATION_STORAGE_KEY = 'fb_scraper_backend_azure_migrated_v1';
 const DEFAULT_BASE_URL = 'https://infocenter-c4a7fqdegrhecdee.eastasia-01.azurewebsites.net';
+
+function sanitizeBaseUrl(url: string): string {
+  return (url || DEFAULT_BASE_URL).trim().replace(/\/+$/, '');
+}
 
 // In-memory posts cache for simulation and merging new scrapes
 let localStoredPosts: FacebookPost[] = [...INITIAL_MOCK_POSTS];
@@ -19,9 +24,19 @@ export interface ConnectionStatus {
 export class FacebookApiClient {
   private static baseUrl: string = (() => {
     try {
-      return localStorage.getItem(BASE_URL_STORAGE_KEY) || DEFAULT_BASE_URL;
+      const migrated = localStorage.getItem(AZURE_MIGRATION_STORAGE_KEY);
+      const saved = localStorage.getItem(BASE_URL_STORAGE_KEY);
+      if (!migrated) {
+        localStorage.setItem(AZURE_MIGRATION_STORAGE_KEY, 'true');
+        if (!saved || saved.includes('localhost:5030') || saved.includes('127.0.0.1:5030')) {
+          const cleanDefault = sanitizeBaseUrl(DEFAULT_BASE_URL);
+          localStorage.setItem(BASE_URL_STORAGE_KEY, cleanDefault);
+          return cleanDefault;
+        }
+      }
+      return sanitizeBaseUrl(saved || DEFAULT_BASE_URL);
     } catch {
-      return DEFAULT_BASE_URL;
+      return sanitizeBaseUrl(DEFAULT_BASE_URL);
     }
   })();
 
@@ -30,10 +45,7 @@ export class FacebookApiClient {
   }
 
   public static setBaseUrl(url: string): void {
-    let cleanUrl = url.trim();
-    if (cleanUrl.endsWith('/')) {
-      cleanUrl = cleanUrl.slice(0, -1);
-    }
+    const cleanUrl = sanitizeBaseUrl(url);
     this.baseUrl = cleanUrl;
     try {
       localStorage.setItem(BASE_URL_STORAGE_KEY, cleanUrl);
@@ -52,7 +64,7 @@ export class FacebookApiClient {
   public static async checkConnection(): Promise<{ ok: boolean; message: string }> {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       // Check root endpoint or debug datasets
       const response = await fetch(`${this.baseUrl}/`, {
@@ -74,7 +86,7 @@ export class FacebookApiClient {
       };
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        return { ok: false, message: 'Request timed out after 3.5s' };
+        return { ok: false, message: 'Request timed out after 12s' };
       }
       return {
         ok: false,
@@ -95,7 +107,7 @@ export class FacebookApiClient {
       try {
         const url = `${this.baseUrl}/api/posts/recent?page=${encodeURIComponent(page)}&limit=${limit}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
 
         const response = await fetch(url, {
           method: 'GET',
@@ -460,7 +472,7 @@ export class FacebookApiClient {
     try {
       const url = `${this.baseUrl}/api/posts/recent/instagram?profile=${encodeURIComponent(profile)}&limit=${limit}`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
       const response = await fetch(url, {
         method: 'GET',
         headers: { Accept: 'application/json' },
@@ -506,7 +518,7 @@ export class FacebookApiClient {
     try {
       const url = `${this.baseUrl}/api/posts/recent/tiktok?profile=${encodeURIComponent(profile)}&limit=${limit}`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
       const response = await fetch(url, {
         method: 'GET',
         headers: { Accept: 'application/json' },
@@ -557,33 +569,29 @@ export class FacebookApiClient {
       return { posts: [], totalScanned: 0, isSimulated: false };
     }
 
-    let anyLiveSuccess = false;
-    let maxTotalScanned = 0;
-    const collected: FacebookPost[] = [];
-
-    for (const sub of subscriptions) {
-      const limit = Math.max(1, sub.postsLimit || 1);
-      if (sub.platform === 'instagram') {
-        const res = await this.getRecentInstagramPosts(sub.handle, limit);
-        if (!res.isSimulated) anyLiveSuccess = true;
-        maxTotalScanned = Math.max(maxTotalScanned, res.totalScanned);
-        collected.push(...res.posts);
-      } else if (sub.platform === 'tiktok') {
-        const res = await this.getRecentTikTokPosts(sub.handle, limit);
-        if (!res.isSimulated) anyLiveSuccess = true;
-        maxTotalScanned = Math.max(maxTotalScanned, res.totalScanned);
-        collected.push(...res.posts);
-      } else {
+    const results = await Promise.all(
+      subscriptions.map(async (sub) => {
+        const limit = Math.max(1, sub.postsLimit || 1);
+        if (sub.platform === 'instagram') {
+          const res = await this.getRecentInstagramPosts(sub.handle, limit);
+          return { posts: res.posts, totalScanned: res.totalScanned, isSimulated: res.isSimulated };
+        }
+        if (sub.platform === 'tiktok') {
+          const res = await this.getRecentTikTokPosts(sub.handle, limit);
+          return { posts: res.posts, totalScanned: res.totalScanned, isSimulated: res.isSimulated };
+        }
         const pageParam =
           sub.handle === '61563364138740'
             ? 'International-Student-Club-MFU'
             : sub.handle;
         const res = await this.getRecentPosts(pageParam, limit);
-        if (!res.isSimulated) anyLiveSuccess = true;
-        maxTotalScanned = Math.max(maxTotalScanned, res.data.totalScanned);
-        collected.push(...res.data.posts);
-      }
-    }
+        return { posts: res.data.posts, totalScanned: res.data.totalScanned, isSimulated: res.isSimulated };
+      })
+    );
+
+    const anyLiveSuccess = results.some((r) => !r.isSimulated);
+    const maxTotalScanned = results.reduce((max, r) => Math.max(max, r.totalScanned), 0);
+    const collected = results.flatMap((r) => r.posts);
 
     const deduped = this.deduplicatePosts(collected);
     const strictlyFiltered = filterPostsBySubscriptions(
