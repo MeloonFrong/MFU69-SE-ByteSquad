@@ -86,7 +86,7 @@ npm run dev
 | Path / Document | Description |
 | :--- | :--- |
 | **Clickable Prototype** | |
-| [clickable prototype](http://10.2.4.20:3000/) | **Live Clickable Prototype** (`http://10.2.4.20:3000/`) |
+| [clickable prototype](https://proud-mud-0b9904600.5.azurestaticapps.net/) | **Live Clickable Prototype** (`https://proud-mud-0b9904600.5.azurestaticapps.net/') |
 | **Milestone Reports & Core Docs (`docs/`)** | |
 | [`docs/final-report.md`](./docs/final-report.md) | **M3 Final Project Report & Complete Golden Thread Table** (`Problem → FR → Design → Prototype → Test`) |
 | [`docs/SRS.md`](./docs/SRS.md) | **Software Requirements Specification (Markdown)** with updated Section 7 Traceability Matrix |
@@ -103,7 +103,6 @@ npm run dev
 | [`docs/design/Deployment Diagram.md`](./docs/design/Deployment%20Diagram.md) | **UML Deployment Diagram** (Standalone Prototype Mode + Full-Stack Mode) |
 | **Presentation Slides (`slides/`)** | |
 | [`slides/demo-slides.pdf`](./slides/demo-slides.pdf) | **M3 Final Demo Presentation Slides (PDF)** |
-| [`slides/InfoCenter_M3_Demo_Slides_ByteSquad.pptx`](./slides/InfoCenter_M3_Demo_Slides_ByteSquad.pptx) | **M3 Final Demo Presentation Slides (PowerPoint `.pptx`)** |
 | **Source Code** | |
 | [`Program.cs`](./Program.cs) & [`FacebookScraperApi.csproj`](./FacebookScraperApi.csproj) | **C# ASP.NET Core (.NET 8) Backend** (`Port 5030`, Apify actors & SQLite persistence) |
 | [`Frontend/src/`](./Frontend/src/) | **React 19 + TypeScript + Tailwind CSS Frontend Source Code** |
