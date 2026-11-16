@@ -1,4 +1,4 @@
-# Integration Work Log and Technical Report HTET WAI YAN (6931503004)
+# Integration Work Log and Technical Report (HTET WAI YAN - 6931503004)
 
 **Project:** MFU69-SE-ByteSquad
 **Area:** Frontend and Backend Integration
